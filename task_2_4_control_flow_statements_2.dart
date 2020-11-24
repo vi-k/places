@@ -22,10 +22,10 @@ void main() {
   } while (i <= 100);
 
   print('\nfor .. in');
-  for (final index in Iterable<int>.generate(101)) {
-    if (index.isEven) print(index);
+  for (final i in Iterable<int>.generate(101)) {
+    if (i.isEven) print(i);
   }
 
   print('\nforEach');
-  Iterable<int>.generate(101).where((element) => element.isEven).forEach(print);
+  Iterable<int>.generate(101).where((i) => i.isEven).forEach(print);
 }

@@ -24,30 +24,47 @@ import 'dart:convert';
 import 'dart:io';
 
 Future<void> main() async {
-  var now = DateTime.now();
+  final httpClient = HttpClient();
 
-  await HttpClient()
+  final stopwatch = Stopwatch()..start();
+
+  await httpClient
       .getUrl(Uri.parse('http://example.com/'))
       .then((request) => request.close())
-      .then<dynamic>((response) => response.transform(utf8.decoder).forEach(print));
+      .then<dynamic>(
+          (response) => response.transform(utf8.decoder).forEach(print));
 
-  print('Request 1: ${DateTime.now().difference(now)}');
+  stopwatch.stop();
+  httpClient.close();
 
-  Future<int> getImageFromWeb(String url) async {
-    final file = File('./image.jpg');
-    var first = true;
-    await HttpClient()
-      .getUrl(Uri.parse(url))
-      .then((request) => request.close())
-      .then<dynamic>((response) => response.forEach((element) {
-          file.writeAsBytesSync(element, mode: first ? FileMode.write : FileMode.append);
-          first = false;
-        }));
-    return file.length();
+  print('Request 1: ${stopwatch.elapsed}');
+
+  Future<File> getImageFromWeb(String url, String filename) async {
+    File file;
+    final httpClient = HttpClient();
+    await httpClient
+        .getUrl(Uri.parse(url))
+        .then((request) => request.close())
+        .then<dynamic>((response) => response.forEach((element) {
+              final first = file == null;
+              file ??= File(filename);
+              file.writeAsBytesSync(element,
+                  mode: first ? FileMode.write : FileMode.append);
+            }));
+    httpClient.close();
+    return file;
   }
 
-  now = DateTime.now();
-  final fileSize = await getImageFromWeb('https://i.pinimg.com/564x/e6/57/1a/e6571a6c62fb2615c741a8fcf32aef49.jpg');
-  print(fileSize);
-  print('Request 2: ${DateTime.now().difference(now)}');
+  stopwatch
+    ..reset()
+    ..start();
+
+  final file = await getImageFromWeb(
+      'https://i.pinimg.com/564x/e6/57/1a/e6571a6c62fb2615c741a8fcf32aef49.jpg',
+      './image.jpg');
+
+  stopwatch.stop();
+  print(file.lengthSync());
+
+  print('Request 2: ${stopwatch.elapsed}');
 }
