@@ -7,7 +7,7 @@ import 'dart:math';
 void main() {
   String reverse([String a = '']) => a.split(' ').reversed.join(' ');
 
-  double avg([List<num> list]) => list == null
+  double? avg([List<num>? list]) => list == null
       ? null
       : list.fold<double>(0, (prev, element) => prev + element) / list.length;
 

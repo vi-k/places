@@ -7,7 +7,9 @@ void main() {
   print('Введите номер месяца:');
 
   final input = stdin.readLineSync();
-  final month = int.parse(input);
+  if (input == null) return;
+
+  final month = int.tryParse(input);
 
   switch (month) {
     case 1: print('Январь'); break;
@@ -22,6 +24,6 @@ void main() {
     case 10: print('Октябрь'); break;
     case 11: print('Ноябрь'); break;
     case 12: print('Декабрь'); break;
-    default: print('Неверно указано номер месяца');
+    default: print('Неверно указан номер месяца');
   }
 }

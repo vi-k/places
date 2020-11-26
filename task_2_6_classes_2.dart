@@ -30,9 +30,9 @@ class Controller {
 
 class Bike {
   Bike({
-    Wheel wheel1,
-    Wheel wheel2,
-    Controller controller,
+    Wheel? wheel1,
+    Wheel? wheel2,
+    Controller? controller,
   })  : _wheel1 = wheel1 ?? Wheel('Переднее'),
         _wheel2 = wheel2 ?? Wheel('Заднее'),
         _controller = controller ?? Controller();

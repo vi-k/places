@@ -5,8 +5,8 @@
 #include: package:pedantic/analysis_options.1.9.0.yaml
 
 analyzer:
-  #enable-experiment:
-  #  - non-nullable
+  enable-experiment:
+    - non-nullable
     
   exclude:
     # Web

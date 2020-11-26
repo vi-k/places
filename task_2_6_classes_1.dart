@@ -8,8 +8,9 @@
 // год поступления
 // текущий курс
 
+// ignore: avoid_classes_with_only_static_members
 class MyDateTime {
-  static DateTime nowMock;
+  static DateTime? nowMock;
   static DateTime now() => nowMock ?? DateTime.now();
 }
 

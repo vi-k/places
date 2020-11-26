@@ -9,11 +9,12 @@ void main() {
 
   num sum = 0;
 
+  // ignore: literal_only_boolean_expressions
   while (true) {
     print('Введите число:');
 
     final input = stdin.readLineSync();
-    if (input == 'stop') break;
+    if (input == null || input == 'stop') break;
 
     final n = num.tryParse(input);
     if (n == null) {

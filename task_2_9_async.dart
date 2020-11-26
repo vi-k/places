@@ -40,19 +40,21 @@ Future<void> main() async {
   print('Request 1: ${stopwatch.elapsed}');
 
   Future<File> getImageFromWeb(String url, String filename) async {
-    File file;
+    File? file;
     final httpClient = HttpClient();
     await httpClient
         .getUrl(Uri.parse(url))
         .then((request) => request.close())
         .then<dynamic>((response) => response.forEach((element) {
               final first = file == null;
-              file ??= File(filename);
-              file.writeAsBytesSync(element,
+              var f = file;
+              f ??= File(filename);
+              f.writeAsBytesSync(element,
                   mode: first ? FileMode.write : FileMode.append);
+              file = f;
             }));
     httpClient.close();
-    return file;
+    return file!; // Игнорируем ошибки
   }
 
   stopwatch

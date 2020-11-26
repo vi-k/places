@@ -15,7 +15,9 @@ class Orc {}
 class Lair<T extends Goblin> {}
 
 void main() {
+  // ignore: unused_local_variable
   final lair1 = Lair<Goblin>();
+  // ignore: unused_local_variable
   final lair2 = Lair<Hobogoblin>();
   // final lair3 = Lair<Orc>(); // Type argument 'Orc' doesn't conform to the bound 'Goblin' of the type variable 'T' on 'Lair'
 }
