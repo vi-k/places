@@ -1,11 +1,12 @@
 // Задание 1
 
 // 1. Создать глобальную переменную типа int с именем a;
-var a = 1; // или int a;
+int a = 1;
 
 void main() {
   // 2. Создать локальную переменную типа double с именем b;
-  var b = 1.0; // или double b;
+  // ignore: omit_local_variable_types, unused_local_variable, prefer_final_locals
+  double b = 1; // или double b;
 
   // 3. Создать строковую переменную с именем text при помощи var, попытаться
   // присвоить значение переменной a. Каков результат? (выведите его в консоль);
@@ -32,6 +33,7 @@ void main() {
   print(fin);
   try {
     con[0] = 999;
+  // ignore: avoid_catching_errors
   } on UnsupportedError catch (e) {
     print('Error: $e'); // Unsupported operation: Cannot modify an unmodifiable list
   }

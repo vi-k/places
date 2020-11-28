@@ -21,9 +21,7 @@ class User {
   final String secondName;
 
   @override
-  String toString() {
-    return '$firstName $secondName';
-  }
+  String toString() => '$firstName $secondName';
 }
 
 class Student extends User {

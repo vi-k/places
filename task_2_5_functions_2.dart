@@ -5,12 +5,10 @@
 
 import 'dart:math';
 
-double avg(List<num> list) {
-  return list.fold<double>(0, (prev, element) => prev + element) / list.length;
-}
+double avg(List<num> list) =>
+    list.fold<double>(0, (prev, element) => prev + element) / list.length;
 
 void main() {
-
   final list = List<num>.generate(
       Random().nextInt(10), (index) => Random().nextInt(100));
 
