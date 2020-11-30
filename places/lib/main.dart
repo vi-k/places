@@ -14,7 +14,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: MyFirstWidget(),
+      home: MySecondWidget(),
+      // home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -42,11 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
@@ -97,6 +94,39 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class MyFirstWidget extends StatelessWidget {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    print(count++);
+    return Container(
+      child: const Center(
+        child: Text('Hello')
+      )
+    );
+  }
+}
+
+class MySecondWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _MySecondWidgetState();
+}
+
+class _MySecondWidgetState extends State<MySecondWidget> {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    print(count++);
+    return Container(
+      child: const Center(
+        child: Text('Hello')
+      )
     );
   }
 }
