@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(App());
 }
 
-class MyApp extends StatelessWidget {
+//Target file "lib\main.dart" not found.
+//  task manager
+// Undefined name 'context'.
+
+class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Places',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
@@ -101,9 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
 class MyFirstWidget extends StatelessWidget {
   int count = 0;
 
+  // Type getContext() => context.runtimeType;
+
   @override
   Widget build(BuildContext context) {
-    print(count++);
+    print(++count);
     return Container(
       child: const Center(
         child: Text('Hello')
@@ -120,9 +126,12 @@ class MySecondWidget extends StatefulWidget {
 class _MySecondWidgetState extends State<MySecondWidget> {
   int count = 0;
 
+  Type getContext() => context.runtimeType;
+
   @override
   Widget build(BuildContext context) {
-    print(count++);
+    print(++count);
+    print(getContext());
     return Container(
       child: const Center(
         child: Text('Hello')
