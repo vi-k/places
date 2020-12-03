@@ -15,17 +15,44 @@ class _SightListScreenState extends State<SightListScreen> {
         elevation: 0,
         toolbarHeight: 128, // 40 + 72 + 16
         titleSpacing: 16, // отступы по-горизонтали
-        title: const Padding(
-          padding: EdgeInsets.only(top: 40, bottom: 16), // + 24 высота системного бара
-          child: Text(
-            'Список интересных мест',
-            maxLines: 2,
-            style: TextStyle(
-              color: Color(0xFF3B3E5B),
-              fontSize: 32,
-              height: 1.125,
-              fontWeight: FontWeight.w700,
+        title: Padding(
+          padding: EdgeInsets.only(
+              top: 40, bottom: 16), // + 24 высота системного бара
+          child: RichText(
+            text: const TextSpan(
+              text: 'С',
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 32,
+                height: 1.125,
+                fontWeight: FontWeight.w700,
+              ),
+              children: [
+                TextSpan(
+                  text: 'писок\n',
+                  style: TextStyle(
+                    color: Color(0xFF3B3E5B),
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'и',
+                      style: TextStyle(
+                        color: Colors.yellow,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'нтересных мест',
+                          style: TextStyle(
+                            color: Color(0xFF3B3E5B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
+            maxLines: 2,
           ),
         ),
       ),
