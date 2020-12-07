@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../const.dart';
+
 class SightListScreen extends StatefulWidget {
   @override
   _SightListScreenState createState() => _SightListScreenState();
@@ -9,48 +11,94 @@ class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 128, // 40 + 72 + 16
-        titleSpacing: 16, // отступы по-горизонтали
-        title: const Padding(
-          padding: EdgeInsets.only(top: 40, bottom: 16), // + 24 высота системного бара
-          child: Text(
-            'Список интересных мест',
-            maxLines: 2,
-            style: TextStyle(
-              color: Color(0xFF3B3E5B),
-              fontSize: 32,
-              height: 1.125,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+      backgroundColor: screenBackground,
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    // Разбираем заголовок по строкам
+    final titleLines = sightListScreenTitle.split('\n');
+
+    return AppBar(
+      backgroundColor: screenBackground,
+      elevation: 0,
+      toolbarHeight: appbarTopSpacing +
+          titleLines.length * appbarLineHeight +
+          appbarSpacing,
+      titleSpacing: appbarSpacing,
+      title: Padding(
+        padding: const EdgeInsets.only(
+          top: appbarTopSpacing,
+          bottom: appbarSpacing,
         ),
+        child: _buildAppBarTitle(titleLines),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    );
+  }
+
+  Widget _buildAppBarTitle(List<String> titleLines) {
+    assert(titleLines.isNotEmpty);
+
+    final firstLine = titleLines[0];
+    final remainingLines = titleLines.skip(1);
+
+    return RichText(
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        text: firstLine.substring(0, 1),
+        style: const TextStyle(
+          color: appbarFirstLineInitialLetterColor,
+          fontSize: appbarFontSize,
+          height: appbarLineMultiplier,
+          fontWeight: appbarFontWeight,
+        ),
         children: [
-          Card(
-            margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              height: 200,
-              color: const Color(0xFFF5F5F5),
-              child: const Text('Card 1'),
+          TextSpan(
+            text: firstLine.substring(1),
+            style: const TextStyle(
+              color: appbarFontColor,
             ),
           ),
-          Card(
-            margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              height: 200,
-              color: const Color.fromARGB(0xff, 0xf5, 0xf5, 0xf5),
-              child: const Text('Card 2'),
-            ),
-          ),
+          for (final line in remainingLines)
+            TextSpan(
+                text: '\n${line.substring(0, 1)}',
+                style: const TextStyle(
+                  color: appbarSecondLineInitialLetterColor,
+                ),
+                children: [
+                  TextSpan(
+                    text: line.substring(1),
+                    style: const TextStyle(
+                      color: appbarFontColor,
+                    ),
+                  ),
+                ]),
         ],
+      ),
+      maxLines: titleLines.length,
+    );
+  }
+
+  Widget _buildBody() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildCard('Card 1'),
+        _buildCard('Card 2'),
+      ],
+    );
+  }
+
+  Widget _buildCard(String text) {
+    return Card(
+      margin: cardMargin,
+      child: Container(
+        padding: cardPadding,
+        height: cardHeight,
+        color: cardBackground,
+        child: Text(text),
       ),
     );
   }
