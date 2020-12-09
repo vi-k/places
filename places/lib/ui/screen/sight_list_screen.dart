@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../mocks.dart';
 import '../const.dart';
+import 'sight_card.dart';
 
 class SightListScreen extends StatefulWidget {
   @override
@@ -33,73 +35,28 @@ class _SightListScreenState extends State<SightListScreen> {
           top: appbarTopSpacing,
           bottom: appbarSpacing,
         ),
-        child: _buildAppBarTitle(titleLines),
+        child: _buildAppBarTitle(sightListScreenTitle, titleLines.length),
       ),
     );
   }
 
-  Widget _buildAppBarTitle(List<String> titleLines) {
-    assert(titleLines.isNotEmpty);
-
-    final firstLine = titleLines[0];
-    final remainingLines = titleLines.skip(1);
-
-    return RichText(
+  Widget _buildAppBarTitle(String title, int linesCount) {
+    return Text(
+      title,
       overflow: TextOverflow.ellipsis,
-      text: TextSpan(
-        text: firstLine.substring(0, 1),
-        style: const TextStyle(
-          color: appbarFirstLineInitialLetterColor,
-          fontSize: appbarFontSize,
-          height: appbarLineMultiplier,
-          fontWeight: appbarFontWeight,
-        ),
-        children: [
-          TextSpan(
-            text: firstLine.substring(1),
-            style: const TextStyle(
-              color: appbarFontColor,
-            ),
-          ),
-          for (final line in remainingLines)
-            TextSpan(
-                text: '\n${line.substring(0, 1)}',
-                style: const TextStyle(
-                  color: appbarSecondLineInitialLetterColor,
-                ),
-                children: [
-                  TextSpan(
-                    text: line.substring(1),
-                    style: const TextStyle(
-                      color: appbarFontColor,
-                    ),
-                  ),
-                ]),
-        ],
-      ),
-      maxLines: titleLines.length,
+      style: appbarTextStyle,
+      maxLines: linesCount,
     );
   }
 
   Widget _buildBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return ListView(
       children: [
-        _buildCard('Card 1'),
-        _buildCard('Card 2'),
+        for (final sight in mocks)
+          SightCard(
+            sight: sight,
+          ),
       ],
-    );
-  }
-
-  Widget _buildCard(String text) {
-    return Card(
-      margin: cardMargin,
-      child: Container(
-        padding: cardPadding,
-        height: cardHeight,
-        color: cardBackground,
-        child: Text(text),
-      ),
     );
   }
 }
