@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
-import '../const.dart';
+import '../res/colors.dart';
+import '../res/const.dart';
+import '../res/strings.dart';
+import '../res/text_styles.dart';
 
 class SightDetails extends StatefulWidget {
   final Sight sight;
@@ -52,7 +55,7 @@ class _SightDetailsState extends State<SightDetails> {
                       const SizedBox(
                         width: detailsHoursSpacing,
                       ),
-                      const Text(
+                      Text(
                         'закрыто до 09:00', // Временно
                         style: detailsHoursStyle,
                       ),
@@ -70,8 +73,14 @@ class _SightDetailsState extends State<SightDetails> {
                   ),
                   ElevatedButton.icon(
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
+                      shape: MaterialStateProperty.all(
+                        const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(buttonRadius),
+                          ),
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
                     ),
                     onPressed: () {},
                     icon: const Icon(Icons.rowing),
