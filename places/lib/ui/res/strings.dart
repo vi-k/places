@@ -1,5 +1,4 @@
-// Texts
-const String sightListScreenTitle = 'Список\nинтересных мест';
-const String sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
-const String sightDetailsScreenSchedule = 'Запланировать';
-const String sightDetailsScreenFavorite = 'В Избранное';
+const sightListScreenTitle = 'Список\nинтересных мест';
+const sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
+const sightDetailsScreenSchedule = 'Запланировать';
+const sightDetailsScreenFavorite = 'В Избранное';

@@ -1,24 +1,17 @@
-import 'package:flutter/material.dart';
+const buttonRadius = 12.0;
 
-const double buttonRadius = 12;
+const appbarTopSpacing = 40.0;
+const appbarSpacing = 16.0;
+const appbarLineMultiplier = 1.125;
+// double get appbarLineHeight => appbarFontSize * appbarLineMultiplier;
 
-const double appbarTopSpacing = 40;
-const double appbarSpacing = 16;
-const double appbarLineMultiplier = 1.125;
-const double appbarFontSize = 32;
-double get appbarLineHeight => appbarFontSize * appbarLineMultiplier;
+const cardRadius = 16.0;
+// const cardHeight = 188.0;
+// const cardImageHeight = 96.0;
+const cardSpacing = 16.0;
 
-const double cardRadius = 16;
-const EdgeInsets cardPadding = EdgeInsets.all(16);
-const double cardHeight = 188;
-const double cardImageHeight = 96;
-const double cardSpacing = 16;
-const EdgeInsets cardMargin = EdgeInsets.only(left: 16, right: 16, bottom: 16);
-
-const double detailsImageSize = 360;
-const EdgeInsets detailsPadding =
-    EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 16);
-const double detailsTitleSpacing = 2;
-const double detailsHoursSpacing = 16;
-const double detailsCommonSpacing = 24;
-const double detailsFooterSpacing = 8;
+const detailsImageSize = 360.0;
+const detailsTitleSpacing = 2.0;
+const detailsHoursSpacing = 16.0;
+const detailsCommonSpacing = 24.0;
+const detailsFooterSpacing = 8.0;

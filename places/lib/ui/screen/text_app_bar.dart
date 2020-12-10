@@ -12,20 +12,18 @@ class TextAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: appbarSpacing,
-        top: MediaQuery.of(context).padding.top + appbarTopSpacing,
-        right: appbarSpacing,
-        bottom: appbarSpacing,
-      ),
-      child: Text(
-        title,
-        style: appbarTextStyle,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+          left: appbarSpacing,
+          top: MediaQuery.of(context).padding.top + appbarTopSpacing,
+          right: appbarSpacing,
+          bottom: appbarSpacing,
+        ),
+        child: Text(
+          title,
+          style: appbarTextStyle,
+        ),
+      );
 
   @override
   Size get preferredSize => const Size.fromHeight(400);

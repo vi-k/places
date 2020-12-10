@@ -9,14 +9,12 @@ void main() {
 class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Places',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
-      ),
-      home: SightListScreen(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Places',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          fontFamily: 'Roboto',
+        ),
+        home: SightListScreen(),
+      );
 }
