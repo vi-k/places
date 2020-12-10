@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
 import '../res/colors.dart';
@@ -18,15 +19,13 @@ class SightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AspectRatio(
         aspectRatio: 3 / 2,
-        child: Card(
-          margin: cardMargin,
+        child: Material(
+          elevation: 2,
+          textStyle: textRegular.copyWith(color: textColorPrimary),
           color: cardBackground,
           clipBehavior: Clip.antiAlias,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(cardRadius),
-              topRight: Radius.circular(cardRadius),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(cardRadius)),
           ),
           child: Stack(
             children: [
@@ -47,10 +46,6 @@ class SightCard extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => SightDetails(sight: sight),
                         ));
-                    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    //   content: Text('Test!'),
-                    //   duration: Duration(milliseconds: 300),
-                    // ));
                   },
                 ),
               ),
@@ -61,28 +56,41 @@ class SightCard extends StatelessWidget {
 
   Widget _buildTop() => Expanded(
         child: Container(
-          color: Colors.orange,
+          color: imageBackground,
           child: Stack(
             fit: StackFit.expand,
             children: [
               Image.network(
                 sight.url,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Align(
+                    alignment: Alignment.bottomCenter,
+                    child: LinearProgressIndicator(
+                      backgroundColor: imageBackground,
+                      value: progress.expectedTotalBytes != null
+                          ? progress.cumulativeBytesLoaded /
+                              progress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
               ),
               Positioned(
                 left: cardSpacing,
                 top: cardSpacing,
                 child: Text(
                   sight.typeAsText,
-                  style: cardTypeStyle,
+                  style: textBold.copyWith(color: cardSignaturesColor),
                 ),
               ),
-              const Positioned(
+              Positioned(
                 right: cardSpacing,
                 top: cardSpacing,
-                child: Icon(
-                  Icons.favorite_outline,
-                  color: Colors.white, // Временно
+                child: SvgPicture.asset(
+                  'res/favorite.svg',
+                  color: cardSignaturesColor,
                 ),
               ),
             ],
@@ -93,23 +101,18 @@ class SightCard extends StatelessWidget {
   Widget _buildBottom() => Expanded(
         child: Container(
           padding: cardPadding,
-          child: UnconstrainedBox(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 200),
-              child: RichText(
-                overflow: TextOverflow.ellipsis,
-                maxLines: 4,
-                text: TextSpan(
-                  text: '${sight.name}\n',
-                  style: cardTitleStyle,
-                  children: [
-                    TextSpan(
-                      text: sight.details,
-                      style: cardDetailsStyle,
-                    ),
-                  ],
+          child: RichText(
+            overflow: TextOverflow.ellipsis,
+            maxLines: 4,
+            text: TextSpan(
+              text: '${sight.name}\n',
+              style: textMiddle16,
+              children: [
+                TextSpan(
+                  text: sight.details,
+                  style: textRegular,//.copyWith(color: textColorSecondary),
                 ),
-              ),
+              ],
             ),
           ),
         ),

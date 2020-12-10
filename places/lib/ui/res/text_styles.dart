@@ -1,45 +1,29 @@
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
-import 'const.dart';
 
-const _normalTextStyle = TextStyle(
+const _text = TextStyle(
   fontSize: 14,
   height: 18 / 14,
-  color: mainFontColor,
-  fontWeight: FontWeight.normal,
 );
 
-final _boldTextStyle = _normalTextStyle.copyWith(
-  fontWeight: FontWeight.bold,
-);
+// Т.к. copyWith не умеет устанавливать null, создаём стили без цвета для тех
+// случаев, где цвет будет приходить свыше.
+final textFlatRegular = _text.copyWith(fontWeight: FontWeight.normal);
+final textFlatBold = _text.copyWith(fontWeight: FontWeight.bold);
 
-const buttonTextStyle = _normalTextStyle;
+// Все остальные стили с цветом.
+final textRegular =
+    _text.copyWith(fontWeight: FontWeight.normal, color: textColorPrimary);
+final textMiddle = textRegular.copyWith(fontWeight: FontWeight.w500);
+final textBold = textRegular.copyWith(fontWeight: FontWeight.bold);
 
-final appbarTextStyle = _boldTextStyle.copyWith(
-  fontSize: 32,
-  height: appbarLineMultiplier,
-  fontWeight: FontWeight.w700,
-);
+final textRegular16 = textRegular.copyWith(fontSize: 16, height: 1.25);
+final textMiddle16 = textMiddle.copyWith(fontSize: 16, height: 1.25);
+final textBold16 = textBold.copyWith(fontSize: 16, height: 1.25);
 
-final cardTitleStyle = _normalTextStyle.copyWith(
-  fontSize: 16,
-  height: 20 / 16,
-  fontWeight: FontWeight.w500,
-);
-final cardDetailsStyle = _normalTextStyle.copyWith(
-  color: secondFontColor,
-);
-final cardTypeStyle = _boldTextStyle.copyWith(
-  color: cardTypeColor,
-);
+final textRegular24 = textRegular.copyWith(fontSize: 24, height: 1.2);
+final textMiddle24 = textMiddle.copyWith(fontSize: 24, height: 1.2);
+final textBold24 = textBold.copyWith(fontSize: 24, height: 1.2);
 
-final detailsTitleStyle = _boldTextStyle.copyWith(
-  fontSize: 24,
-  height: 28.8 / 24,
-);
-final detailsTypeStyle = _boldTextStyle;
-final detailsHoursStyle = _normalTextStyle.copyWith(
-  color: secondFontColor,
-);
-const detailsDetailsStyle = _normalTextStyle;
+final textBold32 = textBold.copyWith(fontSize: 32, height: 1.125);

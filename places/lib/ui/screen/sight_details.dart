@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
 import '../res/colors.dart';
@@ -27,11 +28,24 @@ class _SightDetailsState extends State<SightDetails> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                color: detailsImageBackgroundColor, // Временно
+                color: imageBackground, // Временно
                 height: detailsImageSize,
                 child: Image.network(
                   widget.sight.url,
                   fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: LinearProgressIndicator(
+                        backgroundColor: imageBackground,
+                        value: progress.expectedTotalBytes != null
+                            ? progress.cumulativeBytesLoaded /
+                                progress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
                 ),
               ),
               Padding(
@@ -41,7 +55,7 @@ class _SightDetailsState extends State<SightDetails> {
                   children: [
                     Text(
                       widget.sight.name,
-                      style: detailsTitleStyle,
+                      style: textBold24,
                     ),
                     const SizedBox(
                       height: detailsTitleSpacing,
@@ -50,14 +64,15 @@ class _SightDetailsState extends State<SightDetails> {
                       children: [
                         Text(
                           widget.sight.typeAsText,
-                          style: detailsTypeStyle,
+                          style: textBold,
                         ),
                         const SizedBox(
                           width: detailsHoursSpacing,
                         ),
                         Text(
                           'закрыто до 09:00', // Временно
-                          style: detailsHoursStyle,
+                          style:
+                              textRegular.copyWith(color: textColorSecondary),
                         ),
                       ],
                     ),
@@ -66,13 +81,14 @@ class _SightDetailsState extends State<SightDetails> {
                     ),
                     Text(
                       widget.sight.details,
-                      style: detailsDetailsStyle,
+                      style: textRegular,
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
                     ),
                     ElevatedButton.icon(
                       style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all(Size(0, 48)),
                         shape: MaterialStateProperty.all(
                           const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
@@ -84,8 +100,14 @@ class _SightDetailsState extends State<SightDetails> {
                             MaterialStateProperty.all(Colors.green),
                       ),
                       onPressed: () {},
-                      icon: const Icon(Icons.rowing),
-                      label: const Text(sightDetailsScreenRoute),
+                      icon: SvgPicture.asset(
+                        'res/route.svg',
+                        color: textColorButton,
+                      ),
+                      label: Text(sightDetailsScreenRoute,
+                          style: textFlatRegular.copyWith(
+                            color: textColorButton,
+                          )),
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
@@ -100,21 +122,28 @@ class _SightDetailsState extends State<SightDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         FlatButton.icon(
-                          textColor: inactiveFontColor,
                           onPressed: () {},
-                          icon: const Icon(Icons.calendar_today),
-                          label: const Text(
+                          icon: SvgPicture.asset(
+                            'res/calendar.svg',
+                            color: textColorInactive,
+                          ),
+                          label: Text(
                             sightDetailsScreenSchedule,
-                            style: buttonTextStyle,
+                            style: textRegular.copyWith(
+                              color: textColorInactive,
+                            ),
                           ),
                         ),
                         FlatButton.icon(
-                          textColor: mainFontColor,
+                          textColor: textColorPrimary,
                           onPressed: () {},
-                          icon: const Icon(Icons.favorite),
-                          label: const Text(
+                          icon: SvgPicture.asset(
+                            'res/favorite.svg',
+                            color: textColorPrimary,
+                          ),
+                          label: Text(
                             sightDetailsScreenFavorite,
-                            style: buttonTextStyle,
+                            style: textRegular,
                           ),
                         ),
                       ],
