@@ -22,11 +22,14 @@ final textRegularSecondary = textRegular.copyWith(color: textColorSecondary);
 final textRegularInactive = textRegular.copyWith(color: textColorInactive);
 final textRegularButton = textRegular.copyWith(color: textColorButton);
 
+final textBoldSecondary = textBold.copyWith(color: textColorSecondary);
 final textBoldWhite = textBold.copyWith(color: Colors.white);
 
 final textRegular16 = textRegular.copyWith(fontSize: 16, height: 1.25);
 final textMiddle16 = textMiddle.copyWith(fontSize: 16, height: 1.25);
 final textBold16 = textBold.copyWith(fontSize: 16, height: 1.25);
+
+final textBold18 = textBold.copyWith(fontSize: 18, height: 1.25);
 
 final textRegular24 = textRegular.copyWith(fontSize: 24, height: 1.2);
 final textMiddle24 = textMiddle.copyWith(fontSize: 24, height: 1.2);

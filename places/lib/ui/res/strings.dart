@@ -5,3 +5,7 @@ const sightDetailsScreenFavorite = 'В Избранное';
 const assetFavorite = 'res/favorite.svg';
 const assetRoute = 'res/route.svg';
 const assetCalendar = 'res/calendar.svg';
+const visitingScreenTitle = 'Избранное';
+const visitingScreenWishlist = 'Хочу посетить';
+const visitingScreenVisited = 'Посещённые места';
+const visitingScreenTabs = ['Хочу посетить', 'Посетил'];

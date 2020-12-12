@@ -7,8 +7,8 @@ import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
 import '../res/text_styles.dart';
-import '../widget/loadable_image.dart';
-import 'sight_details.dart';
+import 'loadable_image.dart';
+import '../screen/sight_details.dart';
 
 class SightCard extends StatelessWidget {
   final Sight sight;
