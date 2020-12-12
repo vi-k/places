@@ -5,7 +5,9 @@ import '../../domain/sight.dart';
 import '../res/colors.dart';
 import '../res/const.dart';
 import '../res/edge_insets.dart';
+import '../res/strings.dart';
 import '../res/text_styles.dart';
+import '../widget/loadable_image.dart';
 import 'sight_details.dart';
 
 class SightCard extends StatelessWidget {
@@ -21,11 +23,11 @@ class SightCard extends StatelessWidget {
         aspectRatio: 3 / 2,
         child: Material(
           elevation: 2,
-          textStyle: textRegular.copyWith(color: textColorPrimary),
+          textStyle: textRegular,
           color: cardBackground,
           clipBehavior: Clip.antiAlias,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(cardRadius)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(cardRadius),
           ),
           child: Stack(
             children: [
@@ -60,36 +62,20 @@ class SightCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                sight.url,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: LinearProgressIndicator(
-                      backgroundColor: imageBackground,
-                      value: progress.expectedTotalBytes != null
-                          ? progress.cumulativeBytesLoaded /
-                              progress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-              ),
+              LoadableImage(url: sight.url),
               Positioned(
                 left: cardSpacing,
                 top: cardSpacing,
                 child: Text(
                   sight.typeAsText,
-                  style: textBold.copyWith(color: cardSignaturesColor),
+                  style: textBoldWhite,
                 ),
               ),
               Positioned(
                 right: cardSpacing,
                 top: cardSpacing,
                 child: SvgPicture.asset(
-                  'res/favorite.svg',
+                  assetFavorite,
                   color: cardSignaturesColor,
                 ),
               ),
@@ -110,7 +96,7 @@ class SightCard extends StatelessWidget {
               children: [
                 TextSpan(
                   text: sight.details,
-                  style: textRegular,//.copyWith(color: textColorSecondary),
+                  style: textRegularSecondary,
                 ),
               ],
             ),

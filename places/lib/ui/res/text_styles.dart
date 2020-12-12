@@ -18,6 +18,12 @@ final textRegular =
 final textMiddle = textRegular.copyWith(fontWeight: FontWeight.w500);
 final textBold = textRegular.copyWith(fontWeight: FontWeight.bold);
 
+final textRegularSecondary = textRegular.copyWith(color: textColorSecondary);
+final textRegularInactive = textRegular.copyWith(color: textColorInactive);
+final textRegularButton = textRegular.copyWith(color: textColorButton);
+
+final textBoldWhite = textBold.copyWith(color: Colors.white);
+
 final textRegular16 = textRegular.copyWith(fontSize: 16, height: 1.25);
 final textMiddle16 = textMiddle.copyWith(fontSize: 16, height: 1.25);
 final textBold16 = textBold.copyWith(fontSize: 16, height: 1.25);

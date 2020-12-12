@@ -7,6 +7,7 @@ import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
 import '../res/text_styles.dart';
+import '../widget/loadable_image.dart';
 
 class SightDetails extends StatefulWidget {
   final Sight sight;
@@ -28,25 +29,9 @@ class _SightDetailsState extends State<SightDetails> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                color: imageBackground, // Временно
+                color: imageBackground,
                 height: detailsImageSize,
-                child: Image.network(
-                  widget.sight.url,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return Align(
-                      alignment: Alignment.bottomCenter,
-                      child: LinearProgressIndicator(
-                        backgroundColor: imageBackground,
-                        value: progress.expectedTotalBytes != null
-                            ? progress.cumulativeBytesLoaded /
-                                progress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
+                child: LoadableImage(url: widget.sight.url),
               ),
               Padding(
                 padding: detailsPadding,
@@ -71,8 +56,7 @@ class _SightDetailsState extends State<SightDetails> {
                         ),
                         Text(
                           'закрыто до 09:00', // Временно
-                          style:
-                              textRegular.copyWith(color: textColorSecondary),
+                          style: textRegularSecondary,
                         ),
                       ],
                     ),
@@ -88,7 +72,9 @@ class _SightDetailsState extends State<SightDetails> {
                     ),
                     ElevatedButton.icon(
                       style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(Size(0, 48)),
+                        minimumSize: MaterialStateProperty.all(
+                          const Size(0, buttonHeight),
+                        ),
                         shape: MaterialStateProperty.all(
                           const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
@@ -96,18 +82,17 @@ class _SightDetailsState extends State<SightDetails> {
                             ),
                           ),
                         ),
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.green),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.green,
+                        ),
                       ),
                       onPressed: () {},
                       icon: SvgPicture.asset(
-                        'res/route.svg',
+                        assetRoute,
                         color: textColorButton,
                       ),
                       label: Text(sightDetailsScreenRoute,
-                          style: textFlatRegular.copyWith(
-                            color: textColorButton,
-                          )),
+                          style: textRegularButton),
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
@@ -124,21 +109,19 @@ class _SightDetailsState extends State<SightDetails> {
                         FlatButton.icon(
                           onPressed: () {},
                           icon: SvgPicture.asset(
-                            'res/calendar.svg',
+                            assetCalendar,
                             color: textColorInactive,
                           ),
                           label: Text(
                             sightDetailsScreenSchedule,
-                            style: textRegular.copyWith(
-                              color: textColorInactive,
-                            ),
+                            style: textRegularInactive,
                           ),
                         ),
                         FlatButton.icon(
                           textColor: textColorPrimary,
                           onPressed: () {},
                           icon: SvgPicture.asset(
-                            'res/favorite.svg',
+                            assetFavorite,
                             color: textColorPrimary,
                           ),
                           label: Text(
