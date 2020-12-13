@@ -5,6 +5,8 @@ const textColorSecondary = Color(0xFF7C7E92);
 final textColorInactive = textColorSecondary.withOpacity(0.56);
 const textColorButton = Colors.white;
 
+const standartButtonColor = Colors.green;
+
 const screenBackground = Colors.white;
 const appbarBackground = Colors.transparent;
 const cardBackground = Color(0xFFF5F5F5);

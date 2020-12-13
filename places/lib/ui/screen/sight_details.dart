@@ -8,6 +8,8 @@ import '../res/edge_insets.dart';
 import '../res/strings.dart';
 import '../res/text_styles.dart';
 import '../widget/loadable_image.dart';
+import '../widget/small_button.dart';
+import '../widget/standart_button.dart';
 
 class SightDetails extends StatefulWidget {
   final Sight sight;
@@ -70,29 +72,13 @@ class _SightDetailsState extends State<SightDetails> {
                     const SizedBox(
                       height: detailsCommonSpacing,
                     ),
-                    ElevatedButton.icon(
-                      style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(
-                          const Size(0, buttonHeight),
-                        ),
-                        shape: MaterialStateProperty.all(
-                          const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(buttonRadius),
-                            ),
-                          ),
-                        ),
-                        backgroundColor: MaterialStateProperty.all(
-                          Colors.green,
-                        ),
-                      ),
-                      onPressed: () {},
+                    StandartButton(
                       icon: SvgPicture.asset(
                         assetRoute,
                         color: textColorButton,
                       ),
                       label: Text(sightDetailsScreenRoute,
-                          style: textRegularButton),
+                          style: textRegularButton,),
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
@@ -106,7 +92,7 @@ class _SightDetailsState extends State<SightDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        FlatButton.icon(
+                        SmallButton(
                           onPressed: () {},
                           icon: SvgPicture.asset(
                             assetCalendar,
@@ -117,8 +103,7 @@ class _SightDetailsState extends State<SightDetails> {
                             style: textRegularInactive,
                           ),
                         ),
-                        FlatButton.icon(
-                          textColor: textColorPrimary,
+                        SmallButton(
                           onPressed: () {},
                           icon: SvgPicture.asset(
                             assetFavorite,

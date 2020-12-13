@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'ui/screen/sight_list_screen.dart';
-import 'ui/screen/visiting_screen.dart';
 
 void main() {
   runApp(App());
@@ -16,7 +15,6 @@ class App extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Roboto',
         ),
-        // home: SightListScreen(),
-        home: VisitingScreen(),
+        home: SightListScreen(),
       );
 }

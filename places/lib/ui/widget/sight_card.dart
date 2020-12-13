@@ -7,16 +7,20 @@ import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
 import '../res/text_styles.dart';
-import 'loadable_image.dart';
 import '../screen/sight_details.dart';
+import 'loadable_image.dart';
+
+enum SightCardType { list, wishlist, visited }
 
 class SightCard extends StatelessWidget {
-  final Sight sight;
-
   const SightCard({
     Key? key,
     required this.sight,
+    required this.type,
   }) : super(key: key);
+
+  final Sight sight;
+  final SightCardType type;
 
   @override
   Widget build(BuildContext context) => AspectRatio(
@@ -74,10 +78,40 @@ class SightCard extends StatelessWidget {
               Positioned(
                 right: cardSpacing,
                 top: cardSpacing,
-                child: SvgPicture.asset(
-                  assetFavorite,
-                  color: cardSignaturesColor,
-                ),
+                child: type == SightCardType.list
+                    ? SvgPicture.asset(
+                        assetFavorite,
+                        color: cardSignaturesColor,
+                      )
+                    : Row(
+                        children: type == SightCardType.wishlist
+                            ? [
+                                SvgPicture.asset(
+                                  assetCalendar,
+                                  color: cardSignaturesColor,
+                                ),
+                                const SizedBox(
+                                  width: cardSpacing,
+                                ),
+                                SvgPicture.asset(
+                                  assetClose,
+                                  color: cardSignaturesColor,
+                                ),
+                              ]
+                            : [
+                                SvgPicture.asset(
+                                  assetShare,
+                                  color: cardSignaturesColor,
+                                ),
+                                const SizedBox(
+                                  width: cardSpacing,
+                                ),
+                                SvgPicture.asset(
+                                  assetClose,
+                                  color: cardSignaturesColor,
+                                ),
+                              ],
+                      ),
               ),
             ],
           ),

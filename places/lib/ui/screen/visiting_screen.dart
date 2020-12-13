@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
 import '../res/strings.dart';
+import '../widget/app_navigation_bar.dart';
 import '../widget/card_list.dart';
 import '../widget/short_app_bar.dart';
+import '../widget/sight_card.dart';
 import '../widget/tab_switch.dart';
 
 class VisitingScreen extends StatefulWidget {
@@ -34,31 +36,30 @@ class _VisitingScreenState extends State<VisitingScreen>
   }
 
   @override
-  Widget build(BuildContext context) => DefaultTabController(
-        length: visitingScreenTabs.length,
-        child: Scaffold(
-          appBar: ShortAppBar(
-            title: visitingScreenTitle,
-            bottom: TabSwitch(
-              tabs: visitingScreenTabs,
-              tabController: tabController,
-            ),
-          ),
-          body: TabBarView(
-            controller: tabController,
-            children: [
-              Tab(
-                child: CardList(
-                    iterable:
-                        mocks.where((element) => element.visitTime != null)),
-              ),
-              Tab(
-                child: CardList(
-                    iterable:
-                        mocks.where((element) => element.visited != null)),
-              ),
-            ],
+  Widget build(BuildContext context) => Scaffold(
+        appBar: ShortAppBar(
+          title: visitingScreenTitle,
+          bottom: TabSwitch(
+            tabs: visitingScreenTabs,
+            tabController: tabController,
           ),
         ),
+        body: TabBarView(
+          controller: tabController,
+          children: [
+            Tab(
+              child: CardList(
+                  cardType: SightCardType.wishlist,
+                  iterable:
+                      mocks.where((element) => element.visitTime != null)),
+            ),
+            Tab(
+              child: CardList(
+                  cardType: SightCardType.visited,
+                  iterable: mocks.where((element) => element.visited != null)),
+            ),
+          ],
+        ),
+        bottomNavigationBar: const AppNavigationBar(index: 2),
       );
 }
