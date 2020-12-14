@@ -14,12 +14,11 @@ class SmallButton extends StatelessWidget {
   final Color color;
   final Widget? icon;
   final Widget label;
-  final VoidCallback onPressed;
+  final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) => icon == null
       ? FlatButton(
-          onPressed: onPressed,
           color: color,
           highlightColor: color == Colors.transparent
               ? null
@@ -31,15 +30,16 @@ class SmallButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(smallButtonRadius),
           ),
+          onPressed: onPressed,
           child: label,
         )
       : FlatButton.icon(
-          onPressed: onPressed,
           color: color,
           height: standartButtonHeight,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(smallButtonRadius),
           ),
+          onPressed: onPressed,
           icon: icon!,
           label: label,
         );

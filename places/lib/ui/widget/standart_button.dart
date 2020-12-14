@@ -8,10 +8,12 @@ class StandartButton extends StatelessWidget {
     Key? key,
     this.icon,
     required this.label,
+    required this.onPressed,
   }) : super(key: key);
 
   final Widget? icon;
   final Widget label;
+  final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) => icon == null
@@ -23,7 +25,7 @@ class StandartButton extends StatelessWidget {
               Radius.circular(standartButtonRadius),
             ),
           ),
-          onPressed: () {},
+          onPressed: onPressed,
           child: label,
         )
       : FlatButton.icon(
@@ -34,7 +36,7 @@ class StandartButton extends StatelessWidget {
               Radius.circular(standartButtonRadius),
             ),
           ),
-          onPressed: () {},
+          onPressed: onPressed,
           icon: icon!,
           label: label,
         );

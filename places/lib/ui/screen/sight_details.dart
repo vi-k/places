@@ -73,6 +73,7 @@ class _SightDetailsState extends State<SightDetails> {
                       height: detailsCommonSpacing,
                     ),
                     StandartButton(
+                      onPressed: () {},
                       icon: SvgPicture.asset(
                         assetRoute,
                         color: textColorButton,
