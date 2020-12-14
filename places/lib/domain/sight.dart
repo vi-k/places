@@ -14,6 +14,8 @@ class Sight {
   final String url;
   final String details;
   final SightType type;
+  final DateTime? visitTime;
+  final DateTime? visited;
 
   Sight({
     required this.name,
@@ -22,6 +24,8 @@ class Sight {
     required this.url,
     required this.details,
     required this.type,
+    this.visitTime,
+    this.visited,
   });
 
   String get typeAsText => translate(type.toString());

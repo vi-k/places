@@ -1,5 +1,13 @@
-const buttonRadius = 12.0;
-const buttonHeight = 48.0;
+const standartButtonRadius = 12.0;
+const standartButtonHeight = 48.0;
+
+const smallButtonRadius = 40.0;
+const smallButtonHeight = 40.0;
+
+const shortAppBarSpacing = 22.0;
+
+const tabsSwitchRadius = 40.0;
+const tabsSwitchHeight = 40.0;
 
 const cardRadius = 16.0;
 const cardSpacing = 16.0;
