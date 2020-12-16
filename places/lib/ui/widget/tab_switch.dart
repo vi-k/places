@@ -16,32 +16,41 @@ class TabSwitch extends StatelessWidget {
   final TabController tabController;
 
   @override
-  Widget build(BuildContext context) => Container(
-        height: smallButtonHeight,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(tabsSwitchRadius),
-          color: tabsBackground,
-        ),
-        child: Row(
-          children: [
-            for (var i = 0; i < tabs.length; i++)
-              Expanded(
-                child: SmallButton(
-                  onPressed: () {
-                    tabController.index = i;
-                  },
-                  color: i == tabController.index
-                      ? textColorPrimary
-                      : Colors.transparent,
-                  label: Text(
-                    tabs[i],
-                    style: i == tabController.index
-                        ? textBoldWhite
-                        : textBoldSecondary,
-                  ),
-                ),
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      height: smallButtonHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(tabsSwitchRadius),
+        color: Theme.of(context).cardTheme.color,
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < tabs.length; i++)
+            Expanded(
+              child: SmallButton(
+                onPressed: () {
+                  tabController.index = i;
+                },
+                color: i == tabController.index
+                    ? (isDark
+                        ? darkTextPrimaryColor
+                        : lightTextPrimaryColor)
+                    : Colors.transparent,
+                label: tabs[i],
+                style: Theme.of(context).primaryTextTheme.bodyText1?.copyWith(
+                    color: i == tabController.index
+                        ? (isDark
+                            ? lightTextPrimaryColor
+                            : darkTextPrimaryColor)
+                        : (isDark
+                            ? darkTextSecondaryColor
+                            : lightTextSecondaryColor)),
               ),
-          ],
-        ),
-      );
+            ),
+        ],
+      ),
+    );
+  }
 }

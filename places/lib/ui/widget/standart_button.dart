@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/colors.dart';
 import '../res/const.dart';
@@ -6,38 +7,38 @@ import '../res/const.dart';
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,
-    this.icon,
+    this.svg,
     required this.label,
     required this.onPressed,
   }) : super(key: key);
 
-  final Widget? icon;
-  final Widget label;
+  final String? svg;
+  final String label;
   final void Function() onPressed;
 
   @override
-  Widget build(BuildContext context) => icon == null
-      ? FlatButton(
-          color: standartButtonColor,
-          height: standartButtonHeight,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(standartButtonRadius),
-            ),
-          ),
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).accentTextTheme.headline4;
+
+    return svg == null
+      ? RaisedButton(
+          color: Theme.of(context).buttonTheme.colorScheme?.primary,
           onPressed: onPressed,
-          child: label,
+          child: Text(
+            label,
+            style: textStyle,
+          ),
         )
-      : FlatButton.icon(
-          color: standartButtonColor,
-          height: standartButtonHeight,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(standartButtonRadius),
-            ),
-          ),
+      : RaisedButton.icon(
           onPressed: onPressed,
-          icon: icon!,
-          label: label,
+          icon: SvgPicture.asset(
+            svg!,
+            color: textStyle?.color,
+          ),
+          label: Text(
+            label,
+            style: textStyle,
+          ),
         );
+  }
 }

@@ -16,7 +16,6 @@ class SightListScreen extends StatefulWidget {
 class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: screenBackground,
         appBar: const TextAppBar(title: sightListScreenTitle),
         body: CardList(
           cardType: SightCardType.list,

@@ -14,15 +14,16 @@ final textFlatBold = _text.copyWith(fontWeight: FontWeight.bold);
 
 // Все остальные стили с цветом.
 final textRegular =
-    _text.copyWith(fontWeight: FontWeight.normal, color: textColorPrimary);
+    // _text.copyWith(fontWeight: FontWeight.normal, color: textColorPrimary);
+    _text.copyWith(fontWeight: FontWeight.normal);
 final textMiddle = textRegular.copyWith(fontWeight: FontWeight.w500);
 final textBold = textRegular.copyWith(fontWeight: FontWeight.bold);
 
-final textRegularSecondary = textRegular.copyWith(color: textColorSecondary);
-final textRegularInactive = textRegular.copyWith(color: textColorInactive);
-final textRegularButton = textRegular.copyWith(color: textColorButton);
+// final textRegularSecondary = textRegular.copyWith(color: textColorSecondary);
+// final textRegularInactive = textRegular.copyWith(color: textColorInactive);
+// final textRegularButton = textRegular.copyWith(color: textColorButton);
 
-final textBoldSecondary = textBold.copyWith(color: textColorSecondary);
+// final textBoldSecondary = textBold.copyWith(color: textColorSecondary);
 final textBoldWhite = textBold.copyWith(color: Colors.white);
 
 final textRegular16 = textRegular.copyWith(fontSize: 16, height: 1.25);

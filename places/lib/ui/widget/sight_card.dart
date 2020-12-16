@@ -25,21 +25,15 @@ class SightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AspectRatio(
         aspectRatio: 3 / 2,
-        child: Material(
+        child: Card(
           elevation: 2,
-          textStyle: textRegular,
-          color: cardBackground,
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(cardRadius),
-          ),
           child: Stack(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildTop(),
-                  _buildBottom(),
+                  _buildTop(context),
+                  _buildBottom(context),
                 ],
               ),
               Positioned.fill(
@@ -60,65 +54,69 @@ class SightCard extends StatelessWidget {
         ),
       );
 
-  Widget _buildTop() => Expanded(
-        child: Container(
-          color: imageBackground,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              LoadableImage(url: sight.url),
-              Positioned(
-                left: cardSpacing,
-                top: cardSpacing,
-                child: Text(
-                  sight.typeAsText,
-                  style: textBoldWhite,
-                ),
-              ),
-              Positioned(
-                right: cardSpacing,
-                top: cardSpacing,
-                child: type == SightCardType.list
-                    ? SvgPicture.asset(
-                        assetFavorite,
-                        color: cardSignaturesColor,
-                      )
-                    : Row(
-                        children: type == SightCardType.wishlist
-                            ? [
-                                SvgPicture.asset(
-                                  assetCalendar,
-                                  color: cardSignaturesColor,
-                                ),
-                                const SizedBox(
-                                  width: cardSpacing,
-                                ),
-                                SvgPicture.asset(
-                                  assetClose,
-                                  color: cardSignaturesColor,
-                                ),
-                              ]
-                            : [
-                                SvgPicture.asset(
-                                  assetShare,
-                                  color: cardSignaturesColor,
-                                ),
-                                const SizedBox(
-                                  width: cardSpacing,
-                                ),
-                                SvgPicture.asset(
-                                  assetClose,
-                                  color: cardSignaturesColor,
-                                ),
-                              ],
-                      ),
-              ),
-            ],
-          ),
-        ),
-      );
+  Widget _buildTop(BuildContext context) {
+    final textStyle = Theme.of(context).accentTextTheme.bodyText1;
+    final textColor = textStyle?.color;
 
-  Widget _buildBottom() => Expanded(
+    return Expanded(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          LoadableImage(
+            url: sight.url,
+          ),
+          Positioned(
+            left: cardSpacing,
+            top: cardSpacing,
+            child: Text(
+              sight.typeAsText,
+              style: textStyle,
+            ),
+          ),
+          Positioned(
+            right: cardSpacing,
+            top: cardSpacing,
+            child: type == SightCardType.list
+                ? SvgPicture.asset(
+                    assetFavorite,
+                    color: textColor,
+                  )
+                : Row(
+                    children: type == SightCardType.wishlist
+                        ? [
+                            SvgPicture.asset(
+                              assetCalendar,
+                              color: textColor,
+                            ),
+                            const SizedBox(
+                              width: cardSpacing,
+                            ),
+                            SvgPicture.asset(
+                              assetClose,
+                              color: textColor,
+                            ),
+                          ]
+                        : [
+                            SvgPicture.asset(
+                              assetShare,
+                              color: textColor,
+                            ),
+                            const SizedBox(
+                              width: cardSpacing,
+                            ),
+                            SvgPicture.asset(
+                              assetClose,
+                              color: textColor,
+                            ),
+                          ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottom(BuildContext context) => Expanded(
         child: Container(
           padding: cardPadding,
           child: RichText(
@@ -126,11 +124,11 @@ class SightCard extends StatelessWidget {
             maxLines: 4,
             text: TextSpan(
               text: '${sight.name}\n',
-              style: textMiddle16,
+              style: Theme.of(context).primaryTextTheme.headline6,
               children: [
                 TextSpan(
                   text: sight.details,
-                  style: textRegularSecondary,
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),

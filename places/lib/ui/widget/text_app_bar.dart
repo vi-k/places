@@ -18,7 +18,7 @@ class TextAppBar extends StatelessWidget implements PreferredSizeWidget {
         )),
         child: Text(
           title,
-          style: textBold32,
+          style: Theme.of(context).primaryTextTheme.headline1,
         ),
       );
 
