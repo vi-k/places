@@ -5,10 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "places",
-            "request": "launch",
+            "name": "Dart",
             "type": "dart",
-            "args": ["--no-sound-null-safety"],
+            "request": "launch"
+        },
+        {
+            "name": "Profile",
+            "type": "dart",
+            "request": "launch",
+            "args": ["--no-sound-null-safety", "--profile"],
         }
     ]
 }
