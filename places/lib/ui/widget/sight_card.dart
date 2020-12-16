@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
-import '../res/colors.dart';
 import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
-import '../res/text_styles.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
 

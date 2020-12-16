@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
-import '../res/colors.dart';
 import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
-import '../res/text_styles.dart';
 import '../widget/loadable_image.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';

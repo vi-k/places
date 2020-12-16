@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
-import '../res/colors.dart';
 import '../res/strings.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/card_list.dart';

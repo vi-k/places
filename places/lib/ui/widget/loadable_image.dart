@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/ui/res/strings.dart';
+
+import '../res/strings.dart';
 
 class LoadableImage extends StatelessWidget {
   const LoadableImage({
@@ -14,15 +15,13 @@ class LoadableImage extends StatelessWidget {
   Widget build(BuildContext context) => Image.network(
         url,
         fit: BoxFit.cover,
-        frameBuilder: (context, child, frame, _) {
-          return frame == null
-              ? Center(
-                  child: SvgPicture.asset(
-                    assetImage,
-                  ),
-                )
-              : child;
-        },
+        frameBuilder: (context, child, frame, _) => frame == null
+            ? Center(
+                child: SvgPicture.asset(
+                  assetImage,
+                ),
+              )
+            : child,
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;
           return Stack(

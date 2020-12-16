@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/colors.dart';
-import '../res/const.dart';
-
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,

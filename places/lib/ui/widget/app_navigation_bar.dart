@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/colors.dart';
 import '../res/strings.dart';
 import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
@@ -71,9 +70,7 @@ class AppNavigationBar extends StatelessWidget {
         ],
       );
 
-  Color? _itemColor(BuildContext context, bool selected) {
-    return selected
-        ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-        : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
-  }
+  Color? _itemColor(BuildContext context, bool selected) => selected
+      ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
+      : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
 }

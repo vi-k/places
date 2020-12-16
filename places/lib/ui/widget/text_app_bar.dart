@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../res/edge_insets.dart';
-import '../res/text_styles.dart';
 
 class TextAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TextAppBar({

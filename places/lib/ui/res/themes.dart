@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:places/ui/res/text_styles.dart';
 
 import 'colors.dart';
-import 'const.dart';
+import 'text_styles.dart';
 
 const _baseButtonTheme = ButtonThemeData(
   height: 48,

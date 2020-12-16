@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../res/colors.dart';
 import '../res/const.dart';
-import '../res/text_styles.dart';
 import 'small_button.dart';
 
 class TabSwitch extends StatelessWidget {
