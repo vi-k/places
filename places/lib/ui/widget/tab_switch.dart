@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../res/colors.dart';
 import '../res/const.dart';
+import 'my_theme.dart';
 import 'small_button.dart';
 
 class TabSwitch extends StatelessWidget {
@@ -15,41 +15,30 @@ class TabSwitch extends StatelessWidget {
   final TabController tabController;
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      height: smallButtonHeight,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(tabsSwitchRadius),
-        color: Theme.of(context).cardTheme.color,
-      ),
-      child: Row(
-        children: [
-          for (var i = 0; i < tabs.length; i++)
-            Expanded(
-              child: SmallButton(
-                onPressed: () {
-                  tabController.index = i;
-                },
-                color: i == tabController.index
-                    ? (isDark
-                        ? darkTextPrimaryColor
-                        : lightTextPrimaryColor)
-                    : Colors.transparent,
-                label: tabs[i],
-                style: Theme.of(context).primaryTextTheme.bodyText1?.copyWith(
-                    color: i == tabController.index
-                        ? (isDark
-                            ? lightTextPrimaryColor
-                            : darkTextPrimaryColor)
-                        : (isDark
-                            ? darkTextSecondaryColor
-                            : lightTextSecondaryColor)),
+  Widget build(BuildContext context) => Container(
+        height: smallButtonHeight,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(tabsSwitchRadius),
+          color: MyTheme.of(context).tabSwitchInactiveColor,
+        ),
+        child: Row(
+          children: [
+            for (var i = 0; i < tabs.length; i++)
+              Expanded(
+                child: SmallButton(
+                  onPressed: () {
+                    tabController.index = i;
+                  },
+                  color: i == tabController.index
+                      ? MyTheme.of(context).tabSwitchActiveColor
+                      : Colors.transparent,
+                  label: tabs[i],
+                  style: i == tabController.index
+                      ? MyTheme.of(context).tabSwitchActiveTextStyle
+                      : MyTheme.of(context).tabSwitchInactiveTextStyle,
+                ),
               ),
-            ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'my_theme.dart';
+
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,
@@ -15,7 +17,7 @@ class StandartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).accentTextTheme.headline4;
+    final textStyle = MyTheme.of(context).standartButtonTextStyle;
 
     return svg == null
       ? RaisedButton(
@@ -30,7 +32,7 @@ class StandartButton extends StatelessWidget {
           onPressed: onPressed,
           icon: SvgPicture.asset(
             svg!,
-            color: textStyle?.color,
+            color: textStyle.color,
           ),
           label: Text(
             label,

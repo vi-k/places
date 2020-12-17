@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:places/ui/widget/my_theme.dart';
 
 import '../../domain/sight.dart';
 import '../res/const.dart';
@@ -86,19 +87,11 @@ class _SightDetailsState extends State<SightDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         SmallButton(
-                            onPressed: () {},
-                            svg: assetCalendar,
-                            label: sightDetailsScreenSchedule,
-                            style: Theme.of(context) // Временное решение до понимания того, почему текст на кнопке тусклый
-                                .primaryTextTheme
-                                .bodyText2
-                                ?.copyWith(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2
-                                      ?.color?.withOpacity(inactiveOpacity),
-                                )
-                            ),
+                          // onPressed: () {},
+                          svg: assetCalendar,
+                          label: sightDetailsScreenSchedule,
+                          // style: MyTheme.of(context).flatButtonInactiveTextStyle,
+                        ),
                         SmallButton(
                           onPressed: () {},
                           svg: assetFavorite,

@@ -16,9 +16,13 @@ class LoadableImage extends StatelessWidget {
         url,
         fit: BoxFit.cover,
         frameBuilder: (context, child, frame, _) => frame == null
-            ? Center(
-                child: SvgPicture.asset(
-                  assetImage,
+            ? Container(
+                color: Colors.black12,
+                child: Center(
+                  child: SvgPicture.asset(
+                    assetPhoto,
+                    color: Colors.white30,
+                  ),
                 ),
               )
             : child,
@@ -30,6 +34,7 @@ class LoadableImage extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: LinearProgressIndicator(
+                  backgroundColor: Colors.transparent,
                   value: progress.expectedTotalBytes != null
                       ? progress.cumulativeBytesLoaded /
                           progress.expectedTotalBytes!

@@ -7,6 +7,7 @@ import '../res/edge_insets.dart';
 import '../res/strings.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
+import 'my_theme.dart';
 
 enum SightCardType { list, wishlist, visited }
 
@@ -53,8 +54,8 @@ class SightCard extends StatelessWidget {
       );
 
   Widget _buildTop(BuildContext context) {
-    final textStyle = Theme.of(context).accentTextTheme.bodyText1;
-    final textColor = textStyle?.color;
+    final textStyle = MyTheme.of(context).cardSignaturesTextStyle;
+    final textColor = textStyle.color;
 
     return Expanded(
       child: Stack(
