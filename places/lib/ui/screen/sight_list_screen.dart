@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
-import '../res/colors.dart';
 import '../res/strings.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/card_list.dart';
@@ -16,7 +15,6 @@ class SightListScreen extends StatefulWidget {
 class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: screenBackground,
         appBar: const TextAppBar(title: sightListScreenTitle),
         body: CardList(
           cardType: SightCardType.list,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../res/colors.dart';
 import '../res/const.dart';
-import '../res/text_styles.dart';
+import 'my_theme.dart';
 import 'small_button.dart';
 
 class TabSwitch extends StatelessWidget {
@@ -20,7 +19,7 @@ class TabSwitch extends StatelessWidget {
         height: smallButtonHeight,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(tabsSwitchRadius),
-          color: tabsBackground,
+          color: MyTheme.of(context).tabSwitchInactiveColor,
         ),
         child: Row(
           children: [
@@ -31,14 +30,12 @@ class TabSwitch extends StatelessWidget {
                     tabController.index = i;
                   },
                   color: i == tabController.index
-                      ? textColorPrimary
+                      ? MyTheme.of(context).tabSwitchActiveColor
                       : Colors.transparent,
-                  label: Text(
-                    tabs[i],
-                    style: i == tabController.index
-                        ? textBoldWhite
-                        : textBoldSecondary,
-                  ),
+                  label: tabs[i],
+                  style: i == tabController.index
+                      ? MyTheme.of(context).tabSwitchActiveTextStyle
+                      : MyTheme.of(context).tabSwitchInactiveTextStyle,
                 ),
               ),
           ],

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/ui/widget/my_theme.dart';
 
 import '../../domain/sight.dart';
-import '../res/colors.dart';
 import '../res/const.dart';
 import '../res/edge_insets.dart';
 import '../res/strings.dart';
-import '../res/text_styles.dart';
 import '../widget/loadable_image.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
@@ -30,8 +28,7 @@ class _SightDetailsState extends State<SightDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                color: imageBackground,
+              SizedBox(
                 height: detailsImageSize,
                 child: LoadableImage(url: widget.sight.url),
               ),
@@ -42,7 +39,7 @@ class _SightDetailsState extends State<SightDetails> {
                   children: [
                     Text(
                       widget.sight.name,
-                      style: textBold24,
+                      style: Theme.of(context).primaryTextTheme.headline2,
                     ),
                     const SizedBox(
                       height: detailsTitleSpacing,
@@ -51,14 +48,14 @@ class _SightDetailsState extends State<SightDetails> {
                       children: [
                         Text(
                           widget.sight.typeAsText,
-                          style: textBold,
+                          style: Theme.of(context).textTheme.bodyText1,
                         ),
                         const SizedBox(
                           width: detailsHoursSpacing,
                         ),
                         Text(
                           'закрыто до 09:00', // Временно
-                          style: textRegularSecondary,
+                          style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ],
                     ),
@@ -67,19 +64,15 @@ class _SightDetailsState extends State<SightDetails> {
                     ),
                     Text(
                       widget.sight.details,
-                      style: textRegular,
+                      style: Theme.of(context).primaryTextTheme.bodyText2,
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
                     ),
                     StandartButton(
+                      svg: assetRoute,
+                      label: sightDetailsScreenRoute,
                       onPressed: () {},
-                      icon: SvgPicture.asset(
-                        assetRoute,
-                        color: textColorButton,
-                      ),
-                      label: Text(sightDetailsScreenRoute,
-                          style: textRegularButton,),
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
@@ -94,26 +87,15 @@ class _SightDetailsState extends State<SightDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         SmallButton(
-                          onPressed: () {},
-                          icon: SvgPicture.asset(
-                            assetCalendar,
-                            color: textColorInactive,
-                          ),
-                          label: Text(
-                            sightDetailsScreenSchedule,
-                            style: textRegularInactive,
-                          ),
+                          // onPressed: () {},
+                          svg: assetCalendar,
+                          label: sightDetailsScreenSchedule,
+                          // style: MyTheme.of(context).flatButtonInactiveTextStyle,
                         ),
                         SmallButton(
                           onPressed: () {},
-                          icon: SvgPicture.asset(
-                            assetFavorite,
-                            color: textColorPrimary,
-                          ),
-                          label: Text(
-                            sightDetailsScreenFavorite,
-                            style: textRegular,
-                          ),
+                          svg: assetFavorite,
+                          label: sightDetailsScreenFavorite,
                         ),
                       ],
                     ),

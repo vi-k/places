@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../res/const.dart';
 import '../res/edge_insets.dart';
-import '../res/text_styles.dart';
 
 class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ShortAppBar({
@@ -26,7 +25,7 @@ class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: textBold18,
+              style: Theme.of(context).primaryTextTheme.headline3,
             ),
             if (bottom != null) const SizedBox(height: shortAppBarSpacing),
             if (bottom != null) bottom!,

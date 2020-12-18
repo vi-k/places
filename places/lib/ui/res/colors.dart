@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 
-const textColorPrimary = Color(0xFF3B3E5B);
-const textColorSecondary = Color(0xFF7C7E92);
-final textColorInactive = textColorSecondary.withOpacity(0.56);
-const textColorButton = Colors.white;
+const buttonColor = Colors.green;
 
-const standartButtonColor = Colors.green;
-
-const screenBackground = Colors.white;
-const appbarBackground = Colors.transparent;
-const cardBackground = Color(0xFFF5F5F5);
-const tabsBackground = Color(0xFFF5F5F5);
-final imageBackground = Color.lerp(cardBackground, Colors.black, 0.2);
-const cardSignaturesColor = Colors.white;
+const primaryColorDarkest = Color(0xFF191A20);
+const primaryColorDarker = Color(0xFF21222C);
+const primaryColorDark = Color(0xFF252849);
+const primaryColor = Color(0xFF3B3E5B);
+const primaryColorLight = Color(0xFF7C7E92);
+const primaryColorLightInactive = Color(0x8F7C7E92);
+const primaryColorLighter = Color(0xFFF5F5F5);
+const primaryColorLightest = Colors.white;

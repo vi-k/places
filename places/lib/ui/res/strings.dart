@@ -16,6 +16,9 @@ const assetCalendar = 'res/calendar.svg';
 const assetClose = 'res/close.svg';
 const assetRoute = 'res/route.svg';
 const assetShare = 'res/share.svg';
+const assetPhoto = 'res/photo.svg';
+
+const assetImage = 'res/image.svg';
 
 const visitingScreenTitle = 'Избранное';
 const visitingScreenWishlist = 'Хочу посетить';

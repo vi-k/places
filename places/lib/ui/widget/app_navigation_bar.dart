@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/colors.dart';
 import '../res/strings.dart';
 import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
@@ -43,31 +42,35 @@ class AppNavigationBar extends StatelessWidget {
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               index == 0 ? assetListFull : assetList,
-              color: textColorPrimary,
+              color: _itemColor(context, index == 0),
             ),
             label: 'List',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               index == 1 ? assetMapFull : assetMap,
-              color: textColorPrimary,
+              color: _itemColor(context, index == 1),
             ),
             label: 'Map',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               index == 2 ? assetFavoriteFull : assetFavorite,
-              color: textColorPrimary,
+              color: _itemColor(context, index == 2),
             ),
             label: 'Visiting',
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               index == 3 ? assetSettingsFull : assetSettings,
-              color: textColorPrimary,
+              color: _itemColor(context, index == 3),
             ),
             label: 'Settings',
           ),
         ],
       );
+
+  Color? _itemColor(BuildContext context, bool selected) => selected
+      ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
+      : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor;
 }
