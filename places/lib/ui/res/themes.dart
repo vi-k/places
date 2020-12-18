@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 import 'text_styles.dart';
 
+/// Собственная тема приложения, т.к. средств обычной ThemeData в нашем случае
+/// недостаточно.
+///
+/// Свой вариант у Flutter team:
+/// https://github.com/flutter/gallery/tree/master/lib/themes
 class MyThemeData {
   const MyThemeData({
     required this.appThemeData,
@@ -115,7 +120,6 @@ final myDarkTheme = MyThemeData(
       bodyText2: textRegular.copyWith(color: primaryColorLightest),
     ),
     textTheme: TextTheme(
-      headline6: textMiddle16.copyWith(color: primaryColorLight),
       bodyText1: textBold.copyWith(color: primaryColorLight),
       bodyText2: textRegular.copyWith(color: primaryColorLight),
     ),

@@ -52,7 +52,7 @@ class SmallButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(smallButtonRadius),
             ),
-            onPressed: onPressed,// ?? () {},
+            onPressed: onPressed,
             icon: SvgPicture.asset(
               svg!,
               color: textStyle.color,

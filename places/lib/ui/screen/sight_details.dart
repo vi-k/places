@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:places/ui/widget/my_theme.dart';
 
 import '../../domain/sight.dart';
 import '../res/const.dart';
@@ -72,7 +71,7 @@ class _SightDetailsState extends State<SightDetails> {
                     StandartButton(
                       svg: assetRoute,
                       label: sightDetailsScreenRoute,
-                      onPressed: () {},
+                      onPressed: () => print('Строим маршрут'),
                     ),
                     const SizedBox(
                       height: detailsCommonSpacing,
@@ -87,13 +86,12 @@ class _SightDetailsState extends State<SightDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         SmallButton(
-                          // onPressed: () {},
+                          onPressed: () => print('Запланировать'),
                           svg: assetCalendar,
                           label: sightDetailsScreenSchedule,
-                          // style: MyTheme.of(context).flatButtonInactiveTextStyle,
                         ),
                         SmallButton(
-                          onPressed: () {},
+                          onPressed: () => print('В Избранное'),
                           svg: assetFavorite,
                           label: sightDetailsScreenFavorite,
                         ),
