@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
-import '../res/const.dart';
-import '../res/edge_insets.dart';
+import '../../mocks.dart';
 import '../res/strings.dart';
+import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
 import 'my_theme.dart';
+import 'small_button.dart';
+import 'svg_button.dart';
 
 enum SightCardType { list, wishlist, visited }
 
@@ -31,102 +32,116 @@ class SightCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildTop(context),
+                  _buildTop(),
                   _buildBottom(context),
                 ],
               ),
-              Positioned.fill(
-                child: MaterialButton(
-                  highlightColor: Colors.black12,
-                  splashColor: Colors.black12,
-                  onPressed: () {
-                    Navigator.push<void>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SightDetails(sight: sight),
-                        ));
-                  },
-                ),
+              // Поверх карточки невдимая кнопка
+              MaterialButton(
+                padding: EdgeInsets.zero,
+                highlightColor: MyTheme.of(context).tapHighlightColor,
+                splashColor: MyTheme.of(context).tapSplashColor,
+                onPressed: () {
+                  Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SightDetails(sight: sight),
+                      ));
+                },
+                child: _buildSignatures(context),
               ),
             ],
           ),
         ),
       );
 
-  Widget _buildTop(BuildContext context) {
+  // Верхняя часть карточки (фотография).
+  Expanded _buildTop() => Expanded(
+        child: LoadableImage(
+          url: sight.url,
+        ),
+      );
+
+  // Строка кнопок поверх картинки.
+  Widget _buildSignatures(BuildContext context) {
     final textStyle = MyTheme.of(context).cardSignaturesTextStyle;
     final textColor = textStyle.color;
 
-    return Expanded(
-      child: Stack(
-        fit: StackFit.expand,
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: MyThemeData.cardSignaturesPadding,
+      child: Row(
         children: [
-          LoadableImage(
-            url: sight.url,
+          SmallButton(
+            highlightColor: MyThemeData.tapOnImageHighlightColor,
+            splashColor: MyThemeData.tapOnImageSplashColor,
+            label: sight.typeAsText,
+            style: textStyle,
+            onPressed: () {
+              print('Filter by category');
+            },
           ),
-          Positioned(
-            left: cardSpacing,
-            top: cardSpacing,
-            child: Text(
-              sight.typeAsText,
-              style: textStyle,
+          const Spacer(),
+          if (type == SightCardType.list) ...[
+            SvgButton(
+              svg: assetFavorite,
+              color: textColor,
+              onPressed: () {
+                print('Add to wishlist');
+              },
             ),
-          ),
-          Positioned(
-            right: cardSpacing,
-            top: cardSpacing,
-            child: type == SightCardType.list
-                ? SvgPicture.asset(
-                    assetFavorite,
-                    color: textColor,
-                  )
-                : Row(
-                    children: type == SightCardType.wishlist
-                        ? [
-                            SvgPicture.asset(
-                              assetCalendar,
-                              color: textColor,
-                            ),
-                            const SizedBox(
-                              width: cardSpacing,
-                            ),
-                            SvgPicture.asset(
-                              assetClose,
-                              color: textColor,
-                            ),
-                          ]
-                        : [
-                            SvgPicture.asset(
-                              assetShare,
-                              color: textColor,
-                            ),
-                            const SizedBox(
-                              width: cardSpacing,
-                            ),
-                            SvgPicture.asset(
-                              assetClose,
-                              color: textColor,
-                            ),
-                          ],
-                  ),
-          ),
+          ],
+          if (type == SightCardType.wishlist) ...[
+            SvgButton(
+              svg: assetCalendar,
+              color: textColor,
+              onPressed: () {
+                print('Schedule');
+              },
+            ),
+            SvgButton(
+              svg: assetClose,
+              color: textColor,
+              onPressed: () {
+                print('Remove from wishlist');
+              },
+            ),
+          ],
+          if (type == SightCardType.visited) ...[
+            SvgButton(
+              svg: assetShare,
+              color: textColor,
+              onPressed: () {
+                print('Share');
+              },
+            ),
+            SvgButton(
+              svg: assetClose,
+              color: textColor,
+              onPressed: () {
+                print('Remove from visited');
+              },
+            ),
+          ],
         ],
       ),
     );
   }
 
+  // Нижняя (текстовая) часть карточки.
   Widget _buildBottom(BuildContext context) => Expanded(
         child: Container(
-          padding: cardPadding,
+          padding: MyThemeData.commonPadding,
           child: RichText(
             overflow: TextOverflow.ellipsis,
             maxLines: 4,
             text: TextSpan(
               text: '${sight.name}\n',
-              style: Theme.of(context).primaryTextTheme.headline6,
+              style: Theme.of(context).primaryTextTheme.headline5,
               children: [
                 TextSpan(
-                  text: sight.details,
+                  //text: sight.details,
+                  text: '${myMockCoord.distance(sight.coord)}',
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
               ],

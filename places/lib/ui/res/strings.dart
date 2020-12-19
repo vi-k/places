@@ -24,3 +24,11 @@ const visitingScreenTitle = 'Избранное';
 const visitingScreenWishlist = 'Хочу посетить';
 const visitingScreenVisited = 'Посещённые места';
 const visitingScreenTabs = ['Хочу посетить', 'Посетил'];
+
+const filtersScreenTitle = 'Фильтр';
+const filtersScreenDistance = 'Расстояние';
+
+const rangeFrom = 'от';
+const rangeTo = 'до';
+const meters = 'м';
+const kilometers = 'км';

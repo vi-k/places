@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/edge_insets.dart';
+import '../res/themes.dart';
 
 class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ShortAppBar({
@@ -15,7 +14,7 @@ class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: shortAppBarPadding.add(EdgeInsets.only(
+        padding: MyThemeData.shortAppBarPadding.add(EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
         )),
         child: Column(
@@ -27,8 +26,10 @@ class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).primaryTextTheme.headline3,
             ),
-            if (bottom != null) const SizedBox(height: shortAppBarSpacing),
-            if (bottom != null) bottom!,
+            if (bottom != null) ...[
+              const SizedBox(height: MyThemeData.shortAppBarSpacing),
+              bottom!,
+            ]
           ],
         ),
       );
