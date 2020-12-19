@@ -46,14 +46,14 @@ class _SightDetailsState extends State<SightDetails> {
                       children: [
                         Text(
                           widget.sight.typeAsText,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.headline6,
                         ),
                         const SizedBox(
                           width: MyThemeData.detailsHoursSpacing,
                         ),
                         Text(
                           'закрыто до 09:00', // Временно
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ],
                     ),
@@ -62,7 +62,7 @@ class _SightDetailsState extends State<SightDetails> {
                     ),
                     Text(
                       widget.sight.details,
-                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      style: Theme.of(context).primaryTextTheme.bodyText1,
                     ),
                     const SizedBox(
                       height: MyThemeData.detailsCommonSpacing,

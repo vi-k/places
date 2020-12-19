@@ -3,9 +3,11 @@ import '../utils/maps.dart';
 
 enum SightType {
   museum,
-  theatre,
-  memorial,
+  particular,
   park,
+  restaurant,
+  cafe,
+  hotel,
 }
 
 class Sight {

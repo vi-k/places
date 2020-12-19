@@ -1,8 +1,6 @@
-const sightListScreenTitle = 'Список\nинтересных мест';
-const sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
-const sightDetailsScreenSchedule = 'Запланировать';
-const sightDetailsScreenFavorite = 'В Избранное';
+import '../../domain/sight.dart';
 
+// Ресурсы
 const assetFavorite = 'res/favorite.svg';
 const assetFavoriteFull = 'res/favorite_full.svg';
 const assetList = 'res/list.svg';
@@ -20,13 +18,30 @@ const assetPhoto = 'res/photo.svg';
 
 const assetImage = 'res/image.svg';
 
+const assetCafe = 'res/cafe.svg';
+const assetHotel = 'res/hotel.svg';
+const assetMuseum = 'res/museum.svg';
+const assetPark = 'res/park.svg';
+const assetParticular = 'res/particular.svg';
+const assetRestaurant = 'res/restaurant.svg';
+
+String assetForSightType(SightType type) =>
+    'res/${type.toString().replaceFirst(RegExp(r'.*\.'), '')}.svg';
+
+// Тексты
+const sightListScreenTitle = 'Список\nинтересных мест';
+const sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
+const sightDetailsScreenSchedule = 'Запланировать';
+const sightDetailsScreenFavorite = 'В Избранное';
+
 const visitingScreenTitle = 'Избранное';
 const visitingScreenWishlist = 'Хочу посетить';
 const visitingScreenVisited = 'Посещённые места';
 const visitingScreenTabs = ['Хочу посетить', 'Посетил'];
 
-const filtersScreenTitle = 'Фильтр';
-const filtersScreenDistance = 'Расстояние';
+const filtersTitle = 'Фильтр';
+const filtersCategory = 'Категория';
+const filtersDistance = 'Расстояние';
 
 const rangeFrom = 'от';
 const rangeTo = 'до';

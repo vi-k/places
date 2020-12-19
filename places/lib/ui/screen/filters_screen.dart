@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../app.dart';
+import '../../domain/sight.dart';
 import '../../mocks.dart';
+import '../../translate.dart';
 import '../../utils/num_ext.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
@@ -17,6 +21,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
   static const maxDistance = 30000.0;
   RangeValues distance = const RangeValues(0, 10000);
   RangeValues values = const RangeValues(0, 43);
+  final typeFilter = <SightType>{
+    SightType.museum,
+    SightType.particular,
+    SightType.park,
+    SightType.cafe,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -24,28 +34,54 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
     return Scaffold(
       appBar: const ShortAppBar(
-        title: filtersScreenTitle,
+        title: filtersTitle,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // const Text('Категории'), // временно
-          // const Text('...'), // временно
-          // const SizedBox(
-          //   height: MyThemeData.filtersSectionSpacing,
-          // ),
+          Padding(
+            padding: MyThemeData.filtersCaptionPadding,
+            child: FlatButton(
+              onPressed: () {
+                App.update(context);
+              },
+              child: const Text(filtersCategory),
+            ),
+          ),
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              for (final type in SightType.values)
+                SightTypeFilter(
+                  type: type,
+                  active: typeFilter.contains(type),
+                  onPressed: () {
+                    setState(() {
+                      if (typeFilter.contains(type)) {
+                        typeFilter.remove(type);
+                      } else {
+                        typeFilter.add(type);
+                      }
+                    });
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(
+            height: MyThemeData.filtersSectionSpacing,
+          ),
           Padding(
             padding: MyThemeData.commonPadding,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  filtersScreenDistance,
-                  style: Theme.of(context).primaryTextTheme.headline6,
+                  filtersDistance,
+                  style: Theme.of(context).primaryTextTheme.headline5,
                 ),
                 Text(
                   _distanceToString(distance),
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
               ],
             ),
@@ -67,6 +103,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Expanded(
             child: CardList(
               iterable: mocks.where((element) {
+                if (!typeFilter.contains(element.type)) return false;
+
                 final distance = element.coord.distance(myMockCoord);
                 return distance.value >= this.distance.start &&
                     distance.value <= this.distance.end;
@@ -150,4 +188,59 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
     return '$start$rangeTo $endValue $endUnits';
   }
+}
+
+class SightTypeFilter extends StatelessWidget {
+  const SightTypeFilter({
+    Key? key,
+    required this.type,
+    required this.active,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final SightType type;
+  final bool active;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: MyThemeData.commonPadding,
+        width: MyThemeData.filtersCategorySize,
+        child: Column(
+          children: [
+            SizedBox(
+              height: MyThemeData.filtersCategorySize,
+              child: Material(
+                type: MaterialType.transparency,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: Ink(
+                  color: active
+                      ? MyThemeData.categoryBackground
+                      : Colors.transparent,
+                  child: InkWell(
+                    onTap: onPressed,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        assetForSightType(type),
+                        color: active
+                            ? MyThemeData.categoryActiveColor
+                            : MyThemeData.categoryInactiveColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: MyThemeData.filtersCategorySpacing,
+            ),
+            Text(
+              translate(type.toString()),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).primaryTextTheme.bodyText2,
+            ),
+          ],
+        ),
+      );
 }

@@ -17,7 +17,9 @@ class MyThemeData {
   static const detailsHoursSpacing = 16.0;
   static const detailsCommonSpacing = 24.0;
   static const detailsFooterSpacing = 8.0;
-  static const filtersSectionSpacing = 56.0;
+  static const filtersSectionSpacing = 40.0;
+  static const filtersCategorySize = 64.0;
+  static const filtersCategorySpacing = 12.0;
 
   /// Цвета.
   static const buttonColor = Colors.green;
@@ -31,12 +33,18 @@ class MyThemeData {
   static const primaryColorLightest = Colors.white;
   static const tapOnImageHighlightColor = Colors.black26;
   static const tapOnImageSplashColor = Colors.black26;
+  static const categoryActiveColor = Color(0xFF6ADA6F);
+  static const categoryInactiveColor = Color(0x806ADA6F);
+  // static const categoryInactiveColor = Color(0xFF4CAF50);
+  static const categoryBackground = Color(0x296ADA6F);
 
   // Стили.
   static const _text = TextStyle(fontSize: 14, height: 18 / 14);
   static final textRegular = _text.copyWith(fontWeight: FontWeight.normal);
   static final textMiddle = textRegular.copyWith(fontWeight: FontWeight.w500);
   static final textBold = textRegular.copyWith(fontWeight: FontWeight.bold);
+  static final textRegular12 =
+      textRegular.copyWith(fontSize: 12, height: 16 / 12);
   static final textRegular16 = textRegular.copyWith(fontSize: 16, height: 1.25);
   static final textMiddle16 = textMiddle.copyWith(fontSize: 16, height: 1.25);
   static final textBold16 = textBold.copyWith(fontSize: 16, height: 1.25);
@@ -51,6 +59,8 @@ class MyThemeData {
   static final shortAppBarPadding = commonPadding.copyWith(bottom: 22);
   static final detailsPadding = commonPadding.copyWith(top: 24);
   static const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
+  static final filtersCaptionPadding =
+      commonPadding.copyWith(top: 0, bottom: 0);
 
   const MyThemeData({
     required this.appThemeData,
@@ -124,20 +134,24 @@ final myLightTheme = MyThemeData(
           MyThemeData.textBold24.copyWith(color: MyThemeData.primaryColor),
       headline3:
           MyThemeData.textBold18.copyWith(color: MyThemeData.primaryColor),
-      headline5:
+      headline4:
           MyThemeData.textMiddle16.copyWith(color: MyThemeData.primaryColor),
-      headline6:
+      headline5:
           MyThemeData.textRegular16.copyWith(color: MyThemeData.primaryColor),
-      bodyText1: MyThemeData.textBold.copyWith(color: MyThemeData.primaryColor),
-      bodyText2:
+      headline6: MyThemeData.textBold.copyWith(color: MyThemeData.primaryColor),
+      bodyText1:
           MyThemeData.textRegular.copyWith(color: MyThemeData.primaryColor),
+      bodyText2:
+          MyThemeData.textRegular12.copyWith(color: MyThemeData.primaryColor),
     ),
     textTheme: TextTheme(
-      headline6: MyThemeData.textRegular16
+      headline5: MyThemeData.textRegular16
           .copyWith(color: MyThemeData.primaryColorLight),
-      bodyText1:
+      headline6:
           MyThemeData.textBold.copyWith(color: MyThemeData.primaryColorLight),
-      bodyText2: MyThemeData.textRegular
+      bodyText1: MyThemeData.textRegular
+          .copyWith(color: MyThemeData.primaryColorLight),
+      bodyText2: MyThemeData.textRegular12
           .copyWith(color: MyThemeData.primaryColorLight),
     ),
   ),
@@ -181,21 +195,25 @@ final myDarkTheme = MyThemeData(
           .copyWith(color: MyThemeData.primaryColorLightest),
       headline3: MyThemeData.textBold18
           .copyWith(color: MyThemeData.primaryColorLightest),
-      headline5: MyThemeData.textMiddle16
+      headline4: MyThemeData.textMiddle16
           .copyWith(color: MyThemeData.primaryColorLightest),
-      headline6: MyThemeData.textRegular16
+      headline5: MyThemeData.textRegular16
           .copyWith(color: MyThemeData.primaryColorLightest),
-      bodyText1: MyThemeData.textBold
+      headline6: MyThemeData.textBold
           .copyWith(color: MyThemeData.primaryColorLightest),
-      bodyText2: MyThemeData.textRegular
+      bodyText1: MyThemeData.textRegular
+          .copyWith(color: MyThemeData.primaryColorLightest),
+      bodyText2: MyThemeData.textRegular12
           .copyWith(color: MyThemeData.primaryColorLightest),
     ),
     textTheme: TextTheme(
-      headline6: MyThemeData.textRegular16
+      headline5: MyThemeData.textRegular16
           .copyWith(color: MyThemeData.primaryColorLight),
-      bodyText1:
+      headline6:
           MyThemeData.textBold.copyWith(color: MyThemeData.primaryColorLight),
-      bodyText2: MyThemeData.textRegular
+      bodyText1: MyThemeData.textRegular
+          .copyWith(color: MyThemeData.primaryColorLight),
+      bodyText2: MyThemeData.textRegular12
           .copyWith(color: MyThemeData.primaryColorLight),
     ),
   ),

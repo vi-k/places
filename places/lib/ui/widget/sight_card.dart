@@ -137,12 +137,12 @@ class SightCard extends StatelessWidget {
             maxLines: 4,
             text: TextSpan(
               text: '${sight.name}\n',
-              style: Theme.of(context).primaryTextTheme.headline5,
+              style: Theme.of(context).primaryTextTheme.headline4,
               children: [
                 TextSpan(
                   //text: sight.details,
                   text: '${myMockCoord.distance(sight.coord)}',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
               ],
             ),
