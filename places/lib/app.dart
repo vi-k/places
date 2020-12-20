@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'domain/settings.dart';
 import 'ui/res/themes.dart';
 import 'ui/screen/filters_screen.dart';
+import 'ui/screen/sight_list_screen.dart';
 import 'ui/widget/my_theme.dart';
 
 class App extends StatefulWidget {
@@ -37,7 +38,7 @@ class AppBody extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Places',
         theme: MyTheme.of(context).appThemeData,
-        home: FiltersScreen(),
-        // home: SightListScreen(),
+        // home: FiltersScreen(),
+        home: SightListScreen(),
       );
 }

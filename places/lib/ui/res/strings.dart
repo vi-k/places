@@ -50,6 +50,10 @@ const filtersDistance = 'Расстояние';
 const filtersClear = 'Очистить';
 const filtersApply = 'ПОКАЗАТЬ';
 
+const settingsTitle = 'Настройки';
+const settingsIsDark = 'Тёмная тема';
+const settingsTutorial = 'Смотреть туториал';
+
 const rangeFrom = 'от';
 const rangeTo = 'до';
 const meters = 'м';

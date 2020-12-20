@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/strings.dart';
+import '../screen/settings_screen.dart';
 import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
 
@@ -34,6 +35,14 @@ class AppNavigationBar extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => VisitingScreen(),
+                  ));
+              break;
+
+            case 3:
+              Navigator.pushReplacement<void, void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
                   ));
               break;
           }

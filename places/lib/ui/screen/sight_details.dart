@@ -70,7 +70,9 @@ class _SightDetailsState extends State<SightDetails> {
                     StandartButton(
                       svg: assetRoute,
                       label: sightDetailsScreenRoute,
-                      onPressed: () => print('Строим маршрут'),
+                      onPressed: () {
+                        print('Строим маршрут');
+                      },
                     ),
                     const SizedBox(
                       height: MyThemeData.detailsCommonSpacing,

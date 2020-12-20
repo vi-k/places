@@ -17,7 +17,7 @@ class MyThemeData {
   static const detailsHoursSpacing = 16.0;
   static const detailsCommonSpacing = 24.0;
   static const detailsFooterSpacing = 8.0;
-  static const filtersSectionSpacing = 40.0;
+  static const filtersSectionSpacing = 24.0;
   static const filtersCategorySize = 64.0;
   static const filtersCategorySpacing = 12.0;
 

@@ -83,25 +83,23 @@ class SightCard extends StatelessWidget {
           ),
           const Spacer(),
           if (type == SightCardType.list) ...[
-            SvgButton(
-              highlightColor: MyThemeData.tapOnImageHighlightColor,
-              splashColor: MyThemeData.tapOnImageSplashColor,
+            SignatureButton(
               svg: assetFavorite,
               color: textColor,
               onPressed: () {
-                print('Add to wishlist');
+                print('Favorite');
               },
             ),
           ],
           if (type == SightCardType.wishlist) ...[
-            SvgButton(
+            SignatureButton(
               svg: assetCalendar,
               color: textColor,
               onPressed: () {
                 print('Schedule');
               },
             ),
-            SvgButton(
+            SignatureButton(
               svg: assetClose,
               color: textColor,
               onPressed: () {
@@ -110,14 +108,14 @@ class SightCard extends StatelessWidget {
             ),
           ],
           if (type == SightCardType.visited) ...[
-            SvgButton(
+            SignatureButton(
               svg: assetShare,
               color: textColor,
               onPressed: () {
                 print('Share');
               },
             ),
-            SvgButton(
+            SignatureButton(
               svg: assetClose,
               color: textColor,
               onPressed: () {
@@ -150,5 +148,27 @@ class SightCard extends StatelessWidget {
             ),
           ),
         ),
+      );
+}
+
+class SignatureButton extends StatelessWidget {
+  const SignatureButton({
+    Key? key,
+    required this.svg,
+    required this.color,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final String svg;
+  final Color? color;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) => SvgButton(
+        highlightColor: MyThemeData.tapOnImageHighlightColor,
+        splashColor: MyThemeData.tapOnImageSplashColor,
+        svg: svg,
+        color: color,
+        onPressed: onPressed,
       );
 }

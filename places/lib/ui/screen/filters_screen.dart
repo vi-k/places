@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app.dart';
 import '../../domain/filter.dart';
 import '../../domain/sight.dart';
 import '../../mocks.dart';
@@ -47,12 +46,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ..._buildCategories(),
-              FlatButton(
-                onPressed: () {
-                  App.of(context).settings.toggleIsDark();
-                },
-                child: const Text('День/ночь'),
-              ),
               const SizedBox(height: MyThemeData.filtersSectionSpacing),
               ..._buildDistance(context),
               const SizedBox(height: MyThemeData.filtersSectionSpacing),
@@ -130,7 +123,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SvgButton(
-              onPressed: () {},
+              onPressed: () {
+                print('Back');
+              },
               svg: assetBack,
               color: Theme.of(context).primaryColor,
             ),
