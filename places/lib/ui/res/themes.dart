@@ -35,7 +35,6 @@ class MyThemeData {
   static const tapOnImageSplashColor = Colors.black26;
   static const categoryActiveColor = Color(0xFF6ADA6F);
   static const categoryInactiveColor = Color(0x806ADA6F);
-  // static const categoryInactiveColor = Color(0xFF4CAF50);
   static const categoryBackground = Color(0x296ADA6F);
 
   // Стили.
@@ -61,6 +60,7 @@ class MyThemeData {
   static const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
   static final filtersCaptionPadding =
       commonPadding.copyWith(top: 0, bottom: 0);
+  static const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 
   const MyThemeData({
     required this.appThemeData,
@@ -117,6 +117,7 @@ final myLightTheme = MyThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.light,
     primarySwatch: MyThemeData.buttonColor,
+    primaryColor: MyThemeData.primaryColor,
     backgroundColor: MyThemeData.primaryColorLightest,
     scaffoldBackgroundColor: MyThemeData.primaryColorLightest,
     buttonTheme:
@@ -145,6 +146,8 @@ final myLightTheme = MyThemeData(
           MyThemeData.textRegular12.copyWith(color: MyThemeData.primaryColor),
     ),
     textTheme: TextTheme(
+      headline4: MyThemeData.textMiddle16
+          .copyWith(color: MyThemeData.primaryColorLight),
       headline5: MyThemeData.textRegular16
           .copyWith(color: MyThemeData.primaryColorLight),
       headline6:
@@ -178,6 +181,7 @@ final myDarkTheme = MyThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.dark,
     primarySwatch: MyThemeData.buttonColor,
+    primaryColor: MyThemeData.primaryColorLightest,
     backgroundColor: MyThemeData.primaryColorDarker,
     scaffoldBackgroundColor: MyThemeData.primaryColorDarker,
     buttonTheme:
@@ -207,6 +211,8 @@ final myDarkTheme = MyThemeData(
           .copyWith(color: MyThemeData.primaryColorLightest),
     ),
     textTheme: TextTheme(
+      headline4: MyThemeData.textMiddle16
+          .copyWith(color: MyThemeData.primaryColorLight),
       headline5: MyThemeData.textRegular16
           .copyWith(color: MyThemeData.primaryColorLight),
       headline6:

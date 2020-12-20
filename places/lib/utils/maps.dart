@@ -85,6 +85,7 @@ class Distance implements Comparable<Distance> {
   final double value;
 
   double get inKilometers => value / 1000;
+
   DistanceUnits get optimalUnits =>
       value.round() < 1000 ? DistanceUnits.meters : DistanceUnits.kilometers;
 
@@ -110,4 +111,9 @@ class Distance implements Comparable<Distance> {
 
   @override
   int compareTo(Distance other) => value.compareTo(other.value);
+
+  bool operator >(Distance other) => value > other.value;
+  bool operator >=(Distance other) => value >= other.value;
+  bool operator <(Distance other) => value < other.value;
+  bool operator <=(Distance other) => value <= other.value;
 }

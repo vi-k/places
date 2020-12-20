@@ -8,11 +8,15 @@ class SvgButton extends StatelessWidget {
     Key? key,
     required this.svg,
     this.color,
+    this.highlightColor,
+    this.splashColor,
     this.onPressed,
   }) : super(key: key);
 
   final String svg;
   final Color? color;
+  final Color? highlightColor;
+  final Color? splashColor;
   final void Function()? onPressed;
 
   @override
@@ -20,8 +24,8 @@ class SvgButton extends StatelessWidget {
         height: MyThemeData.smallButtonHeight,
         width: MyThemeData.smallButtonHeight,
         child: IconButton(
-          highlightColor: MyThemeData.tapOnImageHighlightColor,
-          splashColor: MyThemeData.tapOnImageHighlightColor,
+          highlightColor: highlightColor,
+          splashColor: splashColor,
           onPressed: onPressed,
           icon: SvgPicture.asset(
             svg,

@@ -12,15 +12,18 @@ class SmallButton extends StatelessWidget {
     this.splashColor,
     this.style,
     this.svg,
+    this.icon,
     required this.label,
     this.onPressed,
-  }) : super(key: key);
+  })  : assert(svg == null || icon == null),
+        super(key: key);
 
   final Color? color;
   final Color? highlightColor;
   final Color? splashColor;
   final TextStyle? style;
   final String? svg;
+  final Widget? icon;
   final String label;
   final void Function()? onPressed;
 
@@ -33,7 +36,7 @@ class SmallButton extends StatelessWidget {
 
     return SizedBox(
       height: MyThemeData.smallButtonHeight,
-      child: svg == null
+      child: svg == null && icon == null
           ? FlatButton(
               color: color,
               highlightColor: highlightColor,
@@ -59,10 +62,11 @@ class SmallButton extends StatelessWidget {
                     BorderRadius.circular(MyThemeData.smallButtonRadius),
               ),
               onPressed: onPressed,
-              icon: SvgPicture.asset(
-                svg!,
-                color: textStyle.color,
-              ),
+              icon: icon ??
+                  SvgPicture.asset(
+                    svg!,
+                    color: textStyle.color,
+                  ),
               label: Text(
                 label,
                 style: textStyle,

@@ -84,6 +84,8 @@ class SightCard extends StatelessWidget {
           const Spacer(),
           if (type == SightCardType.list) ...[
             SvgButton(
+              highlightColor: MyThemeData.tapOnImageHighlightColor,
+              splashColor: MyThemeData.tapOnImageSplashColor,
               svg: assetFavorite,
               color: textColor,
               onPressed: () {
