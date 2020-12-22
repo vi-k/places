@@ -1,16 +1,18 @@
 import '../translate.dart';
+import '../utils/maps.dart';
 
 enum SightType {
   museum,
-  theatre,
-  memorial,
+  particular,
   park,
+  restaurant,
+  cafe,
+  hotel,
 }
 
 class Sight {
   final String name;
-  final double lat;
-  final double lon;
+  final Coord coord;
   final String url;
   final String details;
   final SightType type;
@@ -19,8 +21,7 @@ class Sight {
 
   Sight({
     required this.name,
-    required this.lat,
-    required this.lon,
+    required this.coord,
     required this.url,
     required this.details,
     required this.type,

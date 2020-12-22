@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
+import '../res/themes.dart';
 import 'my_theme.dart';
 import 'small_button.dart';
 
@@ -16,9 +16,9 @@ class TabSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: smallButtonHeight,
+        height: MyThemeData.smallButtonHeight,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(tabsSwitchRadius),
+          borderRadius: BorderRadius.circular(MyThemeData.tabsSwitchRadius),
           color: MyTheme.of(context).tabSwitchInactiveColor,
         ),
         child: Row(

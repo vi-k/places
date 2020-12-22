@@ -18,7 +18,10 @@ class _SightListScreenState extends State<SightListScreen> {
         appBar: const TextAppBar(title: sightListScreenTitle),
         body: CardList(
           cardType: SightCardType.list,
-          iterable: mocks,
+          iterable: mocks.toList()
+            ..sort((a, b) => a.coord
+                .distance(myMockCoord)
+                .compareTo(b.coord.distance(myMockCoord))),
         ),
         bottomNavigationBar: const AppNavigationBar(index: 0),
       );

@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../res/themes.dart';
 
+/// Виджет для предоставления собственной темы приложения вниз по дереву.
+///
+/// Доступ: `MyTheme.of(context)`. Возвращает MyThemeData (не MyThemeData?),
+/// поэтому, если вверху дерева не будет виджета, приложение рухнет.
+/// Подразумевается, что тот, кто пользуется, тот понимает, что он делает,
+/// а функция убирает лишнюю необходимость заботиться о null.
 class MyTheme extends InheritedWidget {
   const MyTheme({
     Key? key,

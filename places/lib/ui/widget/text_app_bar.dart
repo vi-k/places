@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/edge_insets.dart';
+import '../res/themes.dart';
 
 class TextAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TextAppBar({
@@ -12,7 +12,7 @@ class TextAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: appBarPadding.add(EdgeInsets.only(
+        padding: MyThemeData.appBarPadding.add(EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
         )),
         child: Text(

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:places/ui/widget/my_theme.dart';
 
 import '../../domain/sight.dart';
-import '../res/const.dart';
-import '../res/edge_insets.dart';
 import '../res/strings.dart';
+import '../res/themes.dart';
 import '../widget/loadable_image.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
@@ -29,11 +27,11 @@ class _SightDetailsState extends State<SightDetails> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
-                height: detailsImageSize,
+                height: MyThemeData.detailsImageSize,
                 child: LoadableImage(url: widget.sight.url),
               ),
               Padding(
-                padding: detailsPadding,
+                padding: MyThemeData.detailsPadding,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -42,58 +40,60 @@ class _SightDetailsState extends State<SightDetails> {
                       style: Theme.of(context).primaryTextTheme.headline2,
                     ),
                     const SizedBox(
-                      height: detailsTitleSpacing,
+                      height: MyThemeData.detailsTitleSpacing,
                     ),
                     Row(
                       children: [
                         Text(
                           widget.sight.typeAsText,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.headline6,
                         ),
                         const SizedBox(
-                          width: detailsHoursSpacing,
+                          width: MyThemeData.detailsHoursSpacing,
                         ),
                         Text(
                           'закрыто до 09:00', // Временно
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style: Theme.of(context).textTheme.bodyText1,
                         ),
                       ],
                     ),
                     const SizedBox(
-                      height: detailsCommonSpacing,
+                      height: MyThemeData.detailsCommonSpacing,
                     ),
                     Text(
                       widget.sight.details,
-                      style: Theme.of(context).primaryTextTheme.bodyText2,
+                      style: Theme.of(context).primaryTextTheme.bodyText1,
                     ),
                     const SizedBox(
-                      height: detailsCommonSpacing,
+                      height: MyThemeData.detailsCommonSpacing,
                     ),
                     StandartButton(
                       svg: assetRoute,
                       label: sightDetailsScreenRoute,
-                      onPressed: () {},
+                      onPressed: () {
+                        print('Строим маршрут');
+                      },
                     ),
                     const SizedBox(
-                      height: detailsCommonSpacing,
+                      height: MyThemeData.detailsCommonSpacing,
                     ),
                     const Divider(
                       height: 0,
                     ),
                     const SizedBox(
-                      height: detailsFooterSpacing,
+                      height: MyThemeData.detailsFooterSpacing,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        SmallButton(
-                          // onPressed: () {},
+                        const SmallButton(
+                          // Неактивная кнопка
+                          //onPressed: () => print('Запланировать'),
                           svg: assetCalendar,
                           label: sightDetailsScreenSchedule,
-                          // style: MyTheme.of(context).flatButtonInactiveTextStyle,
                         ),
                         SmallButton(
-                          onPressed: () {},
+                          onPressed: () => print('В Избранное'),
                           svg: assetFavorite,
                           label: sightDetailsScreenFavorite,
                         ),

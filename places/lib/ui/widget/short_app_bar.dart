@@ -1,34 +1,43 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/edge_insets.dart';
+import '../res/themes.dart';
 
 class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const ShortAppBar({
+  ShortAppBar({
     Key? key,
-    required this.title,
+    this.title,
+    this.titleWidget,
     this.bottom,
-  }) : super(key: key);
+    EdgeInsetsGeometry? padding,
+  })  : assert(title != null && titleWidget == null ||
+            title == null && titleWidget != null),
+        padding = padding ?? MyThemeData.shortAppBarPadding,
+        super(key: key);
 
-  final String title;
+  final String? title;
+  final Widget? titleWidget;
   final Widget? bottom;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: shortAppBarPadding.add(EdgeInsets.only(
+        padding: padding.add(EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
         )),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).primaryTextTheme.headline3,
-            ),
-            if (bottom != null) const SizedBox(height: shortAppBarSpacing),
-            if (bottom != null) bottom!,
+            titleWidget ??
+                Text(
+                  title!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).primaryTextTheme.headline3,
+                ),
+            if (bottom != null) ...[
+              const SizedBox(height: MyThemeData.shortAppBarSpacing),
+              bottom!,
+            ]
           ],
         ),
       );

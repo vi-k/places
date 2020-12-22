@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
-import '../res/edge_insets.dart';
+import '../res/themes.dart';
 import 'sight_card.dart';
 
 class CardList extends StatelessWidget {
@@ -16,7 +16,7 @@ class CardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.separated(
-        padding: listPadding,
+        padding: MyThemeData.listPadding,
         itemCount: iterable.length,
         itemBuilder: (context, index) => SightCard(
           type: cardType,
