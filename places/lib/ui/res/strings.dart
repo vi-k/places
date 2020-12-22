@@ -1,8 +1,8 @@
 import '../../domain/sight.dart';
 
-// Ресурсы
+/// Ассеты.
 
-// BottomNavigator
+/// BottomNavigator
 const assetFavorite = 'res/favorite.svg';
 const assetFavoriteFull = 'res/favorite_full.svg';
 const assetList = 'res/list.svg';
@@ -12,7 +12,7 @@ const assetMapFull = 'res/map_full.svg';
 const assetSettings = 'res/settings.svg';
 const assetSettingsFull = 'res/settings_full.svg';
 
-// Buttons
+/// Кнопки
 const assetCalendar = 'res/calendar.svg';
 const assetClose = 'res/close.svg';
 const assetRoute = 'res/route.svg';
@@ -30,8 +30,7 @@ const assetMuseum = 'res/museum.svg';
 const assetPark = 'res/park.svg';
 const assetParticular = 'res/particular.svg';
 const assetRestaurant = 'res/restaurant.svg';
-String assetForSightType(SightType type) =>
-    'res/${type.toString().replaceFirst(RegExp(r'.*\.'), '')}.svg';
+
 const assetChoice = 'res/choice.svg';
 
 // Тексты

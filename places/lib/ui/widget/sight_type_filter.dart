@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
-import '../../translate.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
-class SightTypeFilter extends StatelessWidget {
-  const SightTypeFilter({
+/// Виджет выбора категории для фильтра.
+class SightCategoryFilter extends StatelessWidget {
+  const SightCategoryFilter({
     Key? key,
-    required this.type,
+    required this.category,
     required this.active,
     required this.onPressed,
   }) : super(key: key);
 
-  final SightType type;
+  final SightCategory category;
   final bool active;
   final void Function() onPressed;
 
@@ -33,18 +33,15 @@ class SightTypeFilter extends StatelessWidget {
             child: Stack(
               children: [
                 Material(
-                  type: MaterialType.transparency,
-                  shape: const CircleBorder(),
+                  type: MaterialType.circle,
                   clipBehavior: Clip.antiAlias,
-                  child: Ink(
-                    color: theme.accentColor16,
-                    child: InkWell(
-                      onTap: onPressed,
-                      child: Center(
-                        child: SvgPicture.asset(
-                          assetForSightType(type),
-                          color: theme.accentColor,
-                        ),
+                  color: theme.accentColor16,
+                  child: InkWell(
+                    onTap: onPressed,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        category.asset,
+                        color: theme.accentColor,
                       ),
                     ),
                   ),
@@ -61,7 +58,7 @@ class SightTypeFilter extends StatelessWidget {
             height: MyThemeData.filtersCategorySpacing,
           ),
           Text(
-            translate(type.toString()),
+            category.text,
             textAlign: TextAlign.center,
             style: theme.textRegular12Main,
           ),

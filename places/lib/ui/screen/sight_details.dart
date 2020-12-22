@@ -49,7 +49,7 @@ class _SightDetailsState extends State<SightDetails> {
                   Row(
                     children: [
                       Text(
-                        widget.sight.typeAsText,
+                        widget.sight.type.text,
                         style: theme.textBold14Light,
                       ),
                       const SizedBox(
@@ -91,8 +91,6 @@ class _SightDetailsState extends State<SightDetails> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       const SmallButton(
-                        // Неактивная кнопка
-                        //onPressed: () => print('Запланировать'),
                         svg: assetCalendar,
                         label: sightDetailsScreenSchedule,
                       ),

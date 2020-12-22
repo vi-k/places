@@ -12,6 +12,7 @@ import '../widget/short_app_bar.dart';
 import '../widget/sight_type_filter.dart';
 import '../widget/standart_button.dart';
 
+/// Экран настроек фильтра.
 class FiltersScreen extends StatefulWidget {
   @override
   _FiltersScreenState createState() => _FiltersScreenState();
@@ -115,9 +116,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Wrap(
           alignment: WrapAlignment.spaceEvenly,
           children: [
-            for (final type in SightType.values)
-              SightTypeFilter(
-                type: type,
+            for (final type in SightCategory.values)
+              SightCategoryFilter(
+                category: type,
                 active: filter.hasCategory(type),
                 onPressed: () {
                   setState(() {

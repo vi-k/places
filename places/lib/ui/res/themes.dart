@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 /// https://github.com/flutter/gallery/tree/master/lib/themes
 
 /// Цвета.
-
 const _mainColor20 = Color(0xFF1A1A20);
 const _mainColor30 = Color(0xFF21222C);
 const _mainColor40 = Color(0xFF252849);
@@ -29,8 +28,11 @@ const _attentionColor70 = Color(0xFFCF2A2A);
 const _attentionColor70a16 = Color(0x29CF2A2A);
 const _attentionColor70a40 = Color(0x66CF2A2A);
 
-const _tapOnImageHighlightColor = Colors.black26;
-const _tapOnImageSplashColor = Colors.black26;
+const _tapHighlightColorBlack = Color(0x66BCBCBC);
+const _tapSplashColorBlack = Color(0x66C8C8C8);
+const _tapHighlightColorWhite = Color(0x40CCCCCC);
+const _tapSplashColorWhite = Color(0x40CCCCCC);
+const _tapOnImageColor = Colors.black26;
 
 // Стили.
 const _text = TextStyle(fontSize: 14, height: 18 / 14);
@@ -49,11 +51,6 @@ final _textBold32 = _textBold14.copyWith(fontSize: 32, height: 1.125);
 extension on TextStyle {
   TextStyle withColor(Color color) => copyWith(color: color);
 }
-
-final _signaturesTextStyle = _textBold14;
-final _standartButtonTextStyle = _textBold14;
-final _textButtonPrimaryTextStyle = _textMiddle14;
-final _textButtonSecondaryTextStyle = _textMiddle14;
 
 class MyThemeData {
   /// Константы.
@@ -102,14 +99,10 @@ class MyThemeData {
     required this.lightTextColor56,
     required this.backgroundFirst,
     required this.backgroundSecond,
-    required this.signaturesTextStyle,
-    required this.standartButtonTextStyle,
     required this.tapHighlightColor,
-    this.tapOnImageHighlightColor = _tapOnImageHighlightColor,
-    this.tapOnImageSplashColor = _tapOnImageSplashColor,
     required this.tapSplashColor,
-    required this.textButtonPrimaryTextStyle,
-    required this.textButtonSecondaryTextStyle,
+    this.tapOnImageHighlightColor = _tapOnImageColor,
+    this.tapOnImageSplashColor = _tapOnImageColor,
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
@@ -118,21 +111,20 @@ class MyThemeData {
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Main2 = _textRegular14.withColor(mainTextColor2);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
-    textRegular14Light56 =
-        _textRegular14.withColor(lightTextColor56);
+    textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
     textBold14Accent = _textBold14.withColor(accentColor);
     textBold14Main = _textBold14.withColor(mainTextColor);
     textBold14Main2 = _textBold14.withColor(mainTextColor2);
     textBold14Inverse = _textBold14.withColor(inverseTextColor);
     textBold14Light = _textBold14.withColor(lightTextColor);
     textBold14Light56 = _textBold14.withColor(lightTextColor56);
+    textBold14White = _textBold14.withColor(_mainColor100);
 
     textRegular16Accent = _textRegular16.withColor(accentColor);
     textRegular16Main = _textRegular16.withColor(mainTextColor);
     textRegular16Main2 = _textRegular16.withColor(mainTextColor2);
     textRegular16Light = _textRegular16.withColor(lightTextColor);
-    textRegular16Light56 =
-        _textRegular16.withColor(lightTextColor56);
+    textRegular16Light56 = _textRegular16.withColor(lightTextColor56);
 
     textMiddle16Accent = _textMiddle16.withColor(accentColor);
     textMiddle16Main = _textMiddle16.withColor(mainTextColor);
@@ -168,18 +160,21 @@ class MyThemeData {
   late final TextStyle textRegular14Main2;
   late final TextStyle textRegular14Light;
   late final TextStyle textRegular14Light56;
+
   late final TextStyle textBold14Accent;
   late final TextStyle textBold14Main;
   late final TextStyle textBold14Main2;
   late final TextStyle textBold14Inverse;
   late final TextStyle textBold14Light;
   late final TextStyle textBold14Light56;
+  late final TextStyle textBold14White;
 
   late final TextStyle textRegular16Accent;
   late final TextStyle textRegular16Main;
   late final TextStyle textRegular16Main2;
   late final TextStyle textRegular16Light;
   late final TextStyle textRegular16Light56;
+
   late final TextStyle textMiddle16Accent;
   late final TextStyle textMiddle16Main;
   late final TextStyle textMiddle16Main2;
@@ -190,19 +185,14 @@ class MyThemeData {
   late final TextStyle textBold24Main;
   late final TextStyle textBold32Main;
 
-  final TextStyle signaturesTextStyle;
-  final TextStyle standartButtonTextStyle;
   final Color tapHighlightColor;
+  final Color tapSplashColor;
   final Color tapOnImageHighlightColor;
   final Color tapOnImageSplashColor;
-  final Color tapSplashColor;
-  final TextStyle textButtonPrimaryTextStyle;
-  final TextStyle textButtonSecondaryTextStyle;
 }
 
 const _baseButtonTheme = ButtonThemeData(
   height: 48,
-  textTheme: ButtonTextTheme.normal,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.all(
       Radius.circular(12),
@@ -248,13 +238,19 @@ final myLightTheme = MyThemeData(
     accentColor: _accentColor50,
     backgroundColor: _mainColor100,
     scaffoldBackgroundColor: _mainColor100,
-    buttonTheme: _baseButtonTheme.copyWith(buttonColor: _accentColor50),
+    highlightColor: Colors.orange,
+    splashColor: _tapSplashColorBlack,
+    buttonTheme: _baseButtonTheme.copyWith(
+      buttonColor: _accentColor50,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _mainColor100,
       selectedItemColor: _mainColor50,
       unselectedItemColor: _mainColor50,
     ),
-    cardTheme: _baseCardTheme.copyWith(color: _mainColor90),
+    cardTheme: _baseCardTheme.copyWith(
+      color: _mainColor90,
+    ),
     textSelectionTheme: const TextSelectionThemeData(
       selectionColor: _accentColor50a40,
       selectionHandleColor: _accentColor50,
@@ -272,7 +268,11 @@ final myLightTheme = MyThemeData(
     ),
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.all<Color>(_mainColor100),
-      trackColor: MaterialStateProperty.all<Color>(_accentColor50),
+      trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+        return states.contains(MaterialState.selected)
+            ? _accentColor50
+            : _mainColor70a56;
+      }),
       overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
     ),
   ),
@@ -289,14 +289,8 @@ final myLightTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor100,
   backgroundSecond: _mainColor90,
-  signaturesTextStyle: _signaturesTextStyle.withColor(_mainColor100),
-  standartButtonTextStyle: _standartButtonTextStyle.withColor(_mainColor100),
-  tapHighlightColor: Colors.black12,
-  tapSplashColor: Colors.black12,
-  textButtonPrimaryTextStyle:
-      _textButtonPrimaryTextStyle.withColor(_accentColor50),
-  textButtonSecondaryTextStyle:
-      _textButtonSecondaryTextStyle.withColor(_mainColor70),
+  tapHighlightColor: _tapHighlightColorBlack,
+  tapSplashColor: _tapSplashColorBlack,
 );
 
 final myDarkTheme = MyThemeData(
@@ -307,13 +301,17 @@ final myDarkTheme = MyThemeData(
     accentColor: _accentColor70,
     backgroundColor: _mainColor30,
     scaffoldBackgroundColor: _mainColor30,
-    buttonTheme: _baseButtonTheme.copyWith(buttonColor: _accentColor70),
+    buttonTheme: _baseButtonTheme.copyWith(
+      buttonColor: _accentColor70,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _mainColor30,
       selectedItemColor: _mainColor100,
       unselectedItemColor: _mainColor100,
     ),
-    cardTheme: _baseCardTheme.copyWith(color: _mainColor20),
+    cardTheme: _baseCardTheme.copyWith(
+      color: _mainColor20,
+    ),
     textSelectionTheme: const TextSelectionThemeData(
       selectionColor: _accentColor70a40,
       selectionHandleColor: _accentColor70,
@@ -348,12 +346,6 @@ final myDarkTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor30,
   backgroundSecond: _mainColor20,
-  signaturesTextStyle: _signaturesTextStyle.withColor(_mainColor100),
-  standartButtonTextStyle: _standartButtonTextStyle.withColor(_mainColor100),
-  tapHighlightColor: Colors.white12,
-  tapSplashColor: Colors.white12,
-  textButtonPrimaryTextStyle:
-      _textButtonPrimaryTextStyle.withColor(_accentColor70),
-  textButtonSecondaryTextStyle:
-      _textButtonSecondaryTextStyle.withColor(_mainColor70),
+  tapHighlightColor: _tapHighlightColorWhite,
+  tapSplashColor: _tapSplashColorWhite,
 );

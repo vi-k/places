@@ -10,6 +10,7 @@ import 'my_theme.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
+/// Виджет: Карточка интересного места.
 enum SightCardType { list, wishlist, visited }
 
 class SightCard extends StatelessWidget {
@@ -39,7 +40,7 @@ class SightCard extends StatelessWidget {
                 _buildBottom(theme),
               ],
             ),
-            // Поверх карточки невдимая кнопка
+            // Поверх карточки невидимая кнопка
             MaterialButton(
               padding: EdgeInsets.zero,
               highlightColor: theme.tapHighlightColor,
@@ -68,7 +69,7 @@ class SightCard extends StatelessWidget {
 
   // Строка кнопок поверх картинки.
   Widget _buildSignatures(MyThemeData theme) {
-    final textStyle = theme.signaturesTextStyle;
+    final textStyle = theme.textBold14White;
     final textColor = textStyle.color;
 
     return Container(
@@ -79,7 +80,7 @@ class SightCard extends StatelessWidget {
           SmallButton(
             highlightColor: theme.tapOnImageHighlightColor,
             splashColor: theme.tapOnImageSplashColor,
-            label: sight.typeAsText,
+            label: sight.type.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');

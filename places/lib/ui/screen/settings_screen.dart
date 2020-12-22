@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../app.dart';
 import '../res/strings.dart';
+import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/my_theme.dart';
 import '../widget/short_app_bar.dart';
 
+/// Экран настроек.
 class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -32,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               App.of(context).settings.isDark = value;
             },
           ),
-          const Divider(),
+          const _ListDivider(),
           ListTile(
             title: Text(
               settingsTutorial,
@@ -40,13 +42,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             trailing: Icon(
               Icons.info_outline,
-              color: theme.textButtonPrimaryTextStyle.color,
+              color: theme.accentColor,
             ),
+            onTap: () {
+              print('Смотреть туториал');
+            }
           ),
-          const Divider(),
+          const _ListDivider(),
         ],
       ),
       bottomNavigationBar: const AppNavigationBar(index: 3),
+    );
+  }
+}
+
+class _ListDivider extends StatelessWidget {
+  const _ListDivider({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      indent: MyThemeData.commonPadding.left,
+      endIndent: MyThemeData.commonPadding.right,
+      height: 1,
     );
   }
 }

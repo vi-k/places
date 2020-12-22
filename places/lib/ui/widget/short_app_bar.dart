@@ -85,6 +85,7 @@ class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                 if (button != null)
                   SmallButton(
+                    style: theme.textMiddle16Accent,
                     label: button!,
                     onPressed: onPressed,
                   ),
