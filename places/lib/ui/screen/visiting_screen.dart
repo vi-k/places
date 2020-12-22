@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
 import '../res/strings.dart';
+import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/card_list.dart';
 import '../widget/short_app_bar.dart';
@@ -39,9 +40,12 @@ class _VisitingScreenState extends State<VisitingScreen>
   Widget build(BuildContext context) => Scaffold(
         appBar: ShortAppBar(
           title: visitingScreenTitle,
-          bottom: TabSwitch(
-            tabs: visitingScreenTabs,
-            tabController: tabController,
+          bottom: Padding(
+            padding: MyThemeData.commonPaddingToTop,
+            child: TabSwitch(
+              tabs: visitingScreenTabs,
+              tabController: tabController,
+            ),
           ),
         ),
         body: TabBarView(

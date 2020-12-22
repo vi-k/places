@@ -17,11 +17,12 @@ class StandartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = MyTheme.of(context).standartButtonTextStyle;
+    final theme = MyTheme.of(context);
+    final textStyle = theme.standartButtonTextStyle;
 
     return svg == null
       ? RaisedButton(
-          color: Theme.of(context).buttonTheme.colorScheme?.primary,
+          color: theme.app.buttonTheme.colorScheme?.primary,
           onPressed: onPressed,
           child: Text(
             label,

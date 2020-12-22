@@ -19,6 +19,7 @@ const assetRoute = 'res/route.svg';
 const assetShare = 'res/share.svg';
 const assetPhoto = 'res/photo.svg';
 const assetBack = 'res/back.svg';
+const assetForward = 'res/forward.svg';
 
 const assetImage = 'res/image.svg';
 
@@ -44,17 +45,24 @@ const visitingScreenWishlist = 'Хочу посетить';
 const visitingScreenVisited = 'Посещённые места';
 const visitingScreenTabs = ['Хочу посетить', 'Посетил'];
 
-const filtersTitle = 'Фильтр';
 const filtersCategories = 'КАТЕГОРИИ';
 const filtersDistance = 'Расстояние';
 const filtersClear = 'Очистить';
 const filtersApply = 'ПОКАЗАТЬ';
 
-const settingsTitle = 'Настройки';
-const settingsIsDark = 'Тёмная тема';
 const settingsTutorial = 'Смотреть туториал';
 
 const rangeFrom = 'от';
 const rangeTo = 'до';
 const meters = 'м';
 const kilometers = 'км';
+
+const stringCancel = 'Отмена';
+const stringCategories = 'Категории';
+const stringCategory = 'Категория';
+const stringFilter = 'Фильтр';
+const stringIsDark = 'Тёмная тема';
+const stringName = 'Название';
+const stringNewPlace = 'Новое место';
+const stringSettings = 'Настройки';
+const stringUnselected = 'Не выбрано';

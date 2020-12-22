@@ -7,11 +7,10 @@ import '../../utils/maps.dart';
 import '../../utils/range.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
+import '../widget/my_theme.dart';
 import '../widget/short_app_bar.dart';
 import '../widget/sight_type_filter.dart';
-import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
-import '../widget/svg_button.dart';
 
 class FiltersScreen extends StatefulWidget {
   @override
@@ -39,32 +38,45 @@ class _FiltersScreenState extends State<FiltersScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: _buildAppBar(context),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ..._buildCategories(),
-              const SizedBox(height: MyThemeData.filtersSectionSpacing),
-              ..._buildDistance(context),
-              const SizedBox(height: MyThemeData.filtersSectionSpacing),
-              Padding(
-                padding: MyThemeData.commonPadding,
-                child: StandartButton(
-                  label: filtersApply +
-                      (_cardCount == null ? ' ...' : ' ($_cardCount)'),
-                  onPressed: () {
-                    print('Apply filter');
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
 
-  List<Widget> _buildDistance(BuildContext context) => [
+    return Scaffold(
+      appBar: ShortAppBar(
+        // padding: MyThemeData.appBarFiltersPadding,
+        title: stringFilter,
+        button: filtersClear,
+        onPressed: () {
+          setState(() {
+            filter = Filter();
+          });
+        },
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ..._buildCategories(),
+            const SizedBox(height: MyThemeData.filtersSectionSpacing),
+            ..._buildDistance(theme),
+            const SizedBox(height: MyThemeData.filtersSectionSpacing),
+            Padding(
+              padding: MyThemeData.commonPadding,
+              child: StandartButton(
+                label: filtersApply +
+                    (_cardCount == null ? ' ...' : ' ($_cardCount)'),
+                onPressed: () {
+                  print('Apply filter');
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildDistance(MyThemeData theme) => [
         Padding(
           padding: MyThemeData.commonPadding,
           child: Row(
@@ -72,11 +84,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
             children: [
               Text(
                 filtersDistance,
-                style: Theme.of(context).primaryTextTheme.headline5,
+                style: theme.textRegular16Main,
               ),
               Text(
                 _distanceToString(filter.distance),
-                style: Theme.of(context).textTheme.headline5,
+                style: theme.textRegular16Light,
               ),
             ],
           ),
@@ -116,34 +128,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
           ],
         ),
       ];
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) => ShortAppBar(
-        padding: MyThemeData.appBarFiltersPadding,
-        titleWidget: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SvgButton(
-              onPressed: () {
-                print('Back');
-              },
-              svg: assetBack,
-              color: Theme.of(context).primaryColor,
-            ),
-            SmallButton(
-              onPressed: () {
-                setState(() {
-                  filter = Filter();
-                });
-              },
-              label: filtersClear,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline4
-                  ?.copyWith(color: MyThemeData.buttonColor),
-            ),
-          ],
-        ),
-      );
 
   // Переводит расстояние в значение слайдера.
   int _distanceToValue(Distance distance) {

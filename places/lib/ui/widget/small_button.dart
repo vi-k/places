@@ -29,10 +29,11 @@ class SmallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
     final textStyle = style ??
         (onPressed != null
-            ? MyTheme.of(context).flatButtonTextStyle
-            : MyTheme.of(context).flatButtonInactiveTextStyle);
+            ? theme.textRegular14Main
+            : theme.textRegular16Light56);
 
     return SizedBox(
       height: MyThemeData.smallButtonHeight,
