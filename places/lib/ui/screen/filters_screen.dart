@@ -1,3 +1,5 @@
+/// Экран настроек фильтра.
+
 import 'package:flutter/material.dart';
 
 import '../../domain/filter.dart';
@@ -8,11 +10,11 @@ import '../../utils/range.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/my_theme.dart';
-import '../widget/short_app_bar.dart';
+import '../widget/section.dart';
 import '../widget/sight_type_filter.dart';
+import '../widget/small_app_bar.dart';
 import '../widget/standart_button.dart';
 
-/// Экран настроек фильтра.
 class FiltersScreen extends StatefulWidget {
   @override
   _FiltersScreenState createState() => _FiltersScreenState();
@@ -43,10 +45,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      appBar: ShortAppBar(
+      appBar: SmallAppBar(
         // padding: MyThemeData.appBarFiltersPadding,
         title: stringFilter,
-        button: filtersClear,
+        button: stringClear,
         onPressed: () {
           setState(() {
             filter = Filter();
@@ -64,7 +66,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             Padding(
               padding: MyThemeData.commonPadding,
               child: StandartButton(
-                label: filtersApply +
+                label: stringApply +
                     (_cardCount == null ? ' ...' : ' ($_cardCount)'),
                 onPressed: () {
                   print('Apply filter');
@@ -84,7 +86,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                filtersDistance,
+                stringDistance,
                 style: theme.textRegular16Main,
               ),
               Text(
@@ -109,24 +111,23 @@ class _FiltersScreenState extends State<FiltersScreen> {
       ];
 
   List<Widget> _buildCategories() => [
-        Padding(
-          padding: MyThemeData.filtersCaptionPadding,
-          child: const Text(filtersCategories),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceEvenly,
-          children: [
-            for (final type in SightCategory.values)
-              SightCategoryFilter(
-                category: type,
-                active: filter.hasCategory(type),
-                onPressed: () {
-                  setState(() {
-                    filter = filter.toggleCategory(type);
-                  });
-                },
-              ),
-          ],
+        Section(
+          stringCategories,
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: [
+              for (final type in SightCategory.values)
+                SightCategoryFilter(
+                  category: type,
+                  active: filter.hasCategory(type),
+                  onPressed: () {
+                    setState(() {
+                      filter = filter.toggleCategory(type);
+                    });
+                  },
+                ),
+            ],
+          ),
         ),
       ];
 
@@ -181,11 +182,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
       prefix = '';
     } else {
       final withUnits = distance.start.optimalUnits != endUnits;
-      prefix = '$rangeFrom '
+      prefix = '$stringFrom '
           '${distance.start.toString(withUnits: withUnits)} ';
     }
 
-    return '$prefix$rangeTo $endValue';
+    return '$prefix$stringTo $endValue';
   }
 
   Future<int> calcCardCount() async => mocks.where((element) {

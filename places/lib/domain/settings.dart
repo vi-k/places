@@ -1,9 +1,8 @@
 import 'filter.dart';
 
+/// Класс настроек.
 class Settings {
   Settings(this.onUpdate);
-  // factory Settings() => _instance ?? Settings._();
-  // static Settings? _instance;
 
   final void Function() onUpdate;
 

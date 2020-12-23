@@ -1,10 +1,12 @@
+/// Экран добавления места.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/strings.dart';
 import '../widget/my_theme.dart';
 import '../widget/section.dart';
-import '../widget/short_app_bar.dart';
+import '../widget/small_app_bar.dart';
 
 class AddSightScreen extends StatefulWidget {
   @override
@@ -17,7 +19,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      appBar: const ShortAppBar(
+      appBar: const SmallAppBar(
         title: stringNewPlace,
         back: stringCancel,
       ),
@@ -43,6 +45,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
             Section(
               stringName,
               child: TextFormField(
+                keyboardType: TextInputType.text,
                 style: theme.textRegular16Main2,
                 initialValue: 'Золотая долина',
               ),

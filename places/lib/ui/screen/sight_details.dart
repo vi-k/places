@@ -1,3 +1,5 @@
+/// Экран детализации места.
+
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
@@ -73,7 +75,7 @@ class _SightDetailsState extends State<SightDetails> {
                   ),
                   StandartButton(
                     svg: assetRoute,
-                    label: sightDetailsScreenRoute,
+                    label: stringBuildRoute,
                     onPressed: () {
                       print('Строим маршрут');
                     },
@@ -92,12 +94,12 @@ class _SightDetailsState extends State<SightDetails> {
                     children: [
                       const SmallButton(
                         svg: assetCalendar,
-                        label: sightDetailsScreenSchedule,
+                        label: stringToSchedule,
                       ),
                       SmallButton(
                         onPressed: () => print('В Избранное'),
                         svg: assetFavorite,
-                        label: sightDetailsScreenFavorite,
+                        label: stringToFavorite,
                       ),
                     ],
                   ),

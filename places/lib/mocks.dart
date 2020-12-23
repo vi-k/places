@@ -1,3 +1,5 @@
+/// Моковые данные.
+
 import 'domain/sight.dart';
 import 'utils/maps.dart';
 

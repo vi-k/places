@@ -1,3 +1,5 @@
+/// Экран: Хочу посетить/Посетил.
+
 import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
@@ -5,8 +7,8 @@ import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/card_list.dart';
-import '../widget/short_app_bar.dart';
 import '../widget/sight_card.dart';
+import '../widget/small_app_bar.dart';
 import '../widget/tab_switch.dart';
 
 class VisitingScreen extends StatefulWidget {
@@ -16,13 +18,14 @@ class VisitingScreen extends StatefulWidget {
 
 class _VisitingScreenState extends State<VisitingScreen>
     with SingleTickerProviderStateMixin {
+  static const _visitingScreenTabs = [stringWantToVisit, stringVisited];
   late TabController tabController;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(
-      length: visitingScreenTabs.length,
+      length: _visitingScreenTabs.length,
       vsync: this,
     );
     tabController.addListener(() {
@@ -38,12 +41,12 @@ class _VisitingScreenState extends State<VisitingScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: ShortAppBar(
-          title: visitingScreenTitle,
+        appBar: SmallAppBar(
+          title: stringFavorite,
           bottom: Padding(
             padding: MyThemeData.commonPaddingToTop,
             child: TabSwitch(
-              tabs: visitingScreenTabs,
+              tabs: _visitingScreenTabs,
               tabController: tabController,
             ),
           ),

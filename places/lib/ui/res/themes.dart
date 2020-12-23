@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-
 /// Собственная тема приложения, т.к. средств обычной ThemeData в нашем случае
 /// недостаточно.
 ///
 /// Свой вариант у Flutter team:
 /// https://github.com/flutter/gallery/tree/master/lib/themes
+
+import 'package:flutter/material.dart';
 
 /// Цвета.
 const _mainColor20 = Color(0xFF1A1A20);
@@ -28,25 +28,25 @@ const _attentionColor70 = Color(0xFFCF2A2A);
 const _attentionColor70a16 = Color(0x29CF2A2A);
 const _attentionColor70a40 = Color(0x66CF2A2A);
 
-const _tapHighlightColorBlack = Color(0x66BCBCBC);
-const _tapSplashColorBlack = Color(0x66C8C8C8);
-const _tapHighlightColorWhite = Color(0x40CCCCCC);
-const _tapSplashColorWhite = Color(0x40CCCCCC);
+const _highlightColorDark = Color(0x30000000);
+const _splashColorDark = Color(0x30000000);
+const _highlightColorLight = Color(0x30FFFFFF); //Color(0x40CCCCCC);
+const _splashColorLight = Color(0x30FFFFFF);
 const _tapOnImageColor = Colors.black26;
 
 // Стили.
-const _text = TextStyle(fontSize: 14, height: 18 / 14);
-final _textRegular14 = _text.copyWith(fontWeight: FontWeight.normal);
-final _textMiddle14 = _text.copyWith(fontWeight: FontWeight.w500);
-final _textBold14 = _text.copyWith(fontWeight: FontWeight.bold);
-final _textRegular12 = _textRegular14.copyWith(fontSize: 12, height: 1.33);
-final _textRegular16 = _textRegular14.copyWith(fontSize: 16, height: 1.25);
-final _textMiddle16 = _textMiddle14.copyWith(fontSize: 16, height: 1.25);
-final _textBold16 = _textBold14.copyWith(fontSize: 16, height: 1.25);
-final _textMiddle18 = _textMiddle14.copyWith(fontSize: 18, height: 1.25);
-final _textBold18 = _textBold14.copyWith(fontSize: 18, height: 1.25);
-final _textBold24 = _textBold14.copyWith(fontSize: 24, height: 1.2);
-final _textBold32 = _textBold14.copyWith(fontSize: 32, height: 1.125);
+const _textRegular = TextStyle(fontWeight: FontWeight.normal);
+const _textMiddle = TextStyle(fontWeight: FontWeight.w500);
+const _textBold = TextStyle(fontWeight: FontWeight.bold);
+
+final _textRegular12 = _textRegular.copyWith(fontSize: 12, height: 1.33);
+final _textRegular14 = _textRegular.copyWith(fontSize: 14, height: 1.29);
+final _textBold14 = _textBold.copyWith(fontSize: 14, height: 1.29);
+final _textRegular16 = _textRegular.copyWith(fontSize: 16, height: 1.25);
+final _textMiddle16 = _textMiddle.copyWith(fontSize: 16, height: 1.25);
+final _textMiddle18 = _textMiddle.copyWith(fontSize: 18, height: 1.25);
+final _textBold24 = _textBold.copyWith(fontSize: 24, height: 1.2);
+final _textBold32 = _textBold.copyWith(fontSize: 32, height: 1.125);
 
 extension on TextStyle {
   TextStyle withColor(Color color) => copyWith(color: color);
@@ -94,33 +94,24 @@ class MyThemeData {
     required this.attentionColor40,
     required this.mainTextColor,
     required this.mainTextColor2,
-    required this.inverseTextColor,
     required this.lightTextColor,
     required this.lightTextColor56,
+    required this.inverseTextColor,
     required this.backgroundFirst,
     required this.backgroundSecond,
-    required this.tapHighlightColor,
-    required this.tapSplashColor,
     this.tapOnImageHighlightColor = _tapOnImageColor,
     this.tapOnImageSplashColor = _tapOnImageColor,
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
 
-    textRegular14Accent = _textRegular14.withColor(accentColor);
     textRegular14Main = _textRegular14.withColor(mainTextColor);
-    textRegular14Main2 = _textRegular14.withColor(mainTextColor2);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
-    textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
-    textBold14Accent = _textBold14.withColor(accentColor);
-    textBold14Main = _textBold14.withColor(mainTextColor);
-    textBold14Main2 = _textBold14.withColor(mainTextColor2);
-    textBold14Inverse = _textBold14.withColor(inverseTextColor);
+
     textBold14Light = _textBold14.withColor(lightTextColor);
-    textBold14Light56 = _textBold14.withColor(lightTextColor56);
+    textBold14Inverse = _textBold14.withColor(inverseTextColor);
     textBold14White = _textBold14.withColor(_mainColor100);
 
-    textRegular16Accent = _textRegular16.withColor(accentColor);
     textRegular16Main = _textRegular16.withColor(mainTextColor);
     textRegular16Main2 = _textRegular16.withColor(mainTextColor2);
     textRegular16Light = _textRegular16.withColor(lightTextColor);
@@ -128,9 +119,6 @@ class MyThemeData {
 
     textMiddle16Accent = _textMiddle16.withColor(accentColor);
     textMiddle16Main = _textMiddle16.withColor(mainTextColor);
-    textMiddle16Main2 = _textMiddle16.withColor(mainTextColor2);
-    textMiddle16Light = _textMiddle16.withColor(lightTextColor);
-    textMiddle16Light56 = _textMiddle16.withColor(lightTextColor56);
 
     textMiddle18Main = _textMiddle18.withColor(mainTextColor);
     textBold24Main = _textBold24.withColor(mainTextColor);
@@ -155,21 +143,13 @@ class MyThemeData {
   late final TextStyle textRegular12Main;
   late final TextStyle textRegular12Light56;
 
-  late final TextStyle textRegular14Accent;
   late final TextStyle textRegular14Main;
-  late final TextStyle textRegular14Main2;
   late final TextStyle textRegular14Light;
-  late final TextStyle textRegular14Light56;
 
-  late final TextStyle textBold14Accent;
-  late final TextStyle textBold14Main;
-  late final TextStyle textBold14Main2;
   late final TextStyle textBold14Inverse;
   late final TextStyle textBold14Light;
-  late final TextStyle textBold14Light56;
   late final TextStyle textBold14White;
 
-  late final TextStyle textRegular16Accent;
   late final TextStyle textRegular16Main;
   late final TextStyle textRegular16Main2;
   late final TextStyle textRegular16Light;
@@ -177,16 +157,11 @@ class MyThemeData {
 
   late final TextStyle textMiddle16Accent;
   late final TextStyle textMiddle16Main;
-  late final TextStyle textMiddle16Main2;
-  late final TextStyle textMiddle16Light;
-  late final TextStyle textMiddle16Light56;
 
   late final TextStyle textMiddle18Main;
   late final TextStyle textBold24Main;
   late final TextStyle textBold32Main;
 
-  final Color tapHighlightColor;
-  final Color tapSplashColor;
   final Color tapOnImageHighlightColor;
   final Color tapOnImageSplashColor;
 }
@@ -238,8 +213,8 @@ final myLightTheme = MyThemeData(
     accentColor: _accentColor50,
     backgroundColor: _mainColor100,
     scaffoldBackgroundColor: _mainColor100,
-    highlightColor: Colors.orange,
-    splashColor: _tapSplashColorBlack,
+    highlightColor: _highlightColorDark, //Colors.orange,
+    splashColor: _splashColorDark,
     buttonTheme: _baseButtonTheme.copyWith(
       buttonColor: _accentColor50,
     ),
@@ -268,11 +243,10 @@ final myLightTheme = MyThemeData(
     ),
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.all<Color>(_mainColor100),
-      trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-        return states.contains(MaterialState.selected)
-            ? _accentColor50
-            : _mainColor70a56;
-      }),
+      trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
+          states.contains(MaterialState.selected)
+              ? _accentColor50
+              : _mainColor70a56),
       overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
     ),
   ),
@@ -289,8 +263,6 @@ final myLightTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor100,
   backgroundSecond: _mainColor90,
-  tapHighlightColor: _tapHighlightColorBlack,
-  tapSplashColor: _tapSplashColorBlack,
 );
 
 final myDarkTheme = MyThemeData(
@@ -301,6 +273,8 @@ final myDarkTheme = MyThemeData(
     accentColor: _accentColor70,
     backgroundColor: _mainColor30,
     scaffoldBackgroundColor: _mainColor30,
+    highlightColor: _highlightColorLight,
+    splashColor: _splashColorLight,
     buttonTheme: _baseButtonTheme.copyWith(
       buttonColor: _accentColor70,
     ),
@@ -329,8 +303,11 @@ final myDarkTheme = MyThemeData(
     ),
     switchTheme: SwitchThemeData(
       thumbColor: MaterialStateProperty.all<Color>(_mainColor100),
-      trackColor: MaterialStateProperty.all<Color>(_accentColor70),
-      overlayColor: MaterialStateProperty.all<Color>(_accentColor70a16),
+      trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
+          states.contains(MaterialState.selected)
+              ? _accentColor70
+              : _mainColor70a56),
+      overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
     ),
   ),
   accentColor: _accentColor70,
@@ -346,6 +323,4 @@ final myDarkTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor30,
   backgroundSecond: _mainColor20,
-  tapHighlightColor: _tapHighlightColorWhite,
-  tapSplashColor: _tapSplashColorWhite,
 );

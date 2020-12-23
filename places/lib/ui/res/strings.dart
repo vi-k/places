@@ -1,8 +1,6 @@
-import '../../domain/sight.dart';
+/// Строковые константы.
 
-/// Ассеты.
-
-/// BottomNavigator
+/// Ассеты: BottomNavigator
 const assetFavorite = 'res/favorite.svg';
 const assetFavoriteFull = 'res/favorite_full.svg';
 const assetList = 'res/list.svg';
@@ -12,7 +10,7 @@ const assetMapFull = 'res/map_full.svg';
 const assetSettings = 'res/settings.svg';
 const assetSettingsFull = 'res/settings_full.svg';
 
-/// Кнопки
+/// Ассеты: Кнопки
 const assetCalendar = 'res/calendar.svg';
 const assetClose = 'res/close.svg';
 const assetRoute = 'res/route.svg';
@@ -23,7 +21,7 @@ const assetForward = 'res/forward.svg';
 
 const assetImage = 'res/image.svg';
 
-// Категории
+/// Ассеты: Категории
 const assetCafe = 'res/cafe.svg';
 const assetHotel = 'res/hotel.svg';
 const assetMuseum = 'res/museum.svg';
@@ -33,35 +31,35 @@ const assetRestaurant = 'res/restaurant.svg';
 
 const assetChoice = 'res/choice.svg';
 
-// Тексты
-const sightListScreenTitle = 'Список\nинтересных мест';
-const sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
-const sightDetailsScreenSchedule = 'Запланировать';
-const sightDetailsScreenFavorite = 'В Избранное';
+/// Тексты
 
-const visitingScreenTitle = 'Избранное';
-const visitingScreenWishlist = 'Хочу посетить';
-const visitingScreenVisited = 'Посещённые места';
 const visitingScreenTabs = ['Хочу посетить', 'Посетил'];
 
-const filtersCategories = 'КАТЕГОРИИ';
-const filtersDistance = 'Расстояние';
-const filtersClear = 'Очистить';
-const filtersApply = 'ПОКАЗАТЬ';
-
-const settingsTutorial = 'Смотреть туториал';
-
-const rangeFrom = 'от';
-const rangeTo = 'до';
-const meters = 'м';
-const kilometers = 'км';
-
+const stringApply = 'Показать';
+const stringBuildRoute = 'Построить маршрут';
 const stringCancel = 'Отмена';
 const stringCategories = 'Категории';
 const stringCategory = 'Категория';
+const stringClear = 'Очистить';
+const stringDistance = 'Расстояние';
+const stringFavorite = 'Избранное';
 const stringFilter = 'Фильтр';
+const stringFrom = 'от';
 const stringIsDark = 'Тёмная тема';
+const stringKilometers = 'км';
+const stringLatitude = 'Широта';
+const stringLongitude = 'Долгота';
+const stringMeters = 'м';
 const stringName = 'Название';
 const stringNewPlace = 'Новое место';
 const stringSettings = 'Настройки';
+const stringSightListTitle = 'Список\nинтересных мест';
+const stringSightList = 'Список интересных мест';
+const stringTo = 'до';
+const stringToFavorite = 'В Избранное';
+const stringToSchedule = 'Запланировать';
 const stringUnselected = 'Не выбрано';
+const stringVisitedPlaces = 'Посещённые места';
+const stringVisited = 'Посетил';
+const stringWantToVisit = 'Хочу посетить';
+const stringWatchTutorial = 'Смотреть туториал';

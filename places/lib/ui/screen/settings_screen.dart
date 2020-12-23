@@ -1,3 +1,5 @@
+/// Экран настроек.
+
 import 'package:flutter/material.dart';
 
 import '../../app.dart';
@@ -5,9 +7,8 @@ import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/my_theme.dart';
-import '../widget/short_app_bar.dart';
+import '../widget/small_app_bar.dart';
 
-/// Экран настроек.
 class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -19,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      appBar: const ShortAppBar(
+      appBar: const SmallAppBar(
         title: stringSettings,
       ),
       body: ListView(
@@ -36,18 +37,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const _ListDivider(),
           ListTile(
-            title: Text(
-              settingsTutorial,
-              style: theme.textRegular14Main,
-            ),
-            trailing: Icon(
-              Icons.info_outline,
-              color: theme.accentColor,
-            ),
-            onTap: () {
-              print('Смотреть туториал');
-            }
-          ),
+              title: Text(
+                stringWatchTutorial,
+                style: theme.textRegular14Main,
+              ),
+              trailing: Icon(
+                Icons.info_outline,
+                color: theme.accentColor,
+              ),
+              onTap: () {
+                print('Смотреть туториал');
+              }),
           const _ListDivider(),
         ],
       ),
@@ -62,11 +62,9 @@ class _ListDivider extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Divider(
-      indent: MyThemeData.commonPadding.left,
-      endIndent: MyThemeData.commonPadding.right,
-      height: 1,
-    );
-  }
+  Widget build(BuildContext context) => Divider(
+        indent: MyThemeData.commonPadding.left,
+        endIndent: MyThemeData.commonPadding.right,
+        height: 1,
+      );
 }
