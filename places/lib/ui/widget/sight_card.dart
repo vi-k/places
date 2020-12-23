@@ -1,3 +1,5 @@
+/// Виджет: Карточка интересного места.
+
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
@@ -10,7 +12,6 @@ import 'my_theme.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
-/// Виджет: Карточка интересного места.
 enum SightCardType { list, wishlist, visited }
 
 class SightCard extends StatelessWidget {
@@ -43,8 +44,8 @@ class SightCard extends StatelessWidget {
             // Поверх карточки невидимая кнопка
             MaterialButton(
               padding: EdgeInsets.zero,
-              highlightColor: theme.tapHighlightColor,
-              splashColor: theme.tapSplashColor,
+              highlightColor: theme.app.highlightColor,
+              splashColor: theme.app.splashColor,
               onPressed: () {
                 Navigator.push<void>(
                     context,

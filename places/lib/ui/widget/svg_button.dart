@@ -1,3 +1,5 @@
+/// Виджет: Кнопка-иконка для svg.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -28,8 +30,8 @@ class SvgButton extends StatelessWidget {
       height: MyThemeData.smallButtonHeight,
       width: MyThemeData.smallButtonHeight,
       child: IconButton(
-        highlightColor: highlightColor ?? theme.tapHighlightColor,
-        splashColor: splashColor ?? theme.tapSplashColor,
+        highlightColor: highlightColor ?? theme.app.highlightColor,
+        splashColor: splashColor ?? theme.app.splashColor,
         onPressed: onPressed,
         icon: SvgPicture.asset(
           svg,

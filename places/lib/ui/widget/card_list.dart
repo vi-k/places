@@ -1,3 +1,5 @@
+/// Виджет: Список карточек.
+
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';

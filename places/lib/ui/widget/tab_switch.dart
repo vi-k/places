@@ -1,3 +1,5 @@
+/// Виджет: Переключатель табов.
+
 import 'package:flutter/material.dart';
 
 import '../res/themes.dart';

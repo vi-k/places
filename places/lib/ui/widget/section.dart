@@ -1,3 +1,7 @@
+/// Виджет: Раздел.
+/// 
+/// Состоит из названия раздела и виджета-ребёнка.
+
 import 'package:flutter/material.dart';
 
 import '../res/themes.dart';

@@ -1,3 +1,7 @@
+/// Виджет: Малая кнопка.
+/// 
+/// Обычно для текстовых кнопок, не имеющих фона.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -40,8 +44,8 @@ class SmallButton extends StatelessWidget {
       child: svg == null && icon == null
           ? FlatButton(
               color: color,
-              highlightColor: highlightColor,
-              splashColor: splashColor,
+              highlightColor: highlightColor ?? theme.app.highlightColor,
+              splashColor: splashColor ?? theme.app.splashColor,
               height: MyThemeData.smallButtonHeight,
               shape: RoundedRectangleBorder(
                 borderRadius:
@@ -55,8 +59,8 @@ class SmallButton extends StatelessWidget {
             )
           : FlatButton.icon(
               color: color ?? Colors.transparent,
-              highlightColor: highlightColor,
-              splashColor: splashColor,
+              highlightColor: highlightColor ?? theme.app.highlightColor,
+              splashColor: splashColor ?? theme.app.splashColor,
               height: MyThemeData.smallButtonHeight,
               shape: RoundedRectangleBorder(
                 borderRadius:

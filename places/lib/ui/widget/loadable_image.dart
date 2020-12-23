@@ -1,3 +1,5 @@
+/// Виджет: Загружаемая из сети картинка с индикатором прогресса внизу виджета.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

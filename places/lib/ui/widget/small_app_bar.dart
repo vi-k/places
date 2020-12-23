@@ -1,3 +1,5 @@
+/// Виджет: малый AppBar.
+
 import 'package:flutter/material.dart';
 
 import '../res/strings.dart';
@@ -6,8 +8,8 @@ import 'my_theme.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
-class ShortAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const ShortAppBar({
+class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const SmallAppBar({
     Key? key,
     required this.title,
     this.back,

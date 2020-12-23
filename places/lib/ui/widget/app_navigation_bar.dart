@@ -1,3 +1,5 @@
+/// BottomNavigator приложения.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -67,28 +69,28 @@ class AppNavigationBar extends StatelessWidget {
             index == 0 ? assetListFull : assetList,
             color: _itemColor(theme, index == 0),
           ),
-          label: 'List',
+          label: stringSightList,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             index == 1 ? assetMapFull : assetMap,
             color: _itemColor(theme, index == 1),
           ),
-          label: 'Map',
+          label: 'Map', // Временно
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             index == 2 ? assetFavoriteFull : assetFavorite,
             color: _itemColor(theme, index == 2),
           ),
-          label: 'Visiting',
+          label: stringFavorite, 
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
             index == 3 ? assetSettingsFull : assetSettings,
             color: _itemColor(theme, index == 3),
           ),
-          label: 'Settings',
+          label: stringSettings,
         ),
       ],
     );
