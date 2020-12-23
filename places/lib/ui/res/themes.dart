@@ -205,6 +205,10 @@ InputBorder _border(Color color, {bool focused = false}) => OutlineInputBorder(
               : MyThemeData.textFieldBorderWidth),
     );
 
+const _baseInputDecorationTheme = InputDecorationTheme(
+  contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+);
+
 final myLightTheme = MyThemeData(
   app: ThemeData(
     fontFamily: 'Roboto',
@@ -231,7 +235,7 @@ final myLightTheme = MyThemeData(
       selectionHandleColor: _accentColor50,
       cursorColor: _accentColor50,
     ),
-    inputDecorationTheme: InputDecorationTheme(
+    inputDecorationTheme: _baseInputDecorationTheme.copyWith(
       enabledBorder: _border(_accentColor50a40),
       focusedBorder: _border(_accentColor50a40, focused: true),
       errorBorder: _border(_accentColor50a40),
@@ -291,7 +295,7 @@ final myDarkTheme = MyThemeData(
       selectionHandleColor: _accentColor70,
       cursorColor: _accentColor70,
     ),
-    inputDecorationTheme: InputDecorationTheme(
+    inputDecorationTheme: _baseInputDecorationTheme.copyWith(
       enabledBorder: _border(_accentColor70a40),
       focusedBorder: _border(_accentColor70a40, focused: true),
       errorBorder: _border(_accentColor70a40),
