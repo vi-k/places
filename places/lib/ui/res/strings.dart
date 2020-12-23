@@ -50,6 +50,7 @@ const stringFrom = 'от';
 const stringIsDark = 'Тёмная тема';
 const stringKilometers = 'км';
 const stringLatitude = 'Широта';
+const stringLocateOnTheMap = 'Указать на карте';
 const stringLongitude = 'Долгота';
 const stringMeters = 'м';
 const stringName = 'Название';

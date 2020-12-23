@@ -70,10 +70,14 @@ class MyThemeData {
   static const textFieldFocusedBorderWidth = 2.0;
   static const textFieldRadius = 8.0;
   static const tabsSwitchRadius = 40.0;
+  static const sectionTop = 24.0;
+  static const sectionHSpacing = 16.0;
+  static const sectionVSpacing = 12.0;
 
   /// Отступы.
   static const commonPadding = EdgeInsets.all(16);
-  static final commonPaddingToTop = commonPadding.copyWith(top: 0);
+  static const commonPaddingLR = EdgeInsets.only(left: 16, right: 16);
+  static const commonPaddingLBR = EdgeInsets.only(left: 16, right: 16, bottom: 16);
   static final listPadding = commonPadding.copyWith(top: 8);
   static final appBarPadding = commonPadding.copyWith(top: 40, bottom: 8);
   static const shortAppBarPadding = commonPadding;
@@ -82,7 +86,6 @@ class MyThemeData {
   static final filtersCaptionPadding =
       commonPadding.copyWith(top: 0, bottom: 0);
   static const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
-  static const sectionPadding = commonPadding;
 
   MyThemeData({
     required this.app,
@@ -107,6 +110,7 @@ class MyThemeData {
 
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
+    textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
 
     textBold14Light = _textBold14.withColor(lightTextColor);
     textBold14Inverse = _textBold14.withColor(inverseTextColor);
@@ -119,8 +123,9 @@ class MyThemeData {
 
     textMiddle16Accent = _textMiddle16.withColor(accentColor);
     textMiddle16Main = _textMiddle16.withColor(mainTextColor);
+    textMiddle16Light = _textMiddle16.withColor(lightTextColor);
 
-    textMiddle18Main = _textMiddle18.withColor(mainTextColor);
+    textMiddle18Main2 = _textMiddle18.withColor(mainTextColor2);
     textBold24Main = _textBold24.withColor(mainTextColor);
     textBold32Main = _textBold32.withColor(mainTextColor);
   }
@@ -145,6 +150,7 @@ class MyThemeData {
 
   late final TextStyle textRegular14Main;
   late final TextStyle textRegular14Light;
+  late final TextStyle textRegular14Light56;
 
   late final TextStyle textBold14Inverse;
   late final TextStyle textBold14Light;
@@ -157,8 +163,9 @@ class MyThemeData {
 
   late final TextStyle textMiddle16Accent;
   late final TextStyle textMiddle16Main;
+  late final TextStyle textMiddle16Light;
 
-  late final TextStyle textMiddle18Main;
+  late final TextStyle textMiddle18Main2;
   late final TextStyle textBold24Main;
   late final TextStyle textBold32Main;
 
@@ -253,6 +260,10 @@ final myLightTheme = MyThemeData(
               : _mainColor70a56),
       overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
     ),
+    textTheme: TextTheme(
+      // Стиль для TextField
+      subtitle1: _textRegular16.withColor(_mainColor40), // = textRegular16Main2
+    ),
   ),
   accentColor: _accentColor50,
   accentColor16: _accentColor50a16,
@@ -312,6 +323,10 @@ final myDarkTheme = MyThemeData(
               ? _accentColor70
               : _mainColor70a56),
       overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
+    ),
+    textTheme: TextTheme(
+      // Стиль для TextField
+      subtitle1: _textRegular16.withColor(_mainColor100), // = textRegular16Main
     ),
   ),
   accentColor: _accentColor70,

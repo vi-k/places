@@ -1,5 +1,5 @@
 /// Виджет: Малая кнопка.
-/// 
+///
 /// Обычно для текстовых кнопок, не имеющих фона.
 
 import 'package:flutter/material.dart';
@@ -37,7 +37,7 @@ class SmallButton extends StatelessWidget {
     final textStyle = style ??
         (onPressed != null
             ? theme.textRegular14Main
-            : theme.textRegular16Light56);
+            : theme.textRegular14Light56);
 
     return SizedBox(
       height: MyThemeData.smallButtonHeight,

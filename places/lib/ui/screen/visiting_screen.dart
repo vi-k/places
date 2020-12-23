@@ -44,7 +44,7 @@ class _VisitingScreenState extends State<VisitingScreen>
         appBar: SmallAppBar(
           title: stringFavorite,
           bottom: Padding(
-            padding: MyThemeData.commonPaddingToTop,
+            padding: MyThemeData.commonPaddingLBR,
             child: TabSwitch(
               tabs: _visitingScreenTabs,
               tabController: tabController,

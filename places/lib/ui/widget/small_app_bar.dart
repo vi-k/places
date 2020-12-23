@@ -12,21 +12,32 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmallAppBar({
     Key? key,
     required this.title,
+    EdgeInsetsGeometry? padding,
     this.back,
     this.button,
     this.onPressed,
     this.bottom,
-    EdgeInsetsGeometry? padding,
   })  : assert(onPressed == null || button != null),
         padding = padding ?? MyThemeData.shortAppBarPadding,
         super(key: key);
 
+  /// Заголовок.
   final String title;
-  final String? back;
-  final String? button;
-  final void Function()? onPressed;
-  final Widget? bottom;
+
+  // Отступы вокруг title.
   final EdgeInsetsGeometry padding;
+
+  /// Кнопка слева (по значению всегда возврат, но может иметь разный текст).
+  final String? back;
+
+  /// Кнопка справа.
+  final String? button;
+
+  /// Реакция на нажатие кнопки справа.
+  final void Function()? onPressed;
+
+  /// Виджет снизу AppBar'а.
+  final Widget? bottom;
 
   @override
   Widget build(BuildContext context) {
@@ -56,43 +67,40 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: theme.textMiddle18Main,
+            style: theme.textMiddle18Main2,
           ),
         ),
       );
 
   Positioned _buildButtons(BuildContext context, MyThemeData theme) =>
       Positioned.fill(
-        child: Material(
-          // Для IconButton, если у AppBar'а будет цвет
-          type: MaterialType.transparency,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (Navigator.canPop(context))
-                  back == null
-                      ? SvgButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          svg: assetBack,
-                          color: theme.mainTextColor2,
-                        )
-                      : SmallButton(
-                          label: back!,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                if (button != null)
-                  SmallButton(
-                    style: theme.textMiddle16Accent,
-                    label: button!,
-                    onPressed: onPressed,
-                  ),
-              ],
-            ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (Navigator.canPop(context))
+                back == null
+                    ? SvgButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        svg: assetBack,
+                        color: theme.mainTextColor2,
+                      )
+                    : SmallButton(
+                        label: back!,
+                        style: theme.textMiddle16Light,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+              if (button != null)
+                SmallButton(
+                  style: theme.textMiddle16Accent,
+                  label: button!,
+                  onPressed: onPressed,
+                ),
+            ],
           ),
         ),
       );
