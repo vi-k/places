@@ -7,7 +7,7 @@ class Sight {
   final Coord coord;
   final String url;
   final String details;
-  final SightCategory type;
+  final SightCategory category;
   final DateTime? visitTime;
   final DateTime? visited;
 
@@ -16,10 +16,13 @@ class Sight {
     required this.coord,
     required this.url,
     required this.details,
-    required this.type,
+    required this.category,
     this.visitTime,
     this.visited,
   });
+
+  @override
+  String toString() => 'Sight($name, ${category.text}, $coord ...)';
 }
 
 /// Категория места.

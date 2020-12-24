@@ -21,18 +21,19 @@ const _accentColor50a40 = Color(0x664CAF50);
 const _accentColor70 = Color(0xFF6ADA6F);
 const _accentColor70a16 = Color(0x296ADA6F);
 const _accentColor70a40 = Color(0x666ADA6F);
-const _attentionColor50 = Color(0xFFEF4343);
-const _attentionColor50a16 = Color(0x29EF4343);
-const _attentionColor50a40 = Color(0x66EF4343);
-const _attentionColor70 = Color(0xFFCF2A2A);
-const _attentionColor70a16 = Color(0x29CF2A2A);
-const _attentionColor70a40 = Color(0x66CF2A2A);
+const _attentionColor50 = Color(0xFFCF2A2A);
+const _attentionColor50a16 = Color(0x29CF2A2A);
+const _attentionColor50a40 = Color(0x66CF2A2A);
+const _attentionColor70 = Color(0xFFEF4343);
+const _attentionColor70a16 = Color(0x29EF4343);
+const _attentionColor70a40 = Color(0x66EF4343);
 
 const _highlightColorDark = Color(0x30000000);
 const _splashColorDark = Color(0x30000000);
-const _highlightColorLight = Color(0x30FFFFFF); //Color(0x40CCCCCC);
+const _highlightColorLight = Color(0x30FFFFFF);
 const _splashColorLight = Color(0x30FFFFFF);
-const _tapOnImageColor = Colors.black26;
+const _highlightColorDark2 = Colors.black26;
+const _splashColorDark2 = Colors.black26;
 
 // Стили.
 const _textRegular = TextStyle(fontWeight: FontWeight.normal);
@@ -102,8 +103,8 @@ class MyThemeData {
     required this.inverseTextColor,
     required this.backgroundFirst,
     required this.backgroundSecond,
-    this.tapOnImageHighlightColor = _tapOnImageColor,
-    this.tapOnImageSplashColor = _tapOnImageColor,
+    this.highlightColorOnImage = _highlightColorDark2,
+    this.splashColorOnImage = _splashColorDark2,
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
@@ -169,8 +170,8 @@ class MyThemeData {
   late final TextStyle textBold24Main;
   late final TextStyle textBold32Main;
 
-  final Color tapOnImageHighlightColor;
-  final Color tapOnImageSplashColor;
+  final Color highlightColorOnImage;
+  final Color splashColorOnImage;
 }
 
 const _baseButtonTheme = ButtonThemeData(
@@ -224,6 +225,7 @@ final myLightTheme = MyThemeData(
     accentColor: _accentColor50,
     backgroundColor: _mainColor100,
     scaffoldBackgroundColor: _mainColor100,
+    canvasColor: _mainColor90,
     highlightColor: _highlightColorDark, //Colors.orange,
     splashColor: _splashColorDark,
     buttonTheme: _baseButtonTheme.copyWith(
@@ -243,10 +245,13 @@ final myLightTheme = MyThemeData(
       cursorColor: _accentColor50,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
+      hintStyle: const TextStyle(color: _mainColor70a56), // Размеры установятся как у базового
+      errorStyle: const TextStyle(color: _attentionColor50),
+      helperStyle: const TextStyle(color: _mainColor70),
       enabledBorder: _border(_accentColor50a40),
       focusedBorder: _border(_accentColor50a40, focused: true),
-      errorBorder: _border(_accentColor50a40),
-      focusedErrorBorder: _border(_accentColor50a40, focused: true),
+      errorBorder: _border(_attentionColor50a40),
+      focusedErrorBorder: _border(_attentionColor50a40, focused: true),
     ),
     sliderTheme: _baseSliderTheme.copyWith(
       activeTrackColor: _accentColor50,
@@ -288,6 +293,7 @@ final myDarkTheme = MyThemeData(
     accentColor: _accentColor70,
     backgroundColor: _mainColor30,
     scaffoldBackgroundColor: _mainColor30,
+    canvasColor: _mainColor20,
     highlightColor: _highlightColorLight,
     splashColor: _splashColorLight,
     buttonTheme: _baseButtonTheme.copyWith(
@@ -307,10 +313,13 @@ final myDarkTheme = MyThemeData(
       cursorColor: _accentColor70,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
+      hintStyle: const TextStyle(color: _mainColor70a56), // Размеры установятся как у базового
+      errorStyle: const TextStyle(color: _attentionColor70),
+      helperStyle: const TextStyle(color: _mainColor70),
       enabledBorder: _border(_accentColor70a40),
       focusedBorder: _border(_accentColor70a40, focused: true),
-      errorBorder: _border(_accentColor70a40),
-      focusedErrorBorder: _border(_accentColor70a40, focused: true),
+      errorBorder: _border(_attentionColor70a40),
+      focusedErrorBorder: _border(_attentionColor70a40, focused: true),
     ),
     sliderTheme: _baseSliderTheme.copyWith(
       activeTrackColor: _accentColor70,

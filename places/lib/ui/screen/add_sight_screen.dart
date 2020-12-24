@@ -1,9 +1,11 @@
 /// Экран добавления места.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../domain/sight.dart';
+import '../../mocks.dart';
 import '../../utils/focus.dart';
+import '../../utils/maps.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/my_theme.dart';
@@ -18,20 +20,12 @@ class AddSightScreen extends StatefulWidget {
 }
 
 class _AddSightScreenState extends State<AddSightScreen> {
-  late FocusNode focusNodeName;
-  late FocusNode focusNodeLatitude;
-  late FocusNode focusNodeLongitude;
-  late FocusNode focusNodeDescription;
-
-  @override
-  void initState() {
-    super.initState();
-
-    focusNodeName = FocusNode();
-    focusNodeLatitude = FocusNode();
-    focusNodeLongitude = FocusNode();
-    focusNodeDescription = FocusNode();
-  }
+  final _formKey = GlobalKey<FormState>();
+  SightCategory? _category;
+  String? _name;
+  double? _lat;
+  double? _lon;
+  String? _details;
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +38,19 @@ class _AddSightScreenState extends State<AddSightScreen> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildCategory(theme),
-                  _buildName(),
-                  ..._buildCoord(context, theme),
-                  // Описание
-                  _buildDescription(),
-                ],
+          Form(
+            key: _formKey,
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildCategory(theme),
+                    _buildName(),
+                    ..._buildCoord(context, theme),
+                    _buildDetails(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -64,7 +60,11 @@ class _AddSightScreenState extends State<AddSightScreen> {
             child: StandartButton(
               label: stringCreate,
               onPressed: () {
-                print('create place');
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _commit();
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ),
@@ -73,29 +73,68 @@ class _AddSightScreenState extends State<AddSightScreen> {
     );
   }
 
+  void _commit() {
+    mocks.add(Sight(
+      name: _name!,
+      coord: Coord(_lat!, _lon!),
+      url: '',
+      details: _details!,
+      category: _category!,
+    ));
+    print(mocks);
+  }
+
   Section _buildCategory(MyThemeData theme) => Section(
         stringCategory,
-        spacing: 0,
-        applyPaddingToChild: false,
-        child: ListTile(
-          title: Text(
-            stringUnselected,
-            style: theme.textRegular16Light,
-          ),
-          trailing: SvgPicture.asset(
-            assetForward,
-            color: theme.mainTextColor2,
-          ),
-          onTap: () {},
+        child: DropdownButtonFormField<SightCategory>(
+          items: [
+            for (final category in SightCategory.values)
+              DropdownMenuItem(
+                value: category,
+                child: Text(category.text),
+              ),
+          ],
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null) return stringRequiredField;
+            return null;
+          },
+          onChanged: (value) {
+            _category = value;
+            FocusScope.of(context).nextEditableTextFocus();
+          },
         ),
+        // spacing: 0,
+        // applyPaddingToChild: false,
+        // child: ListTile(
+        //   title: Text(
+        //     stringUnselected,
+        //     style: theme.textRegular16Light,
+        //   ),
+        //   trailing: SvgPicture.asset(
+        //     assetForward,
+        //     color: theme.mainTextColor2,
+        //   ),
+        //   onTap: () {},
+        // ),
       );
 
   Section _buildName() => Section(
         stringName,
         child: TextFormField(
-          focusNode: focusNodeName,
-          initialValue: 'Золотая долина',
+          initialValue: 'Моя работа', // Временно. Для тестов
+          decoration: const InputDecoration(
+            hintText: stringNewPlaceFakeName,
+          ),
           textInputAction: TextInputAction.next,
+          onEditingComplete: () {
+            FocusScope.of(context).nextEditableTextFocus();
+          },
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) => value!.isEmpty ? stringRequiredField : null,
+          onSaved: (value) {
+            _name = value;
+          },
         ),
       );
 
@@ -107,9 +146,20 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 stringLatitude,
                 right: 0,
                 child: TextFormField(
-                  focusNode: focusNodeLatitude,
+                  initialValue: '48.506642', // Временно. Для тестов
+                  decoration: const InputDecoration(
+                    hintText: stringNewPlaceFakeLatitude,
+                  ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
+                  onEditingComplete: () {
+                    FocusScope.of(context).nextEditableTextFocus();
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: _checkCoord,
+                  onSaved: (value) {
+                    _lat = double.parse(value!);
+                  },
                 ),
               ),
             ),
@@ -119,11 +169,19 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 stringLongitude,
                 left: 0,
                 child: TextFormField(
-                  focusNode: focusNodeLongitude,
+                  initialValue: '135.138573', // Временно. Для тестов
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  decoration: const InputDecoration(
+                    hintText: stringNewPlaceFakeLongitude,
+                  ),
+                  validator: _checkCoord,
                   onEditingComplete: () {
                     FocusScope.of(context).nextEditableTextFocus();
+                  },
+                  onSaved: (value) {
+                    _lon = double.parse(value!);
                   },
                 ),
               ),
@@ -136,21 +194,31 @@ class _AddSightScreenState extends State<AddSightScreen> {
             label: stringLocateOnTheMap,
             style: theme.textMiddle16Accent,
             onPressed: () {
-
+              print('Указать на карте');
             },
           ),
         ),
       ];
 
-  Section _buildDescription() {
-    return Section(
-      stringDescription,
-      child: TextFormField(
-        focusNode: focusNodeDescription,
-        minLines: 3,
-        maxLines: 10,
-        textInputAction: TextInputAction.done,
-      ),
-    );
+  Section _buildDetails() => Section(
+        stringDescription,
+        child: TextFormField(
+          minLines: 3,
+          maxLines: 10,
+          textInputAction: TextInputAction.done,
+          onSaved: (value) {
+            _details = value;
+          },
+        ),
+      );
+
+  String? _checkCoord(String? value) {
+    if (value == null || value.isEmpty) {
+      return stringRequiredField;
+    }
+
+    if (double.tryParse(value) == null) return stringInvalidValue;
+
+    return null;
   }
 }

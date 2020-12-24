@@ -182,15 +182,15 @@ class _FiltersScreenState extends State<FiltersScreen> {
       prefix = '';
     } else {
       final withUnits = distance.start.optimalUnits != endUnits;
-      prefix = '$stringFrom '
+      prefix = '$stringRangeFrom '
           '${distance.start.toString(withUnits: withUnits)} ';
     }
 
-    return '$prefix$stringTo $endValue';
+    return '$prefix$stringRangeTo $endValue';
   }
 
   Future<int> calcCardCount() async => mocks.where((element) {
-        if (!filter.hasCategory(element.type)) return false;
+        if (!filter.hasCategory(element.category)) return false;
 
         final d = element.coord.distance(myMockCoord);
         return d >= filter.distance.start && d <= filter.distance.end;

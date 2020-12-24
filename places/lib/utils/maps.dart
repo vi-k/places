@@ -60,6 +60,9 @@ class Coord {
 
     return Distance(2.0 * r * asin(0.5 * d / r));
   }
+
+  @override
+  String toString() => '[$lat, $lon]';
 }
 
 enum DistanceUnits { optimal, meters, kilometers }

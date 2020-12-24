@@ -51,7 +51,7 @@ class _SightDetailsState extends State<SightDetails> {
                   Row(
                     children: [
                       Text(
-                        widget.sight.type.text,
+                        widget.sight.category.text,
                         style: theme.textBold14Light,
                       ),
                       const SizedBox(

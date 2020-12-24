@@ -79,9 +79,9 @@ class SightCard extends StatelessWidget {
       child: Row(
         children: [
           SmallButton(
-            highlightColor: theme.tapOnImageHighlightColor,
-            splashColor: theme.tapOnImageSplashColor,
-            label: sight.type.text.toLowerCase(),
+            highlightColor: theme.highlightColorOnImage,
+            splashColor: theme.splashColorOnImage,
+            label: sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');
@@ -174,8 +174,8 @@ class SignatureButton extends StatelessWidget {
     final theme = MyTheme.of(context);
 
     return SvgButton(
-      highlightColor: theme.tapOnImageHighlightColor,
-      splashColor: theme.tapOnImageSplashColor,
+      highlightColor: theme.highlightColorOnImage,
+      splashColor: theme.splashColorOnImage,
       svg: svg,
       color: color,
       onPressed: onPressed,
