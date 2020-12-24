@@ -47,6 +47,7 @@ class SmallButton extends StatelessWidget {
               highlightColor: highlightColor ?? theme.app.highlightColor,
               splashColor: splashColor ?? theme.app.splashColor,
               height: MyThemeData.smallButtonHeight,
+              minWidth: 0,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(MyThemeData.smallButtonRadius),
@@ -62,6 +63,7 @@ class SmallButton extends StatelessWidget {
               highlightColor: highlightColor ?? theme.app.highlightColor,
               splashColor: splashColor ?? theme.app.splashColor,
               height: MyThemeData.smallButtonHeight,
+              minWidth: 0,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(MyThemeData.smallButtonRadius),

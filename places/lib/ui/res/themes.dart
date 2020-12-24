@@ -78,9 +78,10 @@ class MyThemeData {
   /// Отступы.
   static const commonPadding = EdgeInsets.all(16);
   static const commonPaddingLR = EdgeInsets.only(left: 16, right: 16);
-  static const commonPaddingLBR = EdgeInsets.only(left: 16, right: 16, bottom: 16);
+  static const commonPaddingLBR =
+      EdgeInsets.only(left: 16, right: 16, bottom: 16);
   static final listPadding = commonPadding.copyWith(top: 8);
-  static final appBarPadding = commonPadding.copyWith(top: 40, bottom: 8);
+  static final appBarPadding = commonPadding.copyWith(top: 40);
   static const shortAppBarPadding = commonPadding;
   static final detailsPadding = commonPadding.copyWith(top: 24);
   static const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
@@ -105,6 +106,7 @@ class MyThemeData {
     required this.backgroundSecond,
     this.highlightColorOnImage = _highlightColorDark2,
     this.splashColorOnImage = _splashColorDark2,
+    required this.specialInputDecorationTheme,
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
@@ -145,6 +147,8 @@ class MyThemeData {
   final Color lightTextColor56;
   final Color backgroundFirst;
   final Color backgroundSecond;
+  final Color highlightColorOnImage;
+  final Color splashColorOnImage;
 
   late final TextStyle textRegular12Main;
   late final TextStyle textRegular12Light56;
@@ -170,8 +174,7 @@ class MyThemeData {
   late final TextStyle textBold24Main;
   late final TextStyle textBold32Main;
 
-  final Color highlightColorOnImage;
-  final Color splashColorOnImage;
+  final InputDecorationTheme specialInputDecorationTheme;
 }
 
 const _baseButtonTheme = ButtonThemeData(
@@ -204,13 +207,15 @@ const _baseSliderTheme = SliderThemeData(
   ),
 );
 
-InputBorder _border(Color color, {bool focused = false}) => OutlineInputBorder(
+InputBorder _border(Color? color, {bool focused = false}) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(MyThemeData.textFieldRadius),
-      borderSide: BorderSide(
-          color: color,
-          width: focused
-              ? MyThemeData.textFieldFocusedBorderWidth
-              : MyThemeData.textFieldBorderWidth),
+      borderSide: color == null
+          ? const BorderSide(color: Colors.transparent, width: 0)
+          : BorderSide(
+              color: color,
+              width: focused
+                  ? MyThemeData.textFieldFocusedBorderWidth
+                  : MyThemeData.textFieldBorderWidth),
     );
 
 const _baseInputDecorationTheme = InputDecorationTheme(
@@ -231,6 +236,9 @@ final myLightTheme = MyThemeData(
     buttonTheme: _baseButtonTheme.copyWith(
       buttonColor: _accentColor50,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      foregroundColor: _mainColor100,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _mainColor100,
       selectedItemColor: _mainColor50,
@@ -245,7 +253,8 @@ final myLightTheme = MyThemeData(
       cursorColor: _accentColor50,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-      hintStyle: const TextStyle(color: _mainColor70a56), // Размеры установятся как у базового
+      hintStyle: const TextStyle(
+          color: _mainColor70a56), // Размеры установятся как у базового
       errorStyle: const TextStyle(color: _attentionColor50),
       helperStyle: const TextStyle(color: _mainColor70),
       enabledBorder: _border(_accentColor50a40),
@@ -283,6 +292,16 @@ final myLightTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor100,
   backgroundSecond: _mainColor90,
+  specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
+    hintStyle: const TextStyle(
+        color: _mainColor70a56), // Размеры установятся как у базового
+    errorStyle: const TextStyle(color: _attentionColor50),
+    helperStyle: const TextStyle(color: _mainColor70),
+    enabledBorder: _border(null),
+    focusedBorder: _border(null, focused: true),
+    errorBorder: _border(null),
+    focusedErrorBorder: _border(null, focused: true),
+  ),
 );
 
 final myDarkTheme = MyThemeData(
@@ -299,6 +318,9 @@ final myDarkTheme = MyThemeData(
     buttonTheme: _baseButtonTheme.copyWith(
       buttonColor: _accentColor70,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      foregroundColor: _mainColor100,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _mainColor30,
       selectedItemColor: _mainColor100,
@@ -313,7 +335,8 @@ final myDarkTheme = MyThemeData(
       cursorColor: _accentColor70,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-      hintStyle: const TextStyle(color: _mainColor70a56), // Размеры установятся как у базового
+      hintStyle: const TextStyle(
+          color: _mainColor70a56), // Размеры установятся как у базового
       errorStyle: const TextStyle(color: _attentionColor70),
       helperStyle: const TextStyle(color: _mainColor70),
       enabledBorder: _border(_accentColor70a40),
@@ -351,4 +374,14 @@ final myDarkTheme = MyThemeData(
   lightTextColor56: _mainColor70a56,
   backgroundFirst: _mainColor30,
   backgroundSecond: _mainColor20,
+  specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
+    hintStyle: const TextStyle(
+        color: _mainColor70a56), // Размеры установятся как у базового
+    errorStyle: const TextStyle(color: _attentionColor70),
+    helperStyle: const TextStyle(color: _mainColor70),
+    enabledBorder: _border(null),
+    focusedBorder: _border(null, focused: true),
+    errorBorder: _border(null),
+    focusedErrorBorder: _border(null, focused: true),
+  ),
 );

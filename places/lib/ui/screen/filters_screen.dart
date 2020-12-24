@@ -46,7 +46,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
     return Scaffold(
       appBar: SmallAppBar(
-        // padding: MyThemeData.appBarFiltersPadding,
         title: stringFilter,
         button: stringClear,
         onPressed: () {
@@ -55,26 +54,30 @@ class _FiltersScreenState extends State<FiltersScreen> {
           });
         },
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ..._buildCategories(),
-            const SizedBox(height: MyThemeData.filtersSectionSpacing),
-            ..._buildDistance(theme),
-            const SizedBox(height: MyThemeData.filtersSectionSpacing),
-            Padding(
-              padding: MyThemeData.commonPadding,
-              child: StandartButton(
-                label: stringApply +
-                    (_cardCount == null ? ' ...' : ' ($_cardCount)'),
-                onPressed: () {
-                  print('Apply filter');
-                },
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                ..._buildCategories(),
+                const SizedBox(height: MyThemeData.filtersSectionSpacing),
+                ..._buildDistance(theme),
+                const SizedBox(height: MyThemeData.filtersSectionSpacing),
+              ],
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: MyThemeData.commonPadding,
+            child: StandartButton(
+              label: stringApply +
+                  (_cardCount == null ? ' ...' : ' ($_cardCount)'),
+              onPressed: () {
+                print('Apply filter');
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

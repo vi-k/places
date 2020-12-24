@@ -54,38 +54,15 @@ class _AddSightScreenState extends State<AddSightScreen> {
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: MyThemeData.commonPadding,
-            child: StandartButton(
-              label: stringCreate,
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _commit();
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ),
+          _buildDone(context),
         ],
       ),
     );
   }
 
-  void _commit() {
-    mocks.add(Sight(
-      name: _name!,
-      coord: Coord(_lat!, _lon!),
-      url: '',
-      details: _details!,
-      category: _category!,
-    ));
-    print(mocks);
-  }
-
   Section _buildCategory(MyThemeData theme) => Section(
         stringCategory,
+        // Временное решение для выбора категории вместо отдельного экрана
         child: DropdownButtonFormField<SightCategory>(
           items: [
             for (final category in SightCategory.values)
@@ -104,6 +81,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
             FocusScope.of(context).nextEditableTextFocus();
           },
         ),
+        // Заготовка для выбора категории с помощью дополнительного экрана
         // spacing: 0,
         // applyPaddingToChild: false,
         // child: ListTile(
@@ -208,6 +186,50 @@ class _AddSightScreenState extends State<AddSightScreen> {
           textInputAction: TextInputAction.done,
           onSaved: (value) {
             _details = value;
+          },
+        ),
+      );
+
+  Container _buildDone(BuildContext context) => Container(
+        width: double.infinity,
+        padding: MyThemeData.commonPadding,
+        child: StandartButton(
+          label: stringCreate,
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              showDialog<void>(
+                context: context,
+                barrierDismissible: true,
+                builder: (_) => AlertDialog(
+                  title: const Text(stringCreateQuestion),
+                  actions: [
+                    SmallButton(
+                      label: stringNo,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    SmallButton(
+                      label: stringYes,
+                      onPressed: () {
+                        _formKey.currentState!.save();
+
+                        mocks.add(Sight(
+                          name: _name!,
+                          coord: Coord(_lat!, _lon!),
+                          url: '',
+                          details: _details!,
+                          category: _category!,
+                        ));
+
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
           },
         ),
       );

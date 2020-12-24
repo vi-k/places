@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/strings.dart';
 import '../res/themes.dart';
-import '../screen/filters_screen.dart';
 import '../screen/settings_screen.dart';
 import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
@@ -39,11 +38,6 @@ class AppNavigationBar extends StatelessWidget {
             break;
 
           case 1:
-            Navigator.push<void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FiltersScreen(),
-                ));
             break;
 
           case 2:
@@ -83,7 +77,7 @@ class AppNavigationBar extends StatelessWidget {
             index == 2 ? assetFavoriteFull : assetFavorite,
             color: _itemColor(theme, index == 2),
           ),
-          label: stringFavorite, 
+          label: stringFavorite,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(

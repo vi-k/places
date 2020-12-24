@@ -31,6 +31,7 @@ class SightCard extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 3 / 2,
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 2,
         child: Stack(
           children: [
