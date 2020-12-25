@@ -24,14 +24,18 @@ class _SightListScreenState extends State<SightListScreen> {
           title: stringSightListTitle,
           bottom: Padding(
             padding: MyThemeData.commonPadding,
-            child: SearchBar(
-              onTap: () {
-                Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SightSearchScreen(),
-                    ));
-              },
+            child: Column(
+              children: [
+                SearchBar(
+                  onTap: () {
+                    Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SightSearchScreen(),
+                        ));
+                  },
+                ),
+              ],
             ),
           ),
         ),

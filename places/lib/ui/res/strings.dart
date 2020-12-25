@@ -32,6 +32,7 @@ const assetParticular = 'res/particular.svg';
 const assetRestaurant = 'res/restaurant.svg';
 
 const assetChoice = 'res/choice.svg';
+const assetTickChoice = 'res/tick_choice.svg';
 
 /// Тексты
 

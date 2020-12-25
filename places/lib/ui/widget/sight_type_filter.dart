@@ -50,7 +50,20 @@ class SightCategoryFilter extends StatelessWidget {
                 if (active)
                   Align(
                     alignment: Alignment.bottomRight,
-                    child: SvgPicture.asset(assetChoice),
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: theme.mainTextColor2,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          assetTickChoice,
+                          color: theme.inverseTextColor,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),

@@ -22,9 +22,12 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
 
-    settings = Settings(() {
-      setState(() {});
-    });
+    settings = Settings(
+      isDark: true,
+      onUpdate: () {
+        setState(() {});
+      },
+    );
   }
 
   @override
