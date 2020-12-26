@@ -66,7 +66,7 @@ class _SearchBarState extends State<SearchBar> {
                 bottom: 0,
                 right: 4,
                 child: SvgButton(
-                  svg: assetFilter,
+                  assetFilter,
                   color: theme.accentColor,
                   onPressed: () {
                     Navigator.push<void>(

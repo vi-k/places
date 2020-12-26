@@ -79,10 +79,10 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
               if (Navigator.canPop(context))
                 back == null
                     ? SvgButton(
+                        assetBack,
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        svg: assetBack,
                         color: theme.mainTextColor2,
                       )
                     : SmallButton(

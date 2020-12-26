@@ -96,8 +96,8 @@ class _SightCardState extends State<SightCard> {
       child: Row(
         children: [
           SmallButton(
-            highlightColor: theme.highlightColorOnImage,
-            splashColor: theme.splashColorOnImage,
+            highlightColor: highlightColorDark2,
+            splashColor: splashColorDark2,
             label: _sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
@@ -186,15 +186,11 @@ class SignatureButton extends StatelessWidget {
   final void Function() onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
-
-    return SvgButton(
-      highlightColor: theme.highlightColorOnImage,
-      splashColor: theme.splashColorOnImage,
-      svg: svg,
-      color: color,
-      onPressed: onPressed,
-    );
-  }
+  Widget build(BuildContext context) => SvgButton(
+        svg,
+        highlightColor: highlightColorDark2,
+        splashColor: splashColorDark2,
+        color: color,
+        onPressed: onPressed,
+      );
 }

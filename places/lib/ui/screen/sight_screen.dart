@@ -94,15 +94,19 @@ class _SightScreenState extends State<SightScreen> {
                           Dismissible(
                             key: ValueKey(photo),
                             direction: DismissDirection.vertical,
-                            // background: Container(
-                            //   color: Colors.yellow,
-                            // ),
                             onDismissed: (_) {
                               setState(() {
                                 _photos.remove(photo);
                               });
                             },
-                            child: PhotoCard(url: photo),
+                            child: PhotoCard(
+                              url: photo,
+                              onClose: () {
+                                setState(() {
+                                  _photos.remove(photo);
+                                });
+                              },
+                            ),
                           ),
                         ],
                         const SizedBox(width: commonSpacing),
@@ -268,9 +272,8 @@ class _SightScreenState extends State<SightScreen> {
                 context: context,
                 barrierDismissible: true,
                 builder: (_) => AlertDialog(
-                  title: Text(widget.sight == null
-                      ? stringDoCreate
-                      : stringDoSave),
+                  title: Text(
+                      widget.sight == null ? stringDoCreate : stringDoSave),
                   actions: [
                     SmallButton(
                       label: stringNo,

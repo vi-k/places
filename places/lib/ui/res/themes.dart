@@ -7,33 +7,33 @@
 import 'package:flutter/material.dart';
 
 /// Цвета.
-const _mainColor20 = Color(0xFF1A1A20);
-const _mainColor30 = Color(0xFF21222C);
-const _mainColor40 = Color(0xFF252849);
-const _mainColor50 = Color(0xFF3B3E5B);
-const _mainColor70 = Color(0xFF7C7E92);
-const _mainColor70a56 = Color(0x8F7C7E92);
-const _mainColor90 = Color(0xFFF5F5F5);
-const _mainColor100 = Color(0xFFFFFFFF);
-const _accentColor50 = Color(0xFF4CAF50);
-const _accentColor50a16 = Color(0x294CAF50);
-const _accentColor50a40 = Color(0x664CAF50);
-const _accentColor70 = Color(0xFF6ADA6F);
-const _accentColor70a16 = Color(0x296ADA6F);
-const _accentColor70a40 = Color(0x666ADA6F);
-const _attentionColor50 = Color(0xFFCF2A2A);
-const _attentionColor50a16 = Color(0x29CF2A2A);
-const _attentionColor50a40 = Color(0x66CF2A2A);
-const _attentionColor70 = Color(0xFFEF4343);
-const _attentionColor70a16 = Color(0x29EF4343);
-const _attentionColor70a40 = Color(0x66EF4343);
+const mainColor20 = Color(0xFF1A1A20);
+const mainColor30 = Color(0xFF21222C);
+const mainColor40 = Color(0xFF252849);
+const mainColor50 = Color(0xFF3B3E5B);
+const mainColor70 = Color(0xFF7C7E92);
+const mainColor70a56 = Color(0x8F7C7E92);
+const mainColor90 = Color(0xFFF5F5F5);
+const mainColor100 = Color(0xFFFFFFFF);
+const accentColor50 = Color(0xFF4CAF50);
+const accentColor50a16 = Color(0x294CAF50);
+const accentColor50a40 = Color(0x664CAF50);
+const accentColor70 = Color(0xFF6ADA6F);
+const accentColor70a16 = Color(0x296ADA6F);
+const accentColor70a40 = Color(0x666ADA6F);
+const attentionColor50 = Color(0xFFCF2A2A);
+const attentionColor50a16 = Color(0x29CF2A2A);
+const attentionColor50a40 = Color(0x66CF2A2A);
+const attentionColor70 = Color(0xFFEF4343);
+const attentionColor70a16 = Color(0x29EF4343);
+const attentionColor70a40 = Color(0x66EF4343);
 
-const _highlightColorDark = Color(0x30000000);
-const _splashColorDark = Color(0x30000000);
-const _highlightColorLight = Color(0x30FFFFFF);
-const _splashColorLight = Color(0x30FFFFFF);
-const _highlightColorDark2 = Colors.black26;
-const _splashColorDark2 = Colors.black26;
+const highlightColorDark = Color(0x30000000);
+const splashColorDark = Color(0x30000000);
+const highlightColorLight = Color(0x30FFFFFF);
+const splashColorLight = Color(0x30FFFFFF);
+const highlightColorDark2 = Colors.black26;
+const splashColorDark2 = Colors.black26;
 
 // Стили.
 const _textRegular = TextStyle(fontWeight: FontWeight.normal);
@@ -69,6 +69,8 @@ const tabsSwitchRadius = 40.0;
 const sectionTop = 24.0;
 const photoCardSize = 72.0;
 const tickChoiceSize = 16.0;
+const clearIconSize = 20.0;
+const clearButtonSize = 24.0;
 
 /// Отступы.
 const commonPadding = EdgeInsets.all(16);
@@ -80,6 +82,7 @@ const detailsPadding =
     EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 16);
 const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
 const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
+const clearPadding = EdgeInsets.all(4);
 
 class MyThemeData {
   MyThemeData({
@@ -97,8 +100,6 @@ class MyThemeData {
     required this.inverseTextColor,
     required this.backgroundFirst,
     required this.backgroundSecond,
-    this.highlightColorOnImage = _highlightColorDark2,
-    this.splashColorOnImage = _splashColorDark2,
     required this.specialInputDecorationTheme,
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
@@ -110,7 +111,7 @@ class MyThemeData {
 
     textBold14Light = _textBold14.withColor(lightTextColor);
     textBold14Inverse = _textBold14.withColor(inverseTextColor);
-    textBold14White = _textBold14.withColor(_mainColor100);
+    textBold14White = _textBold14.withColor(mainColor100);
 
     textRegular16Main = _textRegular16.withColor(mainTextColor);
     textRegular16Main2 = _textRegular16.withColor(mainTextColor2);
@@ -140,8 +141,6 @@ class MyThemeData {
   final Color lightTextColor56;
   final Color backgroundFirst;
   final Color backgroundSecond;
-  final Color highlightColorOnImage;
-  final Color splashColorOnImage;
 
   late final TextStyle textRegular12Main;
   late final TextStyle textRegular12Light56;
@@ -190,8 +189,8 @@ const _baseCardTheme = CardTheme(
 );
 
 const _baseSliderTheme = SliderThemeData(
-  thumbColor: _mainColor100,
-  inactiveTrackColor: _mainColor70a56,
+  thumbColor: mainColor100,
+  inactiveTrackColor: mainColor70a56,
   trackHeight: 2,
   rangeTrackShape: RectangularRangeSliderTrackShape(),
   rangeThumbShape: RoundRangeSliderThumbShape(
@@ -220,76 +219,76 @@ final myLightTheme = MyThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.light,
     primarySwatch: Colors.pink, // Для проверки, что все цвета заменены
-    accentColor: _accentColor50,
-    backgroundColor: _mainColor100,
-    scaffoldBackgroundColor: _mainColor100,
-    canvasColor: _mainColor90,
-    highlightColor: _highlightColorDark, //Colors.orange,
-    splashColor: _splashColorDark,
+    accentColor: accentColor50,
+    backgroundColor: mainColor100,
+    scaffoldBackgroundColor: mainColor100,
+    canvasColor: mainColor90,
+    highlightColor: highlightColorDark, //Colors.orange,
+    splashColor: splashColorDark,
     buttonTheme: _baseButtonTheme.copyWith(
-      buttonColor: _accentColor50,
+      buttonColor: accentColor50,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: _mainColor100,
+      foregroundColor: mainColor100,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: _mainColor100,
-      selectedItemColor: _mainColor50,
-      unselectedItemColor: _mainColor50,
+      backgroundColor: mainColor100,
+      selectedItemColor: mainColor50,
+      unselectedItemColor: mainColor50,
     ),
     cardTheme: _baseCardTheme.copyWith(
-      color: _mainColor90,
+      color: mainColor90,
     ),
     textSelectionTheme: const TextSelectionThemeData(
-      selectionColor: _accentColor50a40,
-      selectionHandleColor: _accentColor50,
-      cursorColor: _accentColor50,
+      selectionColor: accentColor50a40,
+      selectionHandleColor: accentColor50,
+      cursorColor: accentColor50,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
       hintStyle: const TextStyle(
-          color: _mainColor70a56), // Размеры установятся как у базового
-      errorStyle: const TextStyle(color: _attentionColor50),
-      helperStyle: const TextStyle(color: _mainColor70),
-      enabledBorder: _border(_accentColor50a40),
-      focusedBorder: _border(_accentColor50a40, focused: true),
-      errorBorder: _border(_attentionColor50a40),
-      focusedErrorBorder: _border(_attentionColor50a40, focused: true),
+          color: mainColor70a56), // Размеры установятся как у базового
+      errorStyle: const TextStyle(color: attentionColor50),
+      helperStyle: const TextStyle(color: mainColor70),
+      enabledBorder: _border(accentColor50a40),
+      focusedBorder: _border(accentColor50a40, focused: true),
+      errorBorder: _border(attentionColor50a40),
+      focusedErrorBorder: _border(attentionColor50a40, focused: true),
     ),
     sliderTheme: _baseSliderTheme.copyWith(
-      activeTrackColor: _accentColor50,
-      overlayColor: _accentColor50a16,
+      activeTrackColor: accentColor50,
+      overlayColor: accentColor50a16,
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.all<Color>(_mainColor100),
+      thumbColor: MaterialStateProperty.all<Color>(mainColor100),
       trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
           states.contains(MaterialState.selected)
-              ? _accentColor50
-              : _mainColor70a56),
-      overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
+              ? accentColor50
+              : mainColor70a56),
+      overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
     ),
     textTheme: TextTheme(
       // Стиль для TextField
-      subtitle1: _textRegular16.withColor(_mainColor40), // = textRegular16Main2
+      subtitle1: _textRegular16.withColor(mainColor40), // = textRegular16Main2
     ),
   ),
-  accentColor: _accentColor50,
-  accentColor16: _accentColor50a16,
-  accentColor40: _accentColor50a40,
-  attentionColor: _attentionColor50,
-  attentionColor16: _attentionColor50a16,
-  attentionColor40: _attentionColor50a40,
-  mainTextColor: _mainColor50,
-  mainTextColor2: _mainColor40,
-  inverseTextColor: _mainColor100,
-  lightTextColor: _mainColor70,
-  lightTextColor56: _mainColor70a56,
-  backgroundFirst: _mainColor100,
-  backgroundSecond: _mainColor90,
+  accentColor: accentColor50,
+  accentColor16: accentColor50a16,
+  accentColor40: accentColor50a40,
+  attentionColor: attentionColor50,
+  attentionColor16: attentionColor50a16,
+  attentionColor40: attentionColor50a40,
+  mainTextColor: mainColor50,
+  mainTextColor2: mainColor40,
+  inverseTextColor: mainColor100,
+  lightTextColor: mainColor70,
+  lightTextColor56: mainColor70a56,
+  backgroundFirst: mainColor100,
+  backgroundSecond: mainColor90,
   specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
     hintStyle: const TextStyle(
-        color: _mainColor70a56), // Размеры установятся как у базового
-    errorStyle: const TextStyle(color: _attentionColor50),
-    helperStyle: const TextStyle(color: _mainColor70),
+        color: mainColor70a56), // Размеры установятся как у базового
+    errorStyle: const TextStyle(color: attentionColor50),
+    helperStyle: const TextStyle(color: mainColor70),
     enabledBorder: _border(null),
     focusedBorder: _border(null, focused: true),
     errorBorder: _border(null),
@@ -302,76 +301,76 @@ final myDarkTheme = MyThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.dark,
     primarySwatch: Colors.pink, // Для проверки, что все цвета заменены
-    accentColor: _accentColor70,
-    backgroundColor: _mainColor30,
-    scaffoldBackgroundColor: _mainColor30,
-    canvasColor: _mainColor20,
-    highlightColor: _highlightColorLight,
-    splashColor: _splashColorLight,
+    accentColor: accentColor70,
+    backgroundColor: mainColor30,
+    scaffoldBackgroundColor: mainColor30,
+    canvasColor: mainColor20,
+    highlightColor: highlightColorLight,
+    splashColor: splashColorLight,
     buttonTheme: _baseButtonTheme.copyWith(
-      buttonColor: _accentColor70,
+      buttonColor: accentColor70,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: _mainColor100,
+      foregroundColor: mainColor100,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: _mainColor30,
-      selectedItemColor: _mainColor100,
-      unselectedItemColor: _mainColor100,
+      backgroundColor: mainColor30,
+      selectedItemColor: mainColor100,
+      unselectedItemColor: mainColor100,
     ),
     cardTheme: _baseCardTheme.copyWith(
-      color: _mainColor20,
+      color: mainColor20,
     ),
     textSelectionTheme: const TextSelectionThemeData(
-      selectionColor: _accentColor70a40,
-      selectionHandleColor: _accentColor70,
-      cursorColor: _accentColor70,
+      selectionColor: accentColor70a40,
+      selectionHandleColor: accentColor70,
+      cursorColor: accentColor70,
     ),
     inputDecorationTheme: _baseInputDecorationTheme.copyWith(
       hintStyle: const TextStyle(
-          color: _mainColor70a56), // Размеры установятся как у базового
-      errorStyle: const TextStyle(color: _attentionColor70),
-      helperStyle: const TextStyle(color: _mainColor70),
-      enabledBorder: _border(_accentColor70a40),
-      focusedBorder: _border(_accentColor70a40, focused: true),
-      errorBorder: _border(_attentionColor70a40),
-      focusedErrorBorder: _border(_attentionColor70a40, focused: true),
+          color: mainColor70a56), // Размеры установятся как у базового
+      errorStyle: const TextStyle(color: attentionColor70),
+      helperStyle: const TextStyle(color: mainColor70),
+      enabledBorder: _border(accentColor70a40),
+      focusedBorder: _border(accentColor70a40, focused: true),
+      errorBorder: _border(attentionColor70a40),
+      focusedErrorBorder: _border(attentionColor70a40, focused: true),
     ),
     sliderTheme: _baseSliderTheme.copyWith(
-      activeTrackColor: _accentColor70,
-      overlayColor: _accentColor70a16,
+      activeTrackColor: accentColor70,
+      overlayColor: accentColor70a16,
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.all<Color>(_mainColor100),
+      thumbColor: MaterialStateProperty.all<Color>(mainColor100),
       trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
           states.contains(MaterialState.selected)
-              ? _accentColor70
-              : _mainColor70a56),
-      overlayColor: MaterialStateProperty.all<Color>(_accentColor50a16),
+              ? accentColor70
+              : mainColor70a56),
+      overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
     ),
     textTheme: TextTheme(
       // Стиль для TextField
-      subtitle1: _textRegular16.withColor(_mainColor100), // = textRegular16Main
+      subtitle1: _textRegular16.withColor(mainColor100), // = textRegular16Main
     ),
   ),
-  accentColor: _accentColor70,
-  accentColor16: _accentColor70a16,
-  accentColor40: _accentColor70a40,
-  attentionColor: _attentionColor70,
-  attentionColor16: _attentionColor70a16,
-  attentionColor40: _attentionColor70a40,
-  mainTextColor: _mainColor100,
-  mainTextColor2: _mainColor100,
-  inverseTextColor: _mainColor50,
-  lightTextColor: _mainColor70,
-  lightTextColor56: _mainColor70a56,
-  backgroundFirst: _mainColor30,
-  backgroundSecond: _mainColor20,
+  accentColor: accentColor70,
+  accentColor16: accentColor70a16,
+  accentColor40: accentColor70a40,
+  attentionColor: attentionColor70,
+  attentionColor16: attentionColor70a16,
+  attentionColor40: attentionColor70a40,
+  mainTextColor: mainColor100,
+  mainTextColor2: mainColor100,
+  inverseTextColor: mainColor50,
+  lightTextColor: mainColor70,
+  lightTextColor56: mainColor70a56,
+  backgroundFirst: mainColor30,
+  backgroundSecond: mainColor20,
   specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
     hintStyle: const TextStyle(
-        color: _mainColor70a56), // Размеры установятся как у базового
-    errorStyle: const TextStyle(color: _attentionColor70),
-    helperStyle: const TextStyle(color: _mainColor70),
+        color: mainColor70a56), // Размеры установятся как у базового
+    errorStyle: const TextStyle(color: attentionColor70),
+    helperStyle: const TextStyle(color: mainColor70),
     enabledBorder: _border(null),
     focusedBorder: _border(null, focused: true),
     errorBorder: _border(null),

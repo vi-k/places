@@ -13,6 +13,7 @@ const assetSettingsFull = 'res/settings_full.svg';
 /// Ассеты: Кнопки
 const assetBack = 'res/back.svg';
 const assetCalendar = 'res/calendar.svg';
+const assetClear = 'res/clear.svg';
 const assetClose = 'res/close.svg';
 const assetFilter = 'res/filter.svg';
 const assetForward = 'res/forward.svg';
