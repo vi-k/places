@@ -1,5 +1,3 @@
-/// BottomNavigator приложения.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -10,6 +8,7 @@ import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
 import 'my_theme.dart';
 
+/// BottomNavigator приложения.
 class AppNavigationBar extends StatelessWidget {
   const AppNavigationBar({
     Key? key,

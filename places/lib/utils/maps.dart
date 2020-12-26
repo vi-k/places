@@ -14,14 +14,20 @@ final _ellipsoideE =
         _ellipsoideA; // эксцентриситет эллипса (eccentricity)
 final _ellipsoideE2 = _ellipsoideE * _ellipsoideE;
 
+
+/// Координаты.
 class Coord {
   const Coord(this.lat, this.lon);
 
   final double lat;
   final double lon;
 
-  /// Быстрый рассчёт расстояния между точками по методу хорды.
-  /// Метод можно использовать на небольших расстояниях.
+  /// Рассчитывает расстояние между точками по методу хорды.
+  ///
+  /// Быстрее точных методов и точнее, чем расчёт по теореме Пифагора.
+  ///
+  /// Не подходит для точных расчётов на уровне планеты, материков и больших
+  /// стран. Подходит для расчётов на уровне области/края.
   Distance distance(Coord to) {
     // Координаты первой точки
     final sinB1 = sin(lat * pi / 180.0);
@@ -65,6 +71,9 @@ class Coord {
   String toString() => '[$lat, $lon]';
 }
 
+/// Единицы измерения для расстояния.
+///
+/// Используются для преобразования расстояния в строку.
 enum DistanceUnits { optimal, meters, kilometers }
 
 extension DistanceUnitsExt on DistanceUnits {
@@ -80,6 +89,10 @@ extension DistanceUnitsExt on DistanceUnits {
   }
 }
 
+/// Отдельный класс для расстояний.
+///
+/// Расстояние это обычный `double`. Цель создания отдельного класса - сделать
+/// удобное преобразование в строку с переводом в различные единицы измерения.
 class Distance implements Comparable<Distance> {
   const Distance(this.value);
 

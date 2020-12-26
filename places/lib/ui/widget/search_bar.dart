@@ -1,4 +1,3 @@
-/// Виджет: Поле поиска.
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,6 +7,7 @@ import '../screen/filters_screen.dart';
 import 'my_theme.dart';
 import 'svg_button.dart';
 
+/// Виджет: Поле поиска.
 class SearchBar extends StatefulWidget {
   const SearchBar({
     Key? key,

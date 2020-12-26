@@ -7,6 +7,9 @@ import '../widget/search_bar.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
 
+/// Экран поиска.
+///
+/// TODO: реализовать поиск.
 class SightSearchScreen extends StatefulWidget {
   @override
   _SightSearchScreenState createState() => _SightSearchScreenState();

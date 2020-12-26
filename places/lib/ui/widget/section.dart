@@ -1,12 +1,11 @@
-/// Виджет: Раздел.
-///
-/// Состоит из названия раздела и виджета-ребёнка.
-
 import 'package:flutter/material.dart';
 
 import '../res/themes.dart';
 import 'my_theme.dart';
 
+/// Виджет: Раздел.
+///
+/// Состоит из названия раздела и виджета-ребёнка.
 class Section extends StatelessWidget {
   Section(
     this.name, {

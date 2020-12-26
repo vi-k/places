@@ -1,13 +1,12 @@
-/// Виджет: Малая кнопка.
-///
-/// Обычно для текстовых кнопок, не имеющих фона.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/themes.dart';
 import 'my_theme.dart';
 
+/// Виджет: Малая кнопка.
+///
+/// Обычно для текстовых кнопок, не имеющих фона.
 class SmallButton extends StatelessWidget {
   const SmallButton({
     Key? key,

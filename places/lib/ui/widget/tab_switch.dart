@@ -1,11 +1,10 @@
-/// Виджет: Переключатель табов.
-
 import 'package:flutter/material.dart';
 
 import '../res/themes.dart';
 import 'my_theme.dart';
 import 'small_button.dart';
 
+/// Виджет: Переключатель табов.
 class TabSwitch extends StatelessWidget {
   const TabSwitch({
     Key? key,

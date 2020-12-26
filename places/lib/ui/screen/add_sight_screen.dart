@@ -1,4 +1,3 @@
-/// Экран добавления места.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,6 +13,7 @@ import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 
+/// Экран добавления места.
 class AddSightScreen extends StatefulWidget {
   @override
   _AddSightScreenState createState() => _AddSightScreenState();
@@ -60,7 +60,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
     );
   }
 
-  Section _buildCategory(MyThemeData theme) => Section(
+  Widget _buildCategory(MyThemeData theme) => Section(
         stringCategory,
         // Временное решение для выбора категории вместо отдельного экрана
         child: DropdownButtonFormField<SightCategory>(
@@ -97,7 +97,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
         // ),
       );
 
-  Section _buildName() => Section(
+  Widget _buildName() => Section(
         stringName,
         child: TextFormField(
           initialValue: 'Моя работа', // Временно. Для тестов
@@ -178,7 +178,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
         ),
       ];
 
-  Section _buildDetails() => Section(
+  Widget _buildDetails() => Section(
         stringDescription,
         child: TextFormField(
           minLines: 3,
@@ -190,7 +190,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
         ),
       );
 
-  Container _buildDone(BuildContext context) => Container(
+  Widget _buildDone(BuildContext context) => Container(
         width: double.infinity,
         padding: MyThemeData.commonPadding,
         child: StandartButton(

@@ -1,11 +1,10 @@
-/// Виджет: Список карточек.
-
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
 import '../res/themes.dart';
 import 'sight_card.dart';
 
+/// Виджет: Список карточек.
 class CardList extends StatelessWidget {
   const CardList({
     Key? key,

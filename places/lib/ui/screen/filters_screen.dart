@@ -1,5 +1,3 @@
-/// Экран настроек фильтра.
-
 import 'package:flutter/material.dart';
 
 import '../../domain/filter.dart';
@@ -15,6 +13,7 @@ import '../widget/sight_type_filter.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/standart_button.dart';
 
+/// Экран настроек фильтра.
 class FiltersScreen extends StatefulWidget {
   @override
   _FiltersScreenState createState() => _FiltersScreenState();

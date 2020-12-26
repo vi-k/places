@@ -1,5 +1,3 @@
-/// Виджет: категория места.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,6 +6,7 @@ import '../res/strings.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
+/// Виджет: категория места.
 class SightCategoryFilter extends StatelessWidget {
   const SightCategoryFilter({
     Key? key,

@@ -1,5 +1,3 @@
-/// Экран: Хочу посетить/Посетил.
-
 import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
@@ -11,6 +9,7 @@ import '../widget/sight_card.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/tab_switch.dart';
 
+/// Экран: Хочу посетить/Посетил.
 class VisitingScreen extends StatefulWidget {
   @override
   _VisitingScreenState createState() => _VisitingScreenState();

@@ -1,4 +1,3 @@
-/// Виджет: Загружаемая из сети картинка с индикатором прогресса внизу виджета.
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -6,6 +5,7 @@ import '../res/strings.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
+/// Виджет: Загружаемая из сети картинка с индикатором прогресса внизу виджета.
 class LoadableImage extends StatelessWidget {
   const LoadableImage({
     Key? key,
