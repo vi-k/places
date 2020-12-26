@@ -8,7 +8,7 @@ import '../widget/big_app_bar.dart';
 import '../widget/card_list.dart';
 import '../widget/search_bar.dart';
 import '../widget/sight_card.dart';
-import 'add_sight_screen.dart';
+import 'sight_screen.dart';
 import 'sight_search_screen.dart';
 
 /// Экран: Список интересных мест.
@@ -53,7 +53,7 @@ class _SightListScreenState extends State<SightListScreen> {
             Navigator.push<void>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddSightScreen(),
+                  builder: (context) => const SightScreen(),
                 )).then((value) => setState(() {}));
           },
           icon: const Icon(Icons.add),

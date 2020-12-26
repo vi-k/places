@@ -13,7 +13,7 @@ import 'svg_button.dart';
 enum SightCardType { list, wishlist, visited }
 
 /// Виджет: Карточка интересного места.
-class SightCard extends StatelessWidget {
+class SightCard extends StatefulWidget {
   const SightCard({
     Key? key,
     required this.sight,
@@ -22,6 +22,19 @@ class SightCard extends StatelessWidget {
 
   final Sight sight;
   final SightCardType type;
+
+  @override
+  _SightCardState createState() => _SightCardState();
+}
+
+class _SightCardState extends State<SightCard> {
+  late Sight _sight;
+
+  @override
+  void initState() {
+    super.initState();
+    _sight = widget.sight;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +60,17 @@ class SightCard extends StatelessWidget {
               highlightColor: theme.app.highlightColor,
               splashColor: theme.app.splashColor,
               onPressed: () {
-                Navigator.push<void>(
+                Navigator.push<Sight>(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SightDetails(sight: sight),
-                    ));
+                      builder: (context) => SightDetails(sight: _sight),
+                    )).then((value) => setState(() {
+                      if (value != null) {
+                        setState(() {
+                          _sight = value;
+                        });
+                      }
+                    }));
               },
               child: _buildSignatures(theme),
             ),
@@ -61,14 +80,12 @@ class SightCard extends StatelessWidget {
     );
   }
 
-  // Верхняя часть карточки (фотография).
   Widget _buildTop() => Expanded(
         child: LoadableImage(
-          url: sight.photos.isEmpty ? '' : sight.photos[0],
+          url: _sight.photos.isEmpty ? '' : _sight.photos[0],
         ),
       );
 
-  // Строка кнопок поверх картинки.
   Widget _buildSignatures(MyThemeData theme) {
     final textStyle = theme.textBold14White;
     final textColor = textStyle.color;
@@ -81,14 +98,14 @@ class SightCard extends StatelessWidget {
           SmallButton(
             highlightColor: theme.highlightColorOnImage,
             splashColor: theme.splashColorOnImage,
-            label: sight.category.text.toLowerCase(),
+            label: _sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');
             },
           ),
           const Spacer(),
-          if (type == SightCardType.list) ...[
+          if (widget.type == SightCardType.list) ...[
             SignatureButton(
               svg: assetFavorite,
               color: textColor,
@@ -97,7 +114,7 @@ class SightCard extends StatelessWidget {
               },
             ),
           ],
-          if (type == SightCardType.wishlist) ...[
+          if (widget.type == SightCardType.wishlist) ...[
             SignatureButton(
               svg: assetCalendar,
               color: textColor,
@@ -113,7 +130,7 @@ class SightCard extends StatelessWidget {
               },
             ),
           ],
-          if (type == SightCardType.visited) ...[
+          if (widget.type == SightCardType.visited) ...[
             SignatureButton(
               svg: assetShare,
               color: textColor,
@@ -134,7 +151,6 @@ class SightCard extends StatelessWidget {
     );
   }
 
-  // Нижняя (текстовая) часть карточки.
   Widget _buildBottom(MyThemeData theme) => Expanded(
         child: Container(
           padding: commonPadding,
@@ -142,12 +158,12 @@ class SightCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             maxLines: 4,
             text: TextSpan(
-              text: '${sight.name}\n',
+              text: '${_sight.name}\n',
               style: theme.textMiddle16Main,
               children: [
                 TextSpan(
                   //text: sight.details,
-                  text: '${myMockCoord.distance(sight.coord)}',
+                  text: '${myMockCoord.distance(_sight.coord)}',
                   style: theme.textRegular14Light,
                 ),
               ],

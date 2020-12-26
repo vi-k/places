@@ -84,7 +84,7 @@ final List<Sight> mocks = [
 const mockPhotos = [
   'https://top10.travel/wp-content/uploads/2014/12/hram-vasiliya-blazhennogo.jpg',
   'https://img.gazeta.ru/files3/957/10301957/00-pic905-895x505-58873.jpg',
-  'https://lh3.googleusercontent.com/proxy/8YnZGYa6Bp5esupadpsRox1TgQ4aFmLM9hlNzw9VzbVCgFGGl3yYhQZ5qQ0zj7ULxuJnEeboXewegAdPNCqFFty9WP0rEHUUk0FygP-Qz44',
+  'https://way2day.com/wp-content/uploads/2018/06/Dostoprimechatelnosti-Turtsii.jpg',
   'https://uploads.europa24.ru/rs/580w/news/2017-08/berlinskiy-dom-59819f21c5469.jpg',
   'https://top10.travel/wp-content/uploads/2014/09/brandenburgskie-vorota-1.jpg',
   'https://vibirai.ru/image/1155920.w640.jpg',

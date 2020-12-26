@@ -1,17 +1,20 @@
+import 'package:equatable/equatable.dart';
+
 import '../ui/res/strings.dart';
 import '../utils/maps.dart';
 
 /// Интересное место.
-class Sight {
+class Sight extends Equatable {
   Sight({
     required this.name,
     required this.coord,
-    required this.photos,
+    // required this.photos,
+    required List<String> photos,
     required this.details,
     required this.category,
     this.visitTime,
     this.visited,
-  });
+  }) : photos = List<String>.unmodifiable(photos);
 
   final String name;
   final Coord coord;
@@ -22,7 +25,30 @@ class Sight {
   final DateTime? visited;
 
   @override
+  List<Object?> get props =>
+      [name, coord, photos, details, category, visitTime, visited];
+
+  @override
   String toString() => 'Sight($name, ${category.text}, $coord ...)';
+
+  Sight copyWith({
+    String? name,
+    Coord? coord,
+    List<String>? photos,
+    String? details,
+    SightCategory? category,
+    DateTime? visitTime,
+    DateTime? visited,
+  }) =>
+      Sight(
+        name: name ?? this.name,
+        coord: coord ?? this.coord,
+        photos: photos ?? this.photos,
+        details: details ?? this.details,
+        category: category ?? this.category,
+        visitTime: visitTime ?? this.visitTime,
+        visited: visited ?? this.visited,
+      );
 }
 
 /// Категория места.

@@ -16,12 +16,19 @@ import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 
 /// Экран добавления места.
-class AddSightScreen extends StatefulWidget {
+class SightScreen extends StatefulWidget {
+  const SightScreen({
+    Key? key,
+    this.sight,
+  }) : super(key: key);
+
+  final Sight? sight;
+
   @override
-  _AddSightScreenState createState() => _AddSightScreenState();
+  _SightScreenState createState() => _SightScreenState();
 }
 
-class _AddSightScreenState extends State<AddSightScreen> {
+class _SightScreenState extends State<SightScreen> {
   final _formKey = GlobalKey<FormState>();
   SightCategory? _category;
   final _photos = <String>[];
@@ -32,12 +39,27 @@ class _AddSightScreenState extends State<AddSightScreen> {
   String? _details;
 
   @override
+  void initState() {
+    super.initState();
+
+    final sight = widget.sight;
+    if (sight != null) {
+      _photos.addAll(sight.photos);
+      _category = sight.category;
+      _name = sight.name;
+      _lat = sight.coord.lat;
+      _lon = sight.coord.lon;
+      _details = sight.details;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      appBar: const SmallAppBar(
-        title: stringNewPlace,
+      appBar: SmallAppBar(
+        title: widget.sight == null ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
       body: Column(
@@ -105,6 +127,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
         stringCategory,
         // Временное решение для выбора категории вместо отдельного экрана
         child: DropdownButtonFormField<SightCategory>(
+          value: _category,
           items: [
             for (final category in SightCategory.values)
               DropdownMenuItem(
@@ -141,7 +164,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
   Widget _buildName() => Section(
         stringName,
         child: TextFormField(
-          initialValue: 'Моя работа', // Временно. Для тестов
+          initialValue: _name ?? 'Моя работа', // Временно. Для тестов
           decoration: const InputDecoration(
             hintText: stringNewPlaceFakeName,
           ),
@@ -165,7 +188,8 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 stringLatitude,
                 right: 0,
                 child: TextFormField(
-                  initialValue: '48.506642', // Временно. Для тестов
+                  initialValue: _lat?.toStringAsFixed(6) ??
+                      '48.506642', // Временно. Для тестов
                   decoration: const InputDecoration(
                     hintText: stringNewPlaceFakeLatitude,
                   ),
@@ -188,7 +212,8 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 stringLongitude,
                 left: 0,
                 child: TextFormField(
-                  initialValue: '135.138573', // Временно. Для тестов
+                  initialValue: _lon?.toStringAsFixed(6) ??
+                      '135.138573', // Временно. Для тестов
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -222,6 +247,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
   Widget _buildDetails() => Section(
         stringDescription,
         child: TextFormField(
+          initialValue: _details,
           minLines: 3,
           maxLines: 10,
           textInputAction: TextInputAction.done,
@@ -235,19 +261,21 @@ class _AddSightScreenState extends State<AddSightScreen> {
         width: double.infinity,
         padding: commonPadding,
         child: StandartButton(
-          label: stringCreate,
+          label: widget.sight == null ? stringCreate : stringSave,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               showDialog<void>(
                 context: context,
                 barrierDismissible: true,
                 builder: (_) => AlertDialog(
-                  title: const Text(stringCreateQuestion),
+                  title: Text(widget.sight == null
+                      ? stringDoCreate
+                      : stringDoSave),
                   actions: [
                     SmallButton(
                       label: stringNo,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context);
                       },
                     ),
                     SmallButton(
@@ -255,16 +283,25 @@ class _AddSightScreenState extends State<AddSightScreen> {
                       onPressed: () {
                         _formKey.currentState!.save();
 
-                        mocks.add(Sight(
+                        final newSight = Sight(
                           name: _name!,
                           coord: Coord(_lat!, _lon!),
                           photos: _photos,
                           details: _details!,
                           category: _category!,
-                        ));
+                        );
 
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
+                        final sight = widget.sight;
+                        if (sight == null) {
+                          mocks.add(newSight);
+                        } else {
+                          final index = mocks.indexOf(sight);
+                          assert(index != -1);
+                          mocks[index] = newSight;
+                        }
+
+                        Navigator.pop(context);
+                        Navigator.pop(context, newSight);
                       },
                     ),
                   ],
