@@ -1,5 +1,3 @@
-/// Виджет: малый AppBar.
-
 import 'package:flutter/material.dart';
 
 import '../res/strings.dart';
@@ -8,6 +6,7 @@ import 'my_theme.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
+/// Виджет: малый AppBar.
 class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmallAppBar({
     Key? key,
@@ -72,7 +71,7 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       );
 
-  Positioned _buildButtons(BuildContext context, MyThemeData theme) =>
+  Widget _buildButtons(BuildContext context, MyThemeData theme) =>
       Positioned.fill(
         child: Center(
           child: Row(

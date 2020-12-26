@@ -1,13 +1,12 @@
-/// Виджет: Стандартная универсальная кнопка.
-///
-/// Иконка, если нужна, берётся из ресурсов по имени, переданному в параметре
-/// [svg]. Текст кнопки передаётся в строке [label].
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'my_theme.dart';
 
+/// Виджет: Стандартная универсальная кнопка.
+///
+/// Иконка, если нужна, берётся из ресурсов по имени, переданному в параметре
+/// [svg]. Текст кнопки передаётся в строке [label].
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,

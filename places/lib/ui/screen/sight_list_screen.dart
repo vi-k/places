@@ -1,4 +1,3 @@
-/// Экран: Список интересных мест.
 import 'package:flutter/material.dart';
 
 import '../../mocks.dart';
@@ -12,6 +11,7 @@ import '../widget/sight_card.dart';
 import 'add_sight_screen.dart';
 import 'sight_search_screen.dart';
 
+/// Экран: Список интересных мест.
 class SightListScreen extends StatefulWidget {
   @override
   _SightListScreenState createState() => _SightListScreenState();

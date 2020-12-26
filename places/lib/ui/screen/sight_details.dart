@@ -1,5 +1,3 @@
-/// Экран детализации места.
-
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
@@ -10,6 +8,7 @@ import '../widget/my_theme.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 
+/// Экран детализации места.
 class SightDetails extends StatefulWidget {
   final Sight sight;
 

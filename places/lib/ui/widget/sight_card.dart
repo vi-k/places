@@ -1,5 +1,3 @@
-/// Виджет: Карточка интересного места.
-
 import 'package:flutter/material.dart';
 
 import '../../domain/sight.dart';
@@ -14,6 +12,7 @@ import 'svg_button.dart';
 
 enum SightCardType { list, wishlist, visited }
 
+/// Виджет: Карточка интересного места.
 class SightCard extends StatelessWidget {
   const SightCard({
     Key? key,
@@ -63,7 +62,7 @@ class SightCard extends StatelessWidget {
   }
 
   // Верхняя часть карточки (фотография).
-  Expanded _buildTop() => Expanded(
+  Widget _buildTop() => Expanded(
         child: LoadableImage(
           url: sight.url,
         ),

@@ -1,10 +1,9 @@
-/// Виджет: большой AppBar (для страницы списка интересных мест).
-
 import 'package:flutter/material.dart';
 
 import '../res/themes.dart';
 import 'my_theme.dart';
 
+/// Виджет: большой AppBar (для страницы списка интересных мест).
 class BigAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BigAppBar({
     Key? key,

@@ -1,5 +1,3 @@
-/// Экран настроек.
-
 import 'package:flutter/material.dart';
 
 import '../../app.dart';
@@ -9,6 +7,7 @@ import '../widget/app_navigation_bar.dart';
 import '../widget/my_theme.dart';
 import '../widget/small_app_bar.dart';
 
+/// Экран настроек.
 class SettingsScreen extends StatefulWidget {
   @override
   _SettingsScreenState createState() => _SettingsScreenState();

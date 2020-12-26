@@ -1,10 +1,10 @@
-/// Моковые данные.
-
 import 'domain/sight.dart';
 import 'utils/maps.dart';
 
+/// Моковые координаты.
 const myMockCoord = Coord(48.479672, 135.070692);
 
+/// Моковые данные.
 final List<Sight> mocks = [
   Sight(
     name: 'Краеведческий музей',
