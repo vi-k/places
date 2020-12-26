@@ -32,11 +32,13 @@ class _SightDetailsState extends State<SightDetails> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: MyThemeData.detailsImageSize,
-              child: LoadableImage(url: widget.sight.url),
+              height: detailsImageSize,
+              child: LoadableImage(
+                url: widget.sight.photos.isEmpty ? '' : widget.sight.photos[0],
+              ),
             ),
             Padding(
-              padding: MyThemeData.detailsPadding,
+              padding: detailsPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -45,7 +47,7 @@ class _SightDetailsState extends State<SightDetails> {
                     style: theme.textBold24Main,
                   ),
                   const SizedBox(
-                    height: MyThemeData.detailsTitleSpacing,
+                    height: detailsTitleSpacing,
                   ),
                   Row(
                     children: [
@@ -53,9 +55,7 @@ class _SightDetailsState extends State<SightDetails> {
                         widget.sight.category.text,
                         style: theme.textBold14Light,
                       ),
-                      const SizedBox(
-                        width: MyThemeData.detailsHoursSpacing,
-                      ),
+                      const SizedBox(width: commonSpacing),
                       Text(
                         'закрыто до 09:00', // Временно
                         style: theme.textRegular14Light,
@@ -63,14 +63,14 @@ class _SightDetailsState extends State<SightDetails> {
                     ],
                   ),
                   const SizedBox(
-                    height: MyThemeData.detailsCommonSpacing,
+                    height: commonSpacing3_2,
                   ),
                   Text(
                     widget.sight.details,
                     style: theme.textRegular14Light,
                   ),
                   const SizedBox(
-                    height: MyThemeData.detailsCommonSpacing,
+                    height: commonSpacing3_2,
                   ),
                   StandartButton(
                     svg: assetRoute,
@@ -80,13 +80,13 @@ class _SightDetailsState extends State<SightDetails> {
                     },
                   ),
                   const SizedBox(
-                    height: MyThemeData.detailsCommonSpacing,
+                    height: commonSpacing3_2,
                   ),
                   const Divider(
                     height: 0,
                   ),
                   const SizedBox(
-                    height: MyThemeData.detailsFooterSpacing,
+                    height: commonSpacing1_2,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

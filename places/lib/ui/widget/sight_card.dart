@@ -64,7 +64,7 @@ class SightCard extends StatelessWidget {
   // Верхняя часть карточки (фотография).
   Widget _buildTop() => Expanded(
         child: LoadableImage(
-          url: sight.url,
+          url: sight.photos.isEmpty ? '' : sight.photos[0],
         ),
       );
 
@@ -75,7 +75,7 @@ class SightCard extends StatelessWidget {
 
     return Container(
       alignment: Alignment.topLeft,
-      padding: MyThemeData.cardSignaturesPadding,
+      padding: cardSignaturesPadding,
       child: Row(
         children: [
           SmallButton(
@@ -137,7 +137,7 @@ class SightCard extends StatelessWidget {
   // Нижняя (текстовая) часть карточки.
   Widget _buildBottom(MyThemeData theme) => Expanded(
         child: Container(
-          padding: MyThemeData.commonPadding,
+          padding: commonPadding,
           child: RichText(
             overflow: TextOverflow.ellipsis,
             maxLines: 4,

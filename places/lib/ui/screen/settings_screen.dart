@@ -62,8 +62,8 @@ class _ListDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Divider(
-        indent: MyThemeData.commonPadding.left,
-        endIndent: MyThemeData.commonPadding.right,
+        indent: commonPadding.left,
+        endIndent: commonPadding.right,
         height: 1,
       );
 }

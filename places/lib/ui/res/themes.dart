@@ -53,42 +53,40 @@ extension on TextStyle {
   TextStyle withColor(Color color) => copyWith(color: color);
 }
 
+/// Публичные константы.
+const commonSpacing = 16.0;
+const commonSpacing1_2 = commonSpacing / 2; // 8
+const commonSpacing3_4 = commonSpacing * 3 / 4; // 12
+const commonSpacing3_2 = commonSpacing * 3 / 2; // 24
+//const detailsCommonSpacing = 24.0;
+// const detailsFooterSpacing = 8.0;
+// const detailsHoursSpacing = 16.0;
+const detailsImageSize = 360.0;
+const detailsTitleSpacing = 2.0;
+const filtersCategorySize = 64.0;
+const shortAppBarSpacing = 22.0;
+const smallButtonHeight = 40.0;
+const smallButtonRadius = 40.0;
+const textFieldBorderWidth = 1.0;
+const textFieldFocusedBorderWidth = 2.0;
+const textFieldRadius = 8.0;
+const tabsSwitchRadius = 40.0;
+const sectionTop = 24.0;
+const photoCardSize = 72.0;
+const tickChoiceSize = 16.0;
+
+/// Отступы.
+const commonPadding = EdgeInsets.all(16);
+const commonPaddingLR = EdgeInsets.only(left: 16, right: 16);
+const commonPaddingLBR = EdgeInsets.only(left: 16, right: 16, bottom: 16);
+const commonPaddingLTR = EdgeInsets.only(left: 16, top: 16, right: 16);
+const appBarPadding = EdgeInsets.only(left: 16, top: 40, right: 16, bottom: 16);
+const detailsPadding =
+    EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 16);
+const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
+const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
+
 class MyThemeData {
-  /// Константы.
-  static const cardSpacing = 8.0;
-  static const detailsCommonSpacing = 24.0;
-  static const detailsFooterSpacing = 8.0;
-  static const detailsHoursSpacing = 16.0;
-  static const detailsImageSize = 360.0;
-  static const detailsTitleSpacing = 2.0;
-  static const filtersCategorySize = 64.0;
-  static const filtersCategorySpacing = 12.0;
-  static const filtersSectionSpacing = 24.0;
-  static const shortAppBarSpacing = 22.0;
-  static const smallButtonHeight = 40.0;
-  static const smallButtonRadius = 40.0;
-  static const textFieldBorderWidth = 1.0;
-  static const textFieldFocusedBorderWidth = 2.0;
-  static const textFieldRadius = 8.0;
-  static const tabsSwitchRadius = 40.0;
-  static const sectionTop = 24.0;
-  static const sectionHSpacing = 16.0;
-  static const sectionVSpacing = 12.0;
-
-  /// Отступы.
-  static const commonPadding = EdgeInsets.all(16);
-  static const commonPaddingLR = EdgeInsets.only(left: 16, right: 16);
-  static const commonPaddingLBR =
-      EdgeInsets.only(left: 16, right: 16, bottom: 16);
-  static final listPadding = commonPadding.copyWith(top: 8);
-  static final appBarPadding = commonPadding.copyWith(top: 40);
-  static const shortAppBarPadding = commonPadding;
-  static final detailsPadding = commonPadding.copyWith(top: 24);
-  static const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
-  static final filtersCaptionPadding =
-      commonPadding.copyWith(top: 0, bottom: 0);
-  static const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
-
   MyThemeData({
     required this.app,
     required this.accentColor,
@@ -208,14 +206,14 @@ const _baseSliderTheme = SliderThemeData(
 );
 
 InputBorder _border(Color? color, {bool focused = false}) => OutlineInputBorder(
-      borderRadius: BorderRadius.circular(MyThemeData.textFieldRadius),
+      borderRadius: BorderRadius.circular(textFieldRadius),
       borderSide: color == null
           ? const BorderSide(color: Colors.transparent, width: 0)
           : BorderSide(
               color: color,
               width: focused
-                  ? MyThemeData.textFieldFocusedBorderWidth
-                  : MyThemeData.textFieldBorderWidth),
+                  ? textFieldFocusedBorderWidth
+                  : textFieldBorderWidth),
     );
 
 const _baseInputDecorationTheme = InputDecorationTheme(

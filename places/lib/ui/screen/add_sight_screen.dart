@@ -7,7 +7,9 @@ import '../../utils/focus.dart';
 import '../../utils/maps.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
+import '../widget/add_photo_card.dart';
 import '../widget/my_theme.dart';
+import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
@@ -22,6 +24,8 @@ class AddSightScreen extends StatefulWidget {
 class _AddSightScreenState extends State<AddSightScreen> {
   final _formKey = GlobalKey<FormState>();
   SightCategory? _category;
+  final _photos = <String>[];
+  var _mockPhotosCounter = 0;
   String? _name;
   double? _lat;
   double? _lon;
@@ -41,16 +45,53 @@ class _AddSightScreenState extends State<AddSightScreen> {
           Form(
             key: _formKey,
             child: Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildCategory(theme),
-                    _buildName(),
-                    ..._buildCoord(context, theme),
-                    _buildDetails(),
-                  ],
-                ),
+              child: ListView(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: commonSpacing),
+                        AddPhotoCard(
+                          onPressed: () {
+                            // Временно добавляем моковые фотографии.
+                            if (_mockPhotosCounter >= mockPhotos.length) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Добавили всё, что можно')),
+                              );
+                            } else {
+                              setState(() {
+                                _photos.add(mockPhotos[_mockPhotosCounter++]);
+                              });
+                            }
+                          },
+                        ),
+                        for (final photo in _photos) ...[
+                          const SizedBox(width: commonSpacing),
+                          Dismissible(
+                            key: ValueKey(photo),
+                            direction: DismissDirection.vertical,
+                            // background: Container(
+                            //   color: Colors.yellow,
+                            // ),
+                            onDismissed: (_) {
+                              setState(() {
+                                _photos.remove(photo);
+                              });
+                            },
+                            child: PhotoCard(url: photo),
+                          ),
+                        ],
+                        const SizedBox(width: commonSpacing),
+                      ],
+                    ),
+                  ),
+                  _buildCategory(theme),
+                  _buildName(),
+                  ..._buildCoord(context, theme),
+                  _buildDetails(),
+                ],
               ),
             ),
           ),
@@ -141,7 +182,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: MyThemeData.sectionHSpacing),
+            const SizedBox(width: commonSpacing),
             Expanded(
               child: Section(
                 stringLongitude,
@@ -192,7 +233,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
 
   Widget _buildDone(BuildContext context) => Container(
         width: double.infinity,
-        padding: MyThemeData.commonPadding,
+        padding: commonPadding,
         child: StandartButton(
           label: stringCreate,
           onPressed: () {
@@ -217,7 +258,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
                         mocks.add(Sight(
                           name: _name!,
                           coord: Coord(_lat!, _lon!),
-                          url: '',
+                          photos: _photos,
                           details: _details!,
                           category: _category!,
                         ));

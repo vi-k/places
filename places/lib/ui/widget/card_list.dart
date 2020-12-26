@@ -17,14 +17,14 @@ class CardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.separated(
-        padding: MyThemeData.commonPadding,
+        padding: commonPadding,
         itemCount: iterable.length,
         itemBuilder: (context, index) => SightCard(
           type: cardType,
           sight: iterable.elementAt(index),
         ),
         separatorBuilder: (context, index) => const SizedBox(
-          height: 16,
+          height: commonSpacing,
         ),
       );
 }

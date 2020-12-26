@@ -55,7 +55,7 @@ class LoadableImage extends StatelessWidget {
         return Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: MyThemeData.commonPadding,
+            padding: commonPadding,
             child: Text(
               error.toString(),
               textAlign: TextAlign.center,

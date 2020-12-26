@@ -60,14 +60,14 @@ class _FiltersScreenState extends State<FiltersScreen> {
             child: ListView(
               children: [
                 ..._buildCategories(),
-                const SizedBox(height: MyThemeData.filtersSectionSpacing),
+                const SizedBox(height: commonSpacing),
                 ..._buildDistance(theme),
-                const SizedBox(height: MyThemeData.filtersSectionSpacing),
+                const SizedBox(height: commonSpacing),
               ],
             ),
           ),
           Padding(
-            padding: MyThemeData.commonPadding,
+            padding: commonPadding,
             child: StandartButton(
               label: stringApply +
                   (_cardCount == null ? ' ...' : ' ($_cardCount)'),
@@ -83,7 +83,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   List<Widget> _buildDistance(MyThemeData theme) => [
         Padding(
-          padding: MyThemeData.commonPadding,
+          padding: commonPadding,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

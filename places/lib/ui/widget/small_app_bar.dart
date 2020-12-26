@@ -11,13 +11,12 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmallAppBar({
     Key? key,
     required this.title,
-    EdgeInsetsGeometry? padding,
+    this.padding = commonPadding,
     this.back,
     this.button,
     this.onPressed,
     this.bottom,
   })  : assert(onPressed == null || button != null),
-        padding = padding ?? MyThemeData.shortAppBarPadding,
         super(key: key);
 
   /// Заголовок.

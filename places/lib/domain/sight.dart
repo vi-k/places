@@ -3,23 +3,23 @@ import '../utils/maps.dart';
 
 /// Интересное место.
 class Sight {
-  final String name;
-  final Coord coord;
-  final String url;
-  final String details;
-  final SightCategory category;
-  final DateTime? visitTime;
-  final DateTime? visited;
-
   Sight({
     required this.name,
     required this.coord,
-    required this.url,
+    required this.photos,
     required this.details,
     required this.category,
     this.visitTime,
     this.visited,
   });
+
+  final String name;
+  final Coord coord;
+  final List<String> photos;
+  final String details;
+  final SightCategory category;
+  final DateTime? visitTime;
+  final DateTime? visited;
 
   @override
   String toString() => 'Sight($name, ${category.text}, $coord ...)';

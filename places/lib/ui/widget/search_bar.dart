@@ -29,7 +29,7 @@ class _SearchBarState extends State<SearchBar> {
       children: [
         Material(
           color: theme.backgroundSecond,
-          borderRadius: BorderRadius.circular(MyThemeData.textFieldRadius),
+          borderRadius: BorderRadius.circular(textFieldRadius),
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [

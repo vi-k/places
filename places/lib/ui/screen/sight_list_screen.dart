@@ -23,7 +23,7 @@ class _SightListScreenState extends State<SightListScreen> {
         appBar: BigAppBar(
           title: stringSightListTitle,
           bottom: Padding(
-            padding: MyThemeData.commonPadding,
+            padding: commonPadding,
             child: Column(
               children: [
                 SearchBar(

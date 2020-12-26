@@ -26,8 +26,8 @@ class SvgButton extends StatelessWidget {
     final theme = MyTheme.of(context);
 
     return SizedBox(
-      height: MyThemeData.smallButtonHeight,
-      width: MyThemeData.smallButtonHeight,
+      height: smallButtonHeight,
+      width: smallButtonHeight,
       child: IconButton(
         highlightColor: highlightColor ?? theme.app.highlightColor,
         splashColor: splashColor ?? theme.app.splashColor,
