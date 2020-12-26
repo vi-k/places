@@ -1,7 +1,10 @@
+/// Виджет: Кнопка-иконка для svg.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/themes.dart';
+import 'my_theme.dart';
 
 class SvgButton extends StatelessWidget {
   const SvgButton({
@@ -20,17 +23,21 @@ class SvgButton extends StatelessWidget {
   final void Function()? onPressed;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        height: MyThemeData.smallButtonHeight,
-        width: MyThemeData.smallButtonHeight,
-        child: IconButton(
-          highlightColor: highlightColor,
-          splashColor: splashColor,
-          onPressed: onPressed,
-          icon: SvgPicture.asset(
-            svg,
-            color: color,
-          ),
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    return SizedBox(
+      height: MyThemeData.smallButtonHeight,
+      width: MyThemeData.smallButtonHeight,
+      child: IconButton(
+        highlightColor: highlightColor ?? theme.app.highlightColor,
+        splashColor: splashColor ?? theme.app.splashColor,
+        onPressed: onPressed,
+        icon: SvgPicture.asset(
+          svg,
+          color: color,
         ),
-      );
+      ),
+    );
+  }
 }

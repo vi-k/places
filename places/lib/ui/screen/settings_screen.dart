@@ -1,10 +1,13 @@
+/// Экран настроек.
+
 import 'package:flutter/material.dart';
 
 import '../../app.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
-import '../widget/short_app_bar.dart';
+import '../widget/my_theme.dart';
+import '../widget/small_app_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -13,36 +16,55 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: ShortAppBar(
-          title: settingsTitle,
-        ),
-        body: ListView(
-          children: [
-            SwitchListTile(
-              title: Text(
-                settingsIsDark,
-                style: Theme.of(context).primaryTextTheme.bodyText1,
-              ),
-              value: App.of(context).settings.isDark,
-              onChanged: (value) {
-                App.of(context).settings.isDark = value;
-              },
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    return Scaffold(
+      appBar: const SmallAppBar(
+        title: stringSettings,
+      ),
+      body: ListView(
+        children: [
+          SwitchListTile(
+            title: Text(
+              stringIsDark,
+              style: theme.textRegular14Main,
             ),
-            const Divider(),
-            ListTile(
+            value: App.of(context).settings.isDark,
+            onChanged: (value) {
+              App.of(context).settings.isDark = value;
+            },
+          ),
+          const _ListDivider(),
+          ListTile(
               title: Text(
-                settingsTutorial,
-                style: Theme.of(context).primaryTextTheme.bodyText1,
+                stringWatchTutorial,
+                style: theme.textRegular14Main,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.info_outline,
-                color: MyThemeData.buttonColor,
+                color: theme.accentColor,
               ),
-            ),
-            const Divider(),
-          ],
-        ),
-        bottomNavigationBar: const AppNavigationBar(index: 3),
+              onTap: () {
+                print('Смотреть туториал');
+              }),
+          const _ListDivider(),
+        ],
+      ),
+      bottomNavigationBar: const AppNavigationBar(index: 3),
+    );
+  }
+}
+
+class _ListDivider extends StatelessWidget {
+  const _ListDivider({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Divider(
+        indent: MyThemeData.commonPadding.left,
+        endIndent: MyThemeData.commonPadding.right,
+        height: 1,
       );
 }

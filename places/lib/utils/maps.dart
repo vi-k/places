@@ -3,18 +3,16 @@ import 'dart:math';
 import '../ui/res/strings.dart';
 import 'num_ext.dart';
 
-/* Эллипсоид WGS84 */
-const _ellipsoideA = 6378137.0; /* большая полуось */
-const _ellipsoideF = 1.0 / 298.257223563; /* сжатие (flattening) */
-const _ellipsoideB = _ellipsoideA * (1.0 - _ellipsoideF); /* малая полуось */
+/// Утилиты для работы с картографией.
+
+/// Эллипсоид WGS84
+const _ellipsoideA = 6378137.0; // большая полуось
+const _ellipsoideF = 1.0 / 298.257223563; // сжатие (flattening)
+const _ellipsoideB = _ellipsoideA * (1.0 - _ellipsoideF); // малая полуось
 final _ellipsoideE =
     sqrt(_ellipsoideA * _ellipsoideA - _ellipsoideB * _ellipsoideB) /
-        _ellipsoideA; /* эксцентриситет эллипса (eccentricity) */
+        _ellipsoideA; // эксцентриситет эллипса (eccentricity)
 final _ellipsoideE2 = _ellipsoideE * _ellipsoideE;
-// final _ellipsoideE4 = _ellipsoideE2 * _ellipsoideE2;
-// final _ellipsoideE6 = _ellipsoideE4 * _ellipsoideE2;
-// final _ellipsoideE8 = _ellipsoideE4 * _ellipsoideE4;
-// const _ellipsoideK = 1.0 - _ellipsoideF;
 
 class Coord {
   const Coord(this.lat, this.lon);
@@ -62,6 +60,9 @@ class Coord {
 
     return Distance(2.0 * r * asin(0.5 * d / r));
   }
+
+  @override
+  String toString() => '[$lat, $lon]';
 }
 
 enum DistanceUnits { optimal, meters, kilometers }
@@ -72,9 +73,9 @@ extension DistanceUnitsExt on DistanceUnits {
       case DistanceUnits.optimal:
         return '';
       case DistanceUnits.meters:
-        return meters;
+        return stringMeters;
       case DistanceUnits.kilometers:
-        return kilometers;
+        return stringKilometers;
     }
   }
 }
@@ -101,7 +102,7 @@ class Distance implements Comparable<Distance> {
       result = value.toStringAsFixed(0);
     } else {
       result = (value / 1000)
-          .toStringAsFixedWithoutTrailingZeros(value.round() < 10000 ? 1 : 0);
+          .toFixedWithoutTrailingZeros(value.round() < 10000 ? 1 : 0);
     }
 
     if (withUnits) result += ' ${resultUnits.name}';

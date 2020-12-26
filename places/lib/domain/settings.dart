@@ -1,9 +1,11 @@
 import 'filter.dart';
 
+/// Класс настроек.
 class Settings {
-  Settings(this.onUpdate);
-  // factory Settings() => _instance ?? Settings._();
-  // static Settings? _instance;
+  Settings({
+    required this.onUpdate,
+    required bool isDark,
+  }) : _isDark = isDark;
 
   final void Function() onUpdate;
 
@@ -14,11 +16,10 @@ class Settings {
     onUpdate();
   }
 
-  bool _isDark  = false;
+  bool _isDark = false;
   bool get isDark => _isDark;
   set isDark(bool value) {
     _isDark = value;
     onUpdate();
   }
-  void toggleIsDark() => isDark = !isDark;
 }

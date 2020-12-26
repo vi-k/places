@@ -1,8 +1,6 @@
-import '../../domain/sight.dart';
+/// Строковые константы.
 
-// Ресурсы
-
-// BottomNavigator
+/// Ассеты: BottomNavigator
 const assetFavorite = 'res/favorite.svg';
 const assetFavoriteFull = 'res/favorite_full.svg';
 const assetList = 'res/list.svg';
@@ -12,49 +10,72 @@ const assetMapFull = 'res/map_full.svg';
 const assetSettings = 'res/settings.svg';
 const assetSettingsFull = 'res/settings_full.svg';
 
-// Buttons
+/// Ассеты: Кнопки
+const assetBack = 'res/back.svg';
 const assetCalendar = 'res/calendar.svg';
 const assetClose = 'res/close.svg';
+const assetFilter = 'res/filter.svg';
+const assetForward = 'res/forward.svg';
+const assetPhoto = 'res/photo.svg';
 const assetRoute = 'res/route.svg';
 const assetShare = 'res/share.svg';
-const assetPhoto = 'res/photo.svg';
-const assetBack = 'res/back.svg';
+const assetSearch = 'res/search.svg';
 
 const assetImage = 'res/image.svg';
 
-// Категории
+/// Ассеты: Категории
 const assetCafe = 'res/cafe.svg';
 const assetHotel = 'res/hotel.svg';
 const assetMuseum = 'res/museum.svg';
 const assetPark = 'res/park.svg';
 const assetParticular = 'res/particular.svg';
 const assetRestaurant = 'res/restaurant.svg';
-String assetForSightType(SightType type) =>
-    'res/${type.toString().replaceFirst(RegExp(r'.*\.'), '')}.svg';
+
 const assetChoice = 'res/choice.svg';
+const assetTickChoice = 'res/tick_choice.svg';
 
-// Тексты
-const sightListScreenTitle = 'Список\nинтересных мест';
-const sightDetailsScreenRoute = 'ПОСТРОИТЬ МАРШРУТ';
-const sightDetailsScreenSchedule = 'Запланировать';
-const sightDetailsScreenFavorite = 'В Избранное';
+/// Тексты
 
-const visitingScreenTitle = 'Избранное';
-const visitingScreenWishlist = 'Хочу посетить';
-const visitingScreenVisited = 'Посещённые места';
 const visitingScreenTabs = ['Хочу посетить', 'Посетил'];
 
-const filtersTitle = 'Фильтр';
-const filtersCategories = 'КАТЕГОРИИ';
-const filtersDistance = 'Расстояние';
-const filtersClear = 'Очистить';
-const filtersApply = 'ПОКАЗАТЬ';
-
-const settingsTitle = 'Настройки';
-const settingsIsDark = 'Тёмная тема';
-const settingsTutorial = 'Смотреть туториал';
-
-const rangeFrom = 'от';
-const rangeTo = 'до';
-const meters = 'м';
-const kilometers = 'км';
+const stringApply = 'Показать';
+const stringBuildRoute = 'Построить маршрут';
+const stringCancel = 'Отмена';
+const stringCategories = 'Категории';
+const stringCategory = 'Категория';
+const stringClear = 'Очистить';
+const stringCreate = 'Создать';
+const stringCreateQuestion = 'Создать?';
+const stringDescription = 'Описание';
+const stringDistance = 'Расстояние';
+const stringFavorite = 'Избранное';
+const stringFilter = 'Фильтр';
+const stringInvalidValue = 'Неверное значение';
+const stringIsDark = 'Тёмная тема';
+const stringKilometers = 'км';
+const stringLatitude = 'Широта';
+const stringLocateOnTheMap = 'Указать на карте';
+const stringLongitude = 'Долгота';
+const stringLookingFor = 'Вы искали';
+const stringMeters = 'м';
+const stringName = 'Название';
+const stringNewPlace = 'Новое место';
+const stringNewPlaceFakeName = 'Фортросс';
+const stringNewPlaceFakeLatitude = '38.514262';
+const stringNewPlaceFakeLongitude = '-123.243574';
+const stringNo = 'Нет';
+const stringRangeFrom = 'от';
+const stringRangeTo = 'до';
+const stringRequiredField = 'Это обязательное поле';
+const stringSearch = 'Поиск';
+const stringSettings = 'Настройки';
+const stringSightListTitle = 'Список\nинтересных мест';
+const stringSightList = 'Список интересных мест';
+const stringToFavorite = 'В Избранное';
+const stringToSchedule = 'Запланировать';
+const stringUnselected = 'Не выбрано';
+const stringVisitedPlaces = 'Посещённые места';
+const stringVisited = 'Посетил';
+const stringWantToVisit = 'Хочу посетить';
+const stringWatchTutorial = 'Смотреть туториал';
+const stringYes = 'Да';
