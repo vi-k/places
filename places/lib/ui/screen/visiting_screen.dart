@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../domain/sight.dart';
 import '../../mocks.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
@@ -60,7 +59,8 @@ class _VisitingScreenState extends State<VisitingScreen>
                 cardType: SightCardType.wishlist,
                 list: (context) => context
                     .watch<Mocks>()
-                    .where((element) => element.state == SightState.favorite),
+                    .favorites
+                    .where((element) => !element.visited),
               ),
             ),
             Tab(
@@ -68,7 +68,8 @@ class _VisitingScreenState extends State<VisitingScreen>
                 cardType: SightCardType.visited,
                 list: (context) => context
                     .watch<Mocks>()
-                    .where((element) => element.state == SightState.visited),
+                    .favorites
+                    .where((element) => element.visited),
               ),
             ),
           ],

@@ -19,10 +19,12 @@ class SightCard extends StatefulWidget {
     Key? key,
     required this.sightId,
     required this.type,
+    this.onLongPress,
   }) : super(key: key);
 
   final int sightId;
   final SightCardType type;
+  final void Function()? onLongPress;
 
   @override
   _SightCardState createState() => _SightCardState();
@@ -35,33 +37,37 @@ class _SightCardState extends State<SightCard> {
 
     final sight = context.watch<Mocks>()[widget.sightId];
 
-    return AspectRatio(
-      aspectRatio: 3 / 2,
-      child: Card(
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildTop(sight),
-                _buildBottom(theme, sight),
-              ],
-            ),
-            // Поверх карточки невидимая кнопка
-            MaterialButton(
-              padding: EdgeInsets.zero,
-              highlightColor: theme.app.highlightColor,
-              splashColor: theme.app.splashColor,
-              onPressed: () {
-                Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SightDetails(sightId: sight.id),
-                    ));
-              },
-              child: _buildSignatures(theme, sight),
-            ),
-          ],
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - commonPadding.horizontal,
+      child: AspectRatio(
+        aspectRatio: cardAspectRatio,
+        child: Card(
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildTop(sight),
+                  _buildBottom(theme, sight),
+                ],
+              ),
+              // Поверх карточки невидимая кнопка
+              MaterialButton(
+                padding: EdgeInsets.zero,
+                highlightColor: theme.app.highlightColor,
+                splashColor: theme.app.splashColor,
+                onLongPress: widget.onLongPress,
+                onPressed: () {
+                  Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SightDetails(sightId: sight.id),
+                      ));
+                },
+                child: _buildSignatures(theme, sight),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -86,7 +92,7 @@ class _SightCardState extends State<SightCard> {
 
   Widget _buildSignatures(MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
-    final textColor = textStyle.color;
+    final mocks = context.watch<Mocks>();
 
     return Container(
       alignment: Alignment.topLeft,
@@ -105,53 +111,42 @@ class _SightCardState extends State<SightCard> {
           const Spacer(),
           if (widget.type == SightCardType.list) ...[
             SignatureButton(
-              svg: sight.state == SightState.none
-                  ? Svg24.heart
-                  : Svg24.heartFull,
-              color: textColor,
+              svg: mocks.isFavorite(sight.id) ? Svg24.heartFull : Svg24.heart,
+              color: textStyle.color,
               onPressed: () {
-                context.read<Mocks>().replace(
-                    sight.id,
-                    sight.copyWith(
-                        state: sight.state == SightState.none
-                            ? SightState.favorite
-                            : SightState.none));
+                context.read<Mocks>().toggleFavorite(sight.id);
               },
             ),
           ],
           if (widget.type == SightCardType.wishlist) ...[
             SignatureButton(
               svg: Svg24.calendar,
-              color: textColor,
+              color: textStyle.color,
               onPressed: () {
                 print('Schedule');
               },
             ),
             SignatureButton(
               svg: Svg24.close,
-              color: textColor,
+              color: textStyle.color,
               onPressed: () {
-                context
-                    .read<Mocks>()
-                    .replace(sight.id, sight.copyWith(state: SightState.none));
+                context.read<Mocks>().removeFromFavorite(sight.id);
               },
             ),
           ],
           if (widget.type == SightCardType.visited) ...[
             SignatureButton(
               svg: Svg24.share,
-              color: textColor,
+              color: textStyle.color,
               onPressed: () {
                 print('Share');
               },
             ),
             SignatureButton(
               svg: Svg24.close,
-              color: textColor,
+              color: textStyle.color,
               onPressed: () {
-                context
-                    .read<Mocks>()
-                    .replace(sight.id, sight.copyWith(state: SightState.none));
+                context.read<Mocks>().removeFromFavorite(sight.id);
               },
             ),
           ],

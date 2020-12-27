@@ -12,9 +12,9 @@ class Sight {
     required List<String> photos,
     required this.details,
     required this.category,
-    this.state = SightState.none,
+    this.visited = false,
     this.visitTime,
-    this.visited,
+    this.visitedTime,
   }) : photos = UnmodifiableListView(photos);
 
   final int id;
@@ -23,9 +23,9 @@ class Sight {
   final UnmodifiableListView<String> photos;
   final String details;
   final SightCategory category;
-  final SightState state;
+  final bool visited;
   final DateTime? visitTime;
-  final DateTime? visited;
+  final DateTime? visitedTime;
 
   @override
   String toString() => 'Sight(id: $id, $name, ${category.text}, $coord ...)';
@@ -37,9 +37,9 @@ class Sight {
     List<String>? photos,
     String? details,
     SightCategory? category,
-    SightState? state,
+    bool? visited,
     DateTime? visitTime,
-    DateTime? visited,
+    DateTime? visitedTime,
   }) =>
       Sight(
         id: id ?? this.id,
@@ -48,9 +48,9 @@ class Sight {
         photos: photos ?? this.photos,
         details: details ?? this.details,
         category: category ?? this.category,
-        state: state ?? this.state,
-        visitTime: visitTime ?? this.visitTime,
         visited: visited ?? this.visited,
+        visitTime: visitTime ?? this.visitTime,
+        visitedTime: visitedTime ?? this.visitedTime,
       );
 }
 
@@ -62,13 +62,6 @@ enum SightCategory {
   restaurant,
   park,
   particular,
-}
-
-/// Категория места.
-enum SightState {
-  none,
-  favorite,
-  visited,
 }
 
 /// Временное решение вопроса с иконкой и наименованием категории.

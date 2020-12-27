@@ -22,8 +22,8 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
         ],
         details: 'Хабаровский краевой музей имени Н.И. Гродекова',
         category: SightCategory.museum,
-        state: SightState.favorite,
-        visitTime: DateTime(2021, 1, 3),
+        // visited: true,
+        visitedTime: DateTime(2021, 1, 3),
       ),
       Sight(
         id: _mockId++,
@@ -34,7 +34,6 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
         ],
         details: 'Чешская и европейская кухня. Фермерская пивоварня',
         category: SightCategory.restaurant,
-        state: SightState.favorite,
         visitTime: DateTime(2021, 1, 4),
       ),
       Sight(
@@ -47,7 +46,6 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
         details:
             'Гостиница «Интурист» расположена в историческом центре Хабаровска, в парке, в двух шагах от набережной реки Амур. Рядом с гостиницей находится деловая часть города: краеведческий, художественный и военный музеи, театры, концертные залы филармонии и дома офицеров Российской Армии, а также магазины, рестораны и банки.',
         category: SightCategory.hotel,
-        state: SightState.favorite,
         visitTime: DateTime(2021, 1, 4),
       ),
       Sight(
@@ -59,8 +57,7 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
         ],
         details: 'Кафе-кондитерская.',
         category: SightCategory.cafe,
-        state: SightState.visited,
-        visited: DateTime(2020, 12, 20),
+        visitTime: DateTime(2020, 12, 20),
       ),
       Sight(
         id: _mockId++,
@@ -83,8 +80,8 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
         details:
             'Городской парк культуры и отдыха "Динамо" - большой красивый парк в центре Хабаровска. Площадь парка - 31 гектар.',
         category: SightCategory.park,
-        state: SightState.visited,
-        visited: DateTime(2020, 12, 12),
+        // visited: true,
+        visitedTime: DateTime(2020, 12, 12),
       ),
       Sight(
         id: _mockId++,
@@ -102,14 +99,15 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
 
   var _mockId = 0;
   late final List<Sight> _mocks;
+  var _favoriteSet = <int>{0, 1, 2, 3, 5};
 
   @override
   Iterator<Sight> get iterator => _mocks.iterator;
+  Iterable<Sight> get favorites => _favoriteSet.map<Sight>((id) => this[id]);
 
-  Sight operator [](int id) {
-    final index = _mocks.indexWhere((element) => element.id == id);
-    return _mocks[index];
-  }
+  int _index(int id) => _mocks.indexWhere((element) => element.id == id);
+
+  Sight operator [](int id) => _mocks[_index(id)];
 
   int add(Sight sight) {
     final id = _mockId++;
@@ -119,14 +117,40 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
   }
 
   void replace(int id, Sight sight) {
-    final index = _mocks.indexWhere((element) => element.id == id);
-    _mocks[index] = sight;
+    _mocks[_index(id)] = sight;
     notifyListeners();
   }
 
   void remove(int id) {
-    final index = _mocks.indexWhere((element) => element.id == id);
-    _mocks.removeAt(index);
+    _mocks.removeAt(_index(id));
+    notifyListeners();
+  }
+
+  bool isFavorite(int id) => _favoriteSet.contains(id);
+
+  void addToFavorite(int id) {
+    _favoriteSet.add(id);
+    notifyListeners();
+  }
+
+  void removeFromFavorite(int id) {
+    _favoriteSet.remove(id);
+    notifyListeners();
+  }
+
+  void toggleFavorite(int id) {
+    isFavorite(id) ? removeFromFavorite(id) : addToFavorite(id);
+  }
+
+  void moveFavorite(int from, int to) {
+    final id = _favoriteSet.elementAt(from);
+    _favoriteSet.remove(id);
+    final newPos = to > from ? to - 1 : to;
+    _favoriteSet = {
+      ..._favoriteSet.take(newPos),
+      id,
+      ..._favoriteSet.skip(newPos),
+    };
     notifyListeners();
   }
 }
