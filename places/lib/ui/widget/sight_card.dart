@@ -12,6 +12,7 @@ import 'svg_button.dart';
 
 enum SightCardType { list, wishlist, visited }
 
+/// Виджет: Карточка интересного места.
 class SightCard extends StatelessWidget {
   const SightCard({
     Key? key,
@@ -23,48 +24,53 @@ class SightCard extends StatelessWidget {
   final SightCardType type;
 
   @override
-  Widget build(BuildContext context) => AspectRatio(
-        aspectRatio: 3 / 2,
-        child: Card(
-          elevation: 2,
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTop(),
-                  _buildBottom(context),
-                ],
-              ),
-              // Поверх карточки невдимая кнопка
-              MaterialButton(
-                padding: EdgeInsets.zero,
-                highlightColor: MyTheme.of(context).tapHighlightColor,
-                splashColor: MyTheme.of(context).tapSplashColor,
-                onPressed: () {
-                  Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SightDetails(sight: sight),
-                      ));
-                },
-                child: _buildSignatures(context),
-              ),
-            ],
-          ),
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    return AspectRatio(
+      aspectRatio: 3 / 2,
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 2,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildTop(),
+                _buildBottom(theme),
+              ],
+            ),
+            // Поверх карточки невидимая кнопка
+            MaterialButton(
+              padding: EdgeInsets.zero,
+              highlightColor: theme.app.highlightColor,
+              splashColor: theme.app.splashColor,
+              onPressed: () {
+                Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SightDetails(sight: sight),
+                    ));
+              },
+              child: _buildSignatures(theme),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   // Верхняя часть карточки (фотография).
-  Expanded _buildTop() => Expanded(
+  Widget _buildTop() => Expanded(
         child: LoadableImage(
           url: sight.url,
         ),
       );
 
   // Строка кнопок поверх картинки.
-  Widget _buildSignatures(BuildContext context) {
-    final textStyle = MyTheme.of(context).cardSignaturesTextStyle;
+  Widget _buildSignatures(MyThemeData theme) {
+    final textStyle = theme.textBold14White;
     final textColor = textStyle.color;
 
     return Container(
@@ -73,9 +79,9 @@ class SightCard extends StatelessWidget {
       child: Row(
         children: [
           SmallButton(
-            highlightColor: MyThemeData.tapOnImageHighlightColor,
-            splashColor: MyThemeData.tapOnImageSplashColor,
-            label: sight.typeAsText,
+            highlightColor: theme.highlightColorOnImage,
+            splashColor: theme.splashColorOnImage,
+            label: sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');
@@ -129,7 +135,7 @@ class SightCard extends StatelessWidget {
   }
 
   // Нижняя (текстовая) часть карточки.
-  Widget _buildBottom(BuildContext context) => Expanded(
+  Widget _buildBottom(MyThemeData theme) => Expanded(
         child: Container(
           padding: MyThemeData.commonPadding,
           child: RichText(
@@ -137,12 +143,12 @@ class SightCard extends StatelessWidget {
             maxLines: 4,
             text: TextSpan(
               text: '${sight.name}\n',
-              style: Theme.of(context).primaryTextTheme.headline4,
+              style: theme.textMiddle16Main,
               children: [
                 TextSpan(
                   //text: sight.details,
                   text: '${myMockCoord.distance(sight.coord)}',
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: theme.textRegular14Light,
                 ),
               ],
             ),
@@ -164,11 +170,15 @@ class SignatureButton extends StatelessWidget {
   final void Function() onPressed;
 
   @override
-  Widget build(BuildContext context) => SvgButton(
-        highlightColor: MyThemeData.tapOnImageHighlightColor,
-        splashColor: MyThemeData.tapOnImageSplashColor,
-        svg: svg,
-        color: color,
-        onPressed: onPressed,
-      );
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    return SvgButton(
+      highlightColor: theme.highlightColorOnImage,
+      splashColor: theme.splashColorOnImage,
+      svg: svg,
+      color: color,
+      onPressed: onPressed,
+    );
+  }
 }

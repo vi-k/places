@@ -4,6 +4,7 @@ import '../res/themes.dart';
 import 'my_theme.dart';
 import 'small_button.dart';
 
+/// Виджет: Переключатель табов.
 class TabSwitch extends StatelessWidget {
   const TabSwitch({
     Key? key,
@@ -15,30 +16,34 @@ class TabSwitch extends StatelessWidget {
   final TabController tabController;
 
   @override
-  Widget build(BuildContext context) => Container(
-        height: MyThemeData.smallButtonHeight,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(MyThemeData.tabsSwitchRadius),
-          color: MyTheme.of(context).tabSwitchInactiveColor,
-        ),
-        child: Row(
-          children: [
-            for (var i = 0; i < tabs.length; i++)
-              Expanded(
-                child: SmallButton(
-                  onPressed: () {
-                    tabController.index = i;
-                  },
-                  color: i == tabController.index
-                      ? MyTheme.of(context).tabSwitchActiveColor
-                      : Colors.transparent,
-                  label: tabs[i],
-                  style: i == tabController.index
-                      ? MyTheme.of(context).tabSwitchActiveTextStyle
-                      : MyTheme.of(context).tabSwitchInactiveTextStyle,
-                ),
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    return Container(
+      height: MyThemeData.smallButtonHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(MyThemeData.tabsSwitchRadius),
+        color: theme.backgroundSecond,
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < tabs.length; i++)
+            Expanded(
+              child: SmallButton(
+                onPressed: () {
+                  tabController.index = i;
+                },
+                color: i == tabController.index
+                    ? theme.mainTextColor
+                    : Colors.transparent,
+                label: tabs[i],
+                style: i == tabController.index
+                    ? theme.textBold14Inverse
+                    : theme.textBold14Light,
               ),
-          ],
-        ),
-      );
+            ),
+        ],
+      ),
+    );
+  }
 }

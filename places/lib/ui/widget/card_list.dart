@@ -4,6 +4,7 @@ import '../../domain/sight.dart';
 import '../res/themes.dart';
 import 'sight_card.dart';
 
+/// Виджет: Список карточек.
 class CardList extends StatelessWidget {
   const CardList({
     Key? key,
@@ -16,7 +17,7 @@ class CardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView.separated(
-        padding: MyThemeData.listPadding,
+        padding: MyThemeData.commonPadding,
         itemCount: iterable.length,
         itemBuilder: (context, index) => SightCard(
           type: cardType,

@@ -3,6 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'my_theme.dart';
 
+/// Виджет: Стандартная универсальная кнопка.
+///
+/// Иконка, если нужна, берётся из ресурсов по имени, переданному в параметре
+/// [svg]. Текст кнопки передаётся в строке [label].
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,
@@ -17,14 +21,14 @@ class StandartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = MyTheme.of(context).standartButtonTextStyle;
+    final theme = MyTheme.of(context);
+    final textStyle = theme.textBold14White;
 
     return svg == null
       ? RaisedButton(
-          color: Theme.of(context).buttonTheme.colorScheme?.primary,
           onPressed: onPressed,
           child: Text(
-            label,
+            label.toUpperCase(),
             style: textStyle,
           ),
         )
@@ -35,7 +39,7 @@ class StandartButton extends StatelessWidget {
             color: textStyle.color,
           ),
           label: Text(
-            label,
+            label.toUpperCase(),
             style: textStyle,
           ),
         );

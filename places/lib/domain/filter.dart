@@ -4,29 +4,38 @@ import '../utils/maps.dart';
 import '../utils/range.dart';
 import 'sight.dart';
 
+/// Фильтр.
+///
+/// - По категории.
+/// - По расстоянию до места.
 class Filter {
   Filter({
-    Set<SightType>? categories,
+    Set<SightCategory>? categories,
     this.distance = const Range<Distance>(Distance(0), Distance(10000)),
-  }) : categories =
-            UnmodifiableSetView<SightType>(categories ?? {...SightType.values});
+  }) : categories = UnmodifiableSetView<SightCategory>(
+            categories ?? {...SightCategory.values});
 
-  final UnmodifiableSetView<SightType> categories;
+  // Категории сохраняем в немодифицируемом сете, чтобы гарантировать
+  // иммутабельность класса.
+  final UnmodifiableSetView<SightCategory> categories;
   final Range<Distance> distance;
 
-  bool hasCategory(SightType type) => categories.contains(type);
+  bool hasCategory(SightCategory type) => categories.contains(type);
 
-  Filter toggleCategory(SightType type) {
+  Filter toggleCategory(SightCategory type) {
     final s = categories.toSet();
     hasCategory(type) ? s.remove(type) : s.add(type);
     return copyWith(categories: s);
   }
 
-  Filter copyWith({Set<SightType>? categories, Range<Distance>? distance}) =>
+  Filter copyWith({
+    Set<SightCategory>? categories,
+    Range<Distance>? distance,
+  }) =>
       Filter(
         categories: categories == null
             ? this.categories
-            : UnmodifiableSetView<SightType>(categories),
+            : UnmodifiableSetView<SightCategory>(categories),
         distance: distance ?? this.distance,
       );
 }
