@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'loadable_image.dart';
 
@@ -43,7 +43,7 @@ class PhotoCard extends StatelessWidget {
                       child: Padding(
                         padding: clearPadding,
                         child: SvgPicture.asset(
-                          assetClear,
+                          Svg24.clear,
                           width: clearIconSize,
                           height: clearIconSize,
                           color: mainColor100,

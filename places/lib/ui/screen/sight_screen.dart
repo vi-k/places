@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
 import '../../mocks.dart';
@@ -38,12 +39,16 @@ class _SightScreenState extends State<SightScreen> {
   double? _lon;
   String? _details;
 
+  bool get isNew => widget.sight == null;
+
   @override
   void initState() {
     super.initState();
 
-    final sight = widget.sight;
-    if (sight != null) {
+    // В экране редактирования нам не нужно следить за изменениями.
+    // А прочитать данные из провайдера можем и здесь.
+    if (!isNew) {
+      final sight = widget.sight!;
       _photos.addAll(sight.photos);
       _category = sight.category;
       _name = sight.name;
@@ -59,7 +64,7 @@ class _SightScreenState extends State<SightScreen> {
 
     return Scaffold(
       appBar: SmallAppBar(
-        title: widget.sight == null ? stringNewPlace : stringEdit,
+        title: isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
       body: Column(
@@ -69,50 +74,7 @@ class _SightScreenState extends State<SightScreen> {
             child: Expanded(
               child: ListView(
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        const SizedBox(width: commonSpacing),
-                        AddPhotoCard(
-                          onPressed: () {
-                            // Временно добавляем моковые фотографии.
-                            if (_mockPhotosCounter >= mockPhotos.length) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Добавили всё, что можно')),
-                              );
-                            } else {
-                              setState(() {
-                                _photos.add(mockPhotos[_mockPhotosCounter++]);
-                              });
-                            }
-                          },
-                        ),
-                        for (final photo in _photos) ...[
-                          const SizedBox(width: commonSpacing),
-                          Dismissible(
-                            key: ValueKey(photo),
-                            direction: DismissDirection.vertical,
-                            onDismissed: (_) {
-                              setState(() {
-                                _photos.remove(photo);
-                              });
-                            },
-                            child: PhotoCard(
-                              url: photo,
-                              onClose: () {
-                                setState(() {
-                                  _photos.remove(photo);
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                        const SizedBox(width: commonSpacing),
-                      ],
-                    ),
-                  ),
+                  _buildPhotoGallery(context),
                   _buildCategory(theme),
                   _buildName(),
                   ..._buildCoord(context, theme),
@@ -127,6 +89,54 @@ class _SightScreenState extends State<SightScreen> {
     );
   }
 
+  Widget _buildPhotoGallery(BuildContext context) =>
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 24),
+          child: Row(
+            children: [
+              const SizedBox(width: commonSpacing),
+              AddPhotoCard(
+                onPressed: () {
+                  // Временно добавляем моковые фотографии.
+                  if (_mockPhotosCounter >= mockPhotos.length) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Добавили всё, что можно')),
+                    );
+                  } else {
+                    setState(() {
+                      _photos.add(mockPhotos[_mockPhotosCounter++]);
+                    });
+                  }
+                },
+              ),
+              for (final photo in _photos) ...[
+                const SizedBox(width: commonSpacing),
+                Dismissible(
+                  key: ValueKey(photo),
+                  direction: DismissDirection.up,
+                  onDismissed: (_) {
+                    setState(() {
+                      _photos.remove(photo);
+                    });
+                  },
+                  child: PhotoCard(
+                    url: photo,
+                    onClose: () {
+                      setState(() {
+                        _photos.remove(photo);
+                      });
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(width: commonSpacing),
+            ],
+          ),
+        ),
+      );
+
   Widget _buildCategory(MyThemeData theme) => Section(
         stringCategory,
         // Временное решение для выбора категории вместо отдельного экрана
@@ -139,6 +149,9 @@ class _SightScreenState extends State<SightScreen> {
                 child: Text(category.text),
               ),
           ],
+          decoration: const InputDecoration(
+            hintText: stringUnselected,
+          ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             if (value == null) return stringRequiredField;
@@ -265,15 +278,14 @@ class _SightScreenState extends State<SightScreen> {
         width: double.infinity,
         padding: commonPadding,
         child: StandartButton(
-          label: widget.sight == null ? stringCreate : stringSave,
+          label: isNew ? stringCreate : stringSave,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               showDialog<void>(
                 context: context,
                 barrierDismissible: true,
                 builder: (_) => AlertDialog(
-                  title: Text(
-                      widget.sight == null ? stringDoCreate : stringDoSave),
+                  title: Text(isNew ? stringDoCreate : stringDoSave),
                   actions: [
                     SmallButton(
                       label: stringNo,
@@ -286,7 +298,10 @@ class _SightScreenState extends State<SightScreen> {
                       onPressed: () {
                         _formKey.currentState!.save();
 
+                        var id = widget.sight?.id;
+
                         final newSight = Sight(
+                          id: id ?? 0,
                           name: _name!,
                           coord: Coord(_lat!, _lon!),
                           photos: _photos,
@@ -294,17 +309,14 @@ class _SightScreenState extends State<SightScreen> {
                           category: _category!,
                         );
 
-                        final sight = widget.sight;
-                        if (sight == null) {
-                          mocks.add(newSight);
+                        if (id == null) {
+                          id = context.read<Mocks>().add(newSight);
                         } else {
-                          final index = mocks.indexOf(sight);
-                          assert(index != -1);
-                          mocks[index] = newSight;
+                          context.read<Mocks>().replace(id, newSight);
                         }
 
                         Navigator.pop(context);
-                        Navigator.pop(context, newSight);
+                        Navigator.pop(context, id);
                       },
                     ),
                   ],

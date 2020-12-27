@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
@@ -21,6 +21,7 @@ class AddPhotoCard extends StatelessWidget {
       width: photoCardSize,
       height: photoCardSize,
       child: MaterialButton(
+        padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: theme.accentColor40),
           borderRadius: BorderRadius.circular(textFieldRadius),
@@ -28,7 +29,9 @@ class AddPhotoCard extends StatelessWidget {
         onPressed: onPressed,
         child: Center(
           child: SvgPicture.asset(
-            assetAdd,
+            Svg24.plus,
+            width: plusIconSize,
+            height: plusIconSize,
             color: theme.accentColor,
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/filter.dart';
 import '../../domain/sight.dart';
@@ -191,7 +192,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return '$prefix$stringRangeTo $endValue';
   }
 
-  Future<int> calcCardCount() async => mocks.where((element) {
+  Future<int> calcCardCount() async => context.read<Mocks>().where((element) {
         if (!filter.hasCategory(element.category)) return false;
 
         final d = element.coord.distance(myMockCoord);

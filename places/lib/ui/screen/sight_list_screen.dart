@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../mocks.dart';
 import '../res/strings.dart';
@@ -41,7 +42,7 @@ class _SightListScreenState extends State<SightListScreen> {
         ),
         body: CardList(
           cardType: SightCardType.list,
-          iterable: mocks.toList()
+          list: (context) => context.watch<Mocks>().toList()
             ..sort((a, b) => a.coord
                 .distance(myMockCoord)
                 .compareTo(b.coord.distance(myMockCoord))),
@@ -50,11 +51,11 @@ class _SightListScreenState extends State<SightListScreen> {
         floatingActionButton: FloatingActionButton.extended(
           isExtended: true,
           onPressed: () {
-            Navigator.push<void>(
+            Navigator.push<int>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const SightScreen(),
-                )).then((value) => setState(() {}));
+                ));
           },
           icon: const Icon(Icons.add),
           label: Text(stringNewPlace.toUpperCase()),

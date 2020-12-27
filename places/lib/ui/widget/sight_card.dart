@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
 import '../../mocks.dart';
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
@@ -16,11 +17,11 @@ enum SightCardType { list, wishlist, visited }
 class SightCard extends StatefulWidget {
   const SightCard({
     Key? key,
-    required this.sight,
+    required this.sightId,
     required this.type,
   }) : super(key: key);
 
-  final Sight sight;
+  final int sightId;
   final SightCardType type;
 
   @override
@@ -28,30 +29,22 @@ class SightCard extends StatefulWidget {
 }
 
 class _SightCardState extends State<SightCard> {
-  late Sight _sight;
-
-  @override
-  void initState() {
-    super.initState();
-    _sight = widget.sight;
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
+    final sight = context.watch<Mocks>()[widget.sightId];
+
     return AspectRatio(
       aspectRatio: 3 / 2,
       child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 2,
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildTop(),
-                _buildBottom(theme),
+                _buildTop(sight),
+                _buildBottom(theme, sight),
               ],
             ),
             // Поверх карточки невидимая кнопка
@@ -60,19 +53,13 @@ class _SightCardState extends State<SightCard> {
               highlightColor: theme.app.highlightColor,
               splashColor: theme.app.splashColor,
               onPressed: () {
-                Navigator.push<Sight>(
+                Navigator.push<void>(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SightDetails(sight: _sight),
-                    )).then((value) => setState(() {
-                      if (value != null) {
-                        setState(() {
-                          _sight = value;
-                        });
-                      }
-                    }));
+                      builder: (context) => SightDetails(sightId: sight.id),
+                    ));
               },
-              child: _buildSignatures(theme),
+              child: _buildSignatures(theme, sight),
             ),
           ],
         ),
@@ -80,13 +67,24 @@ class _SightCardState extends State<SightCard> {
     );
   }
 
-  Widget _buildTop() => Expanded(
-        child: LoadableImage(
-          url: _sight.photos.isEmpty ? '' : _sight.photos[0],
+  Widget _buildTop(Sight sight) => Expanded(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: LoadableImage(
+                url: sight.photos.isEmpty ? '' : sight.photos[0],
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                color: highlightColorDark2,
+              ),
+            ),
+          ],
         ),
       );
 
-  Widget _buildSignatures(MyThemeData theme) {
+  Widget _buildSignatures(MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
     final textColor = textStyle.color;
 
@@ -98,7 +96,7 @@ class _SightCardState extends State<SightCard> {
           SmallButton(
             highlightColor: highlightColorDark2,
             splashColor: splashColorDark2,
-            label: _sight.category.text.toLowerCase(),
+            label: sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');
@@ -107,42 +105,53 @@ class _SightCardState extends State<SightCard> {
           const Spacer(),
           if (widget.type == SightCardType.list) ...[
             SignatureButton(
-              svg: assetFavorite,
+              svg: sight.state == SightState.none
+                  ? Svg24.heart
+                  : Svg24.heartFull,
               color: textColor,
               onPressed: () {
-                print('Favorite');
+                context.read<Mocks>().replace(
+                    sight.id,
+                    sight.copyWith(
+                        state: sight.state == SightState.none
+                            ? SightState.favorite
+                            : SightState.none));
               },
             ),
           ],
           if (widget.type == SightCardType.wishlist) ...[
             SignatureButton(
-              svg: assetCalendar,
+              svg: Svg24.calendar,
               color: textColor,
               onPressed: () {
                 print('Schedule');
               },
             ),
             SignatureButton(
-              svg: assetClose,
+              svg: Svg24.close,
               color: textColor,
               onPressed: () {
-                print('Remove from wishlist');
+                context
+                    .read<Mocks>()
+                    .replace(sight.id, sight.copyWith(state: SightState.none));
               },
             ),
           ],
           if (widget.type == SightCardType.visited) ...[
             SignatureButton(
-              svg: assetShare,
+              svg: Svg24.share,
               color: textColor,
               onPressed: () {
                 print('Share');
               },
             ),
             SignatureButton(
-              svg: assetClose,
+              svg: Svg24.close,
               color: textColor,
               onPressed: () {
-                print('Remove from visited');
+                context
+                    .read<Mocks>()
+                    .replace(sight.id, sight.copyWith(state: SightState.none));
               },
             ),
           ],
@@ -151,19 +160,19 @@ class _SightCardState extends State<SightCard> {
     );
   }
 
-  Widget _buildBottom(MyThemeData theme) => Expanded(
+  Widget _buildBottom(MyThemeData theme, Sight sight) => Expanded(
         child: Container(
           padding: commonPadding,
           child: RichText(
             overflow: TextOverflow.ellipsis,
             maxLines: 4,
             text: TextSpan(
-              text: '${_sight.name}\n',
+              text: '${sight.name}\n',
               style: theme.textMiddle16Main,
               children: [
                 TextSpan(
                   //text: sight.details,
-                  text: '${myMockCoord.distance(_sight.coord)}',
+                  text: '${myMockCoord.distance(sight.coord)}',
                   style: theme.textRegular14Light,
                 ),
               ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 import 'small_button.dart';
@@ -79,7 +79,7 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
               if (Navigator.canPop(context))
                 back == null
                     ? SvgButton(
-                        assetBack,
+                        Svg24.back,
                         onPressed: () {
                           Navigator.pop(context);
                         },

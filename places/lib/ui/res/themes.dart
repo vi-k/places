@@ -41,6 +41,7 @@ const _textMiddle = TextStyle(fontWeight: FontWeight.w500);
 const _textBold = TextStyle(fontWeight: FontWeight.bold);
 
 final _textRegular12 = _textRegular.copyWith(fontSize: 12, height: 1.33);
+final _textMiddle12 = _textMiddle.copyWith(fontSize: 12, height: 1.33);
 final _textRegular14 = _textRegular.copyWith(fontSize: 14, height: 1.29);
 final _textBold14 = _textBold.copyWith(fontSize: 14, height: 1.29);
 final _textRegular16 = _textRegular.copyWith(fontSize: 16, height: 1.25);
@@ -69,6 +70,7 @@ const tabsSwitchRadius = 40.0;
 const sectionTop = 24.0;
 const photoCardSize = 72.0;
 const tickChoiceSize = 16.0;
+const plusIconSize = 40.0;
 const clearIconSize = 20.0;
 const clearButtonSize = 24.0;
 
@@ -77,6 +79,7 @@ const commonPadding = EdgeInsets.all(16);
 const commonPaddingLR = EdgeInsets.only(left: 16, right: 16);
 const commonPaddingLBR = EdgeInsets.only(left: 16, right: 16, bottom: 16);
 const commonPaddingLTR = EdgeInsets.only(left: 16, top: 16, right: 16);
+const commonPadding1_2 = EdgeInsets.all(8);
 const appBarPadding = EdgeInsets.only(left: 16, top: 40, right: 16, bottom: 16);
 const detailsPadding =
     EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 16);
@@ -104,6 +107,7 @@ class MyThemeData {
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
+    textMiddle12White = _textMiddle12.withColor(mainColor100);
 
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
@@ -144,6 +148,7 @@ class MyThemeData {
 
   late final TextStyle textRegular12Main;
   late final TextStyle textRegular12Light56;
+  late final TextStyle textMiddle12White;
 
   late final TextStyle textRegular14Main;
   late final TextStyle textRegular14Light;
@@ -179,13 +184,14 @@ const _baseButtonTheme = ButtonThemeData(
 );
 
 const _baseCardTheme = CardTheme(
+  margin: EdgeInsets.zero,
   clipBehavior: Clip.antiAlias,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.all(
-      Radius.circular(16), // не использую BorderRadius.circular ради const
+      Radius.circular(commonSpacing), // не использую BorderRadius.circular ради const
     ),
   ),
-  elevation: 0,
+  elevation: 2,
 );
 
 const _baseSliderTheme = SliderThemeData(

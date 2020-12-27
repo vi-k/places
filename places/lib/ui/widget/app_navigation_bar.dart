@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/settings_screen.dart';
 import '../screen/sight_list_screen.dart';
@@ -59,28 +60,28 @@ class AppNavigationBar extends StatelessWidget {
       items: [
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
-            index == 0 ? assetListFull : assetList,
+            index == 0 ? Svg24.listFull : Svg24.list,
             color: _itemColor(theme, index == 0),
           ),
           label: stringSightList,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
-            index == 1 ? assetMapFull : assetMap,
+            index == 1 ? Svg24.mapFull : Svg24.map,
             color: _itemColor(theme, index == 1),
           ),
           label: 'Map', // Временно
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
-            index == 2 ? assetFavoriteFull : assetFavorite,
+            index == 2 ? Svg24.heartFull : Svg24.heart,
             color: _itemColor(theme, index == 2),
           ),
           label: stringFavorite,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
-            index == 3 ? assetSettingsFull : assetSettings,
+            index == 3 ? Svg24.settingsFull : Svg24.settings,
             color: _itemColor(theme, index == 3),
           ),
           label: stringSettings,

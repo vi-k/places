@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
+import '../../mocks.dart';
 import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/loadable_image.dart';
 import '../widget/my_theme.dart';
@@ -11,12 +14,12 @@ import 'sight_screen.dart';
 
 /// Экран детализации места.
 class SightDetails extends StatefulWidget {
-  final Sight sight;
-
   const SightDetails({
     Key? key,
-    required this.sight,
+    required this.sightId,
   }) : super(key: key);
+
+  final int sightId;
 
   @override
   _SightDetailsState createState() => _SightDetailsState();
@@ -24,26 +27,23 @@ class SightDetails extends StatefulWidget {
 
 class _SightDetailsState extends State<SightDetails>
     with TickerProviderStateMixin {
-  late Sight _sight;
-  late TabController _tabController;
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _sight = widget.sight;
-
-    _tabController = TabController(
-      length: _sight.photos.length,
-      vsync: this,
-    );
-    _tabController.addListener(() {
-      setState(() {});
-    });
+    // _tabController = TabController(
+    //   length: _sight.photos.length,
+    //   vsync: this,
+    // );
+    // _tabController.addListener(() {
+    //   setState(() {});
+    // });
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
@@ -51,40 +51,46 @@ class _SightDetailsState extends State<SightDetails>
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
+    final sight = context.watch<Mocks>()[widget.sightId];
+
+    if (_tabController != null) {
+      _tabController!.dispose();
+    }
+
+    _tabController = TabController(
+      length: sight.photos.length,
+      vsync: this,
+    );
+    _tabController!.addListener(() {
+      setState(() {});
+    });
+
     return Scaffold(
-      body: WillPopScope(
-        onWillPop: () async {
-          // Перехватываем возврат, чтобы передать sight, т.к. он мог
-          // измениться.
-          Navigator.pop(context, _sight);
-          return false;
-        },
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildGallery(theme),
-              Padding(
-                padding: detailsPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ..._buildText(theme),
-                    ..._buildButtons(),
-                    ..._buildEditButton(context),
-                  ],
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildGallery(theme, sight),
+            Padding(
+              padding: detailsPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ..._buildText(theme, sight),
+                  ..._buildButtons(),
+                  ..._buildEditButton(sight),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildGallery(MyThemeData theme) => SizedBox(
+  Widget _buildGallery(MyThemeData theme, Sight sight) => SizedBox(
         height: detailsImageSize,
-        child: _sight.photos.isEmpty
+        child: sight.photos.isEmpty
             ? Center(
                 child: Text(
                   'Нет фотографий',
@@ -94,7 +100,7 @@ class _SightDetailsState extends State<SightDetails>
             : TabBarView(
                 controller: _tabController,
                 children: [
-                  for (final url in _sight.photos)
+                  for (final url in sight.photos)
                     Tab(
                       child: SizedBox(
                         width: double.infinity,
@@ -107,15 +113,16 @@ class _SightDetailsState extends State<SightDetails>
                 ],
               ),
       );
-  List<Widget> _buildText(MyThemeData theme) => [
+
+  List<Widget> _buildText(MyThemeData theme, Sight sight) => [
         Text(
-          _sight.name,
+          sight.name,
           style: theme.textBold24Main,
         ),
         Row(
           children: [
             Text(
-              _sight.category.text,
+              sight.category.text,
               style: theme.textBold14Light,
             ),
             const SizedBox(width: commonSpacing),
@@ -127,7 +134,7 @@ class _SightDetailsState extends State<SightDetails>
         ),
         const SizedBox(height: commonSpacing3_2),
         Text(
-          _sight.details,
+          sight.details,
           style: theme.textRegular14Light,
         ),
         const SizedBox(height: commonSpacing3_2),
@@ -135,7 +142,7 @@ class _SightDetailsState extends State<SightDetails>
 
   List<Widget> _buildButtons() => [
         StandartButton(
-          svg: assetRoute,
+          svg: Svg24.go,
           label: stringBuildRoute,
           onPressed: () {
             print('Строим маршрут');
@@ -148,42 +155,44 @@ class _SightDetailsState extends State<SightDetails>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             const SmallButton(
-              svg: assetCalendar,
+              svg: Svg24.calendar,
               label: stringToSchedule,
             ),
             SmallButton(
               onPressed: () => print('В Избранное'),
-              svg: assetFavorite,
+              svg: Svg24.heart,
               label: stringToFavorite,
             ),
           ],
         ),
       ];
 
-  List<Widget> _buildEditButton(BuildContext context) => [
+  List<Widget> _buildEditButton(Sight sight) => [
         const SizedBox(height: commonSpacing1_2),
         const Divider(height: 2),
         const SizedBox(height: commonSpacing3_2),
         StandartButton(
           label: stringEdit,
           onPressed: () {
-            Navigator.push<Sight>(
+            Navigator.push<int>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SightScreen(sight: widget.sight),
-                )).then((value) => setState(() {
-                  if (value != null) {
-                    _sight = value;
-                    // Обновляем tabController. Для этого нужно, чтобы
-                    // виджет был наследником TickerProviderStateMixin,
-                    // а не SingleTickerProviderStateMixin.
-                    _tabController.dispose();
-                    _tabController = TabController(
-                      length: _sight.photos.length,
-                      vsync: this,
-                    );
-                  }
-                }));
+                  builder: (context) => SightScreen(sight: sight),
+                ));
+            // if (newSight != null) {
+            //   setState(() {
+            //     _sight = newSight;
+            //     _changed = true;
+            //     // Обновляем tabController. Для этого нужно, чтобы
+            //     // виджет был наследником TickerProviderStateMixin,
+            //     // а не SingleTickerProviderStateMixin.
+            //     _tabController.dispose();
+            //     _tabController = TabController(
+            //       length: _sight.photos.length,
+            //       vsync: this,
+            //     );
+            //   });
+            // }
           },
         )
       ];

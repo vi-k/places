@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
@@ -26,7 +26,7 @@ class LoadableImage extends StatelessWidget {
               color: Colors.black12,
               child: Center(
                 child: SvgPicture.asset(
-                  assetPhoto,
+                  Svg24.photo,
                   color: Colors.white30,
                 ),
               ),

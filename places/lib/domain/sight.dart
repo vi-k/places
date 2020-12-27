@@ -1,51 +1,54 @@
-import 'package:equatable/equatable.dart';
+import 'dart:collection';
 
-import '../ui/res/strings.dart';
+import '../ui/res/svg.dart';
 import '../utils/maps.dart';
 
 /// Интересное место.
-class Sight extends Equatable {
+class Sight {
   Sight({
+    required this.id,
     required this.name,
     required this.coord,
-    // required this.photos,
     required List<String> photos,
     required this.details,
     required this.category,
+    this.state = SightState.none,
     this.visitTime,
     this.visited,
-  }) : photos = List<String>.unmodifiable(photos);
+  }) : photos = UnmodifiableListView(photos);
 
+  final int id;
   final String name;
   final Coord coord;
-  final List<String> photos;
+  final UnmodifiableListView<String> photos;
   final String details;
   final SightCategory category;
+  final SightState state;
   final DateTime? visitTime;
   final DateTime? visited;
 
   @override
-  List<Object?> get props =>
-      [name, coord, photos, details, category, visitTime, visited];
-
-  @override
-  String toString() => 'Sight($name, ${category.text}, $coord ...)';
+  String toString() => 'Sight(id: $id, $name, ${category.text}, $coord ...)';
 
   Sight copyWith({
+    int? id,
     String? name,
     Coord? coord,
     List<String>? photos,
     String? details,
     SightCategory? category,
+    SightState? state,
     DateTime? visitTime,
     DateTime? visited,
   }) =>
       Sight(
+        id: id ?? this.id,
         name: name ?? this.name,
         coord: coord ?? this.coord,
         photos: photos ?? this.photos,
         details: details ?? this.details,
         category: category ?? this.category,
+        state: state ?? this.state,
         visitTime: visitTime ?? this.visitTime,
         visited: visited ?? this.visited,
       );
@@ -61,6 +64,13 @@ enum SightCategory {
   particular,
 }
 
+/// Категория места.
+enum SightState {
+  none,
+  favorite,
+  visited,
+}
+
 /// Временное решение вопроса с иконкой и наименованием категории.
 ///
 /// Если предполагать, что категории можно добавлять, то это всё должно
@@ -73,12 +83,13 @@ class _SightCategoryInfo {
 }
 
 final _categoryInfo = {
-  SightCategory.cafe: _SightCategoryInfo(assetCafe, 'Кафе'),
-  SightCategory.hotel: _SightCategoryInfo(assetHotel, 'Гостиница'),
-  SightCategory.museum: _SightCategoryInfo(assetMuseum, 'Музей'),
-  SightCategory.restaurant: _SightCategoryInfo(assetRestaurant, 'Ресторан'),
-  SightCategory.park: _SightCategoryInfo(assetMuseum, 'Парк'),
-  SightCategory.particular: _SightCategoryInfo(assetParticular, 'Особое место'),
+  SightCategory.cafe: _SightCategoryInfo(Svg32.cafe, 'Кафе'),
+  SightCategory.hotel: _SightCategoryInfo(Svg32.hotel, 'Гостиница'),
+  SightCategory.museum: _SightCategoryInfo(Svg32.museum, 'Музей'),
+  SightCategory.restaurant: _SightCategoryInfo(Svg32.restaurant, 'Ресторан'),
+  SightCategory.park: _SightCategoryInfo(Svg32.park, 'Парк'),
+  SightCategory.particular:
+      _SightCategoryInfo(Svg32.particularPlace, 'Особое место'),
 };
 
 /// Добавляет свойства к категориям.
