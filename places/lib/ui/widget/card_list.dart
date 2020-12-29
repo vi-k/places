@@ -39,28 +39,27 @@ class _CardListState extends State<CardList> {
   }
 
   // Обычный список.
-  Widget _buildNormalList(Iterable<Sight> iterable, MyThemeData theme) {
-    return ListView.separated(
-      padding: commonPadding,
-      itemCount: iterable.length,
-      itemBuilder: (context, index) {
-        final sight = iterable.elementAt(index);
-        return widget.cardType == SightCardType.list
-            ? _buildCard(sight)
-            : Dismissible(
-                key: ValueKey(sight.id),
-                direction: DismissDirection.endToStart,
-                onDismissed: (_) {
-                  context.read<Mocks>().removeFromFavorite(sight.id);
-                },
-                background: _buildBackground(theme),
-                child: _buildCard(sight),
-              );
-      },
-      separatorBuilder: (context, index) =>
-          const SizedBox(height: commonSpacing),
-    );
-  }
+  Widget _buildNormalList(Iterable<Sight> iterable, MyThemeData theme) =>
+      ListView.separated(
+        padding: commonPadding,
+        itemCount: iterable.length,
+        itemBuilder: (context, index) {
+          final sight = iterable.elementAt(index);
+          return widget.cardType == SightCardType.list
+              ? _buildCard(sight)
+              : Dismissible(
+                  key: ValueKey(sight.id),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) {
+                    context.read<Mocks>().removeFromFavorite(sight.id);
+                  },
+                  background: _buildBackground(theme),
+                  child: _buildCard(sight),
+                );
+        },
+        separatorBuilder: (context, index) =>
+            const SizedBox(height: commonSpacing),
+      );
 
   // Список в режиме перемещения.
   Widget _buildDraggableList(Iterable<Sight> iterable, MyThemeData theme) =>
@@ -78,20 +77,18 @@ class _CardListState extends State<CardList> {
               onAccept: (value) {
                 context.read<Mocks>().moveFavorite(value, targetIndex);
               },
-              builder: (context, candidateData, _) {
-                return candidateData.isNotEmpty
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: commonSpacing),
-                          _buildCardBack(theme, Colors.orange),
-                          const SizedBox(height: commonSpacing),
-                        ],
-                      )
-                    : const SizedBox(
-                        height: commonSpacing,
-                      );
-              },
+              builder: (context, candidateData, _) => candidateData.isNotEmpty
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: commonSpacing),
+                        _buildCardBack(theme, Colors.orange),
+                        const SizedBox(height: commonSpacing),
+                      ],
+                    )
+                  : const SizedBox(
+                      height: commonSpacing,
+                    ),
             );
           }
 

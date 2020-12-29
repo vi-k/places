@@ -73,7 +73,7 @@ const tickChoiceSize = 16.0;
 const plusIconSize = 40.0;
 const clearIconSize = 20.0;
 const clearButtonSize = 24.0;
-const cardAspectRatio = 4 / 1;
+const cardAspectRatio = 3 / 2;
 
 /// Отступы.
 const commonPadding = EdgeInsets.all(16);

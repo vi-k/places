@@ -30,33 +30,18 @@ class _SightDetailsState extends State<SightDetails>
   TabController? _tabController;
 
   @override
-  void initState() {
-    super.initState();
-    // _tabController = TabController(
-    //   length: _sight.photos.length,
-    //   vsync: this,
-    // );
-    // _tabController.addListener(() {
-    //   setState(() {});
-    // });
-  }
-
-  @override
   void dispose() {
     _tabController?.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    final sight = context.watch<Mocks>()[widget.sightId];
+    final sight = context.read<Mocks>()[widget.sightId];
 
-    if (_tabController != null) {
-      _tabController!.dispose();
-    }
-
+    _tabController?.dispose();
     _tabController = TabController(
       length: sight.photos.length,
       vsync: this,
@@ -64,6 +49,14 @@ class _SightDetailsState extends State<SightDetails>
     _tabController!.addListener(() {
       setState(() {});
     });
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+
+    final sight = context.watch<Mocks>()[widget.sightId];
 
     return Scaffold(
       body: SingleChildScrollView(
