@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../mocks.dart';
 import '../res/strings.dart';
@@ -8,7 +9,7 @@ import '../widget/big_app_bar.dart';
 import '../widget/card_list.dart';
 import '../widget/search_bar.dart';
 import '../widget/sight_card.dart';
-import 'add_sight_screen.dart';
+import 'sight_screen.dart';
 import 'sight_search_screen.dart';
 
 /// Экран: Список интересных мест.
@@ -23,7 +24,7 @@ class _SightListScreenState extends State<SightListScreen> {
         appBar: BigAppBar(
           title: stringSightListTitle,
           bottom: Padding(
-            padding: MyThemeData.commonPadding,
+            padding: commonPadding,
             child: Column(
               children: [
                 SearchBar(
@@ -41,7 +42,7 @@ class _SightListScreenState extends State<SightListScreen> {
         ),
         body: CardList(
           cardType: SightCardType.list,
-          iterable: mocks.toList()
+          list: (context) => context.watch<Mocks>().toList()
             ..sort((a, b) => a.coord
                 .distance(myMockCoord)
                 .compareTo(b.coord.distance(myMockCoord))),
@@ -50,11 +51,11 @@ class _SightListScreenState extends State<SightListScreen> {
         floatingActionButton: FloatingActionButton.extended(
           isExtended: true,
           onPressed: () {
-            Navigator.push<void>(
+            Navigator.push<int>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddSightScreen(),
-                )).then((value) => setState(() {}));
+                  builder: (context) => const SightScreen(),
+                ));
           },
           icon: const Icon(Icons.add),
           label: Text(stringNewPlace.toUpperCase()),

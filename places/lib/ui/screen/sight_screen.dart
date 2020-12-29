@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
 import '../../mocks.dart';
@@ -7,33 +8,63 @@ import '../../utils/focus.dart';
 import '../../utils/maps.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
+import '../widget/add_photo_card.dart';
 import '../widget/my_theme.dart';
+import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 
 /// Экран добавления места.
-class AddSightScreen extends StatefulWidget {
+class SightScreen extends StatefulWidget {
+  const SightScreen({
+    Key? key,
+    this.sight,
+  }) : super(key: key);
+
+  final Sight? sight;
+
   @override
-  _AddSightScreenState createState() => _AddSightScreenState();
+  _SightScreenState createState() => _SightScreenState();
 }
 
-class _AddSightScreenState extends State<AddSightScreen> {
+class _SightScreenState extends State<SightScreen> {
   final _formKey = GlobalKey<FormState>();
   SightCategory? _category;
+  final _photos = <String>[];
+  var _mockPhotosCounter = 0;
   String? _name;
   double? _lat;
   double? _lon;
   String? _details;
+
+  bool get isNew => widget.sight == null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // В экране редактирования нам не нужно следить за изменениями.
+    // А прочитать данные из провайдера можем и здесь.
+    if (!isNew) {
+      final sight = widget.sight!;
+      _photos.addAll(sight.photos);
+      _category = sight.category;
+      _name = sight.name;
+      _lat = sight.coord.lat;
+      _lon = sight.coord.lon;
+      _details = sight.details;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      appBar: const SmallAppBar(
-        title: stringNewPlace,
+      appBar: SmallAppBar(
+        title: isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
       body: Column(
@@ -41,16 +72,14 @@ class _AddSightScreenState extends State<AddSightScreen> {
           Form(
             key: _formKey,
             child: Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildCategory(theme),
-                    _buildName(),
-                    ..._buildCoord(context, theme),
-                    _buildDetails(),
-                  ],
-                ),
+              child: ListView(
+                children: [
+                  _buildPhotoGallery(context),
+                  _buildCategory(theme),
+                  _buildName(),
+                  ..._buildCoord(context, theme),
+                  _buildDetails(),
+                ],
               ),
             ),
           ),
@@ -60,10 +89,59 @@ class _AddSightScreenState extends State<AddSightScreen> {
     );
   }
 
+  Widget _buildPhotoGallery(BuildContext context) =>
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 24),
+          child: Row(
+            children: [
+              const SizedBox(width: commonSpacing),
+              AddPhotoCard(
+                onPressed: () {
+                  // Временно добавляем моковые фотографии.
+                  if (_mockPhotosCounter >= mockPhotos.length) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Добавили всё, что можно')),
+                    );
+                  } else {
+                    setState(() {
+                      _photos.add(mockPhotos[_mockPhotosCounter++]);
+                    });
+                  }
+                },
+              ),
+              for (final photo in _photos) ...[
+                const SizedBox(width: commonSpacing),
+                Dismissible(
+                  key: ValueKey(photo),
+                  direction: DismissDirection.up,
+                  onDismissed: (_) {
+                    setState(() {
+                      _photos.remove(photo);
+                    });
+                  },
+                  child: PhotoCard(
+                    url: photo,
+                    onClose: () {
+                      setState(() {
+                        _photos.remove(photo);
+                      });
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(width: commonSpacing),
+            ],
+          ),
+        ),
+      );
+
   Widget _buildCategory(MyThemeData theme) => Section(
         stringCategory,
         // Временное решение для выбора категории вместо отдельного экрана
         child: DropdownButtonFormField<SightCategory>(
+          value: _category,
           items: [
             for (final category in SightCategory.values)
               DropdownMenuItem(
@@ -71,6 +149,9 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 child: Text(category.text),
               ),
           ],
+          decoration: const InputDecoration(
+            hintText: stringUnselected,
+          ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             if (value == null) return stringRequiredField;
@@ -100,7 +181,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
   Widget _buildName() => Section(
         stringName,
         child: TextFormField(
-          initialValue: 'Моя работа', // Временно. Для тестов
+          initialValue: _name ?? 'Моя работа', // Временно. Для тестов
           decoration: const InputDecoration(
             hintText: stringNewPlaceFakeName,
           ),
@@ -124,7 +205,8 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 stringLatitude,
                 right: 0,
                 child: TextFormField(
-                  initialValue: '48.506642', // Временно. Для тестов
+                  initialValue: _lat?.toStringAsFixed(6) ??
+                      '48.506642', // Временно. Для тестов
                   decoration: const InputDecoration(
                     hintText: stringNewPlaceFakeLatitude,
                   ),
@@ -141,13 +223,14 @@ class _AddSightScreenState extends State<AddSightScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: MyThemeData.sectionHSpacing),
+            const SizedBox(width: commonSpacing),
             Expanded(
               child: Section(
                 stringLongitude,
                 left: 0,
                 child: TextFormField(
-                  initialValue: '135.138573', // Временно. Для тестов
+                  initialValue: _lon?.toStringAsFixed(6) ??
+                      '135.138573', // Временно. Для тестов
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -181,6 +264,7 @@ class _AddSightScreenState extends State<AddSightScreen> {
   Widget _buildDetails() => Section(
         stringDescription,
         child: TextFormField(
+          initialValue: _details,
           minLines: 3,
           maxLines: 10,
           textInputAction: TextInputAction.done,
@@ -192,21 +276,21 @@ class _AddSightScreenState extends State<AddSightScreen> {
 
   Widget _buildDone(BuildContext context) => Container(
         width: double.infinity,
-        padding: MyThemeData.commonPadding,
+        padding: commonPadding,
         child: StandartButton(
-          label: stringCreate,
+          label: isNew ? stringCreate : stringSave,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               showDialog<void>(
                 context: context,
                 barrierDismissible: true,
                 builder: (_) => AlertDialog(
-                  title: const Text(stringCreateQuestion),
+                  title: Text(isNew ? stringDoCreate : stringDoSave),
                   actions: [
                     SmallButton(
                       label: stringNo,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context);
                       },
                     ),
                     SmallButton(
@@ -214,16 +298,25 @@ class _AddSightScreenState extends State<AddSightScreen> {
                       onPressed: () {
                         _formKey.currentState!.save();
 
-                        mocks.add(Sight(
+                        var id = widget.sight?.id;
+
+                        final newSight = Sight(
+                          id: id ?? 0,
                           name: _name!,
                           coord: Coord(_lat!, _lon!),
-                          url: '',
+                          photos: _photos,
                           details: _details!,
                           category: _category!,
-                        ));
+                        );
 
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
+                        if (id == null) {
+                          id = context.read<Mocks>().add(newSight);
+                        } else {
+                          context.read<Mocks>().replace(id, newSight);
+                        }
+
+                        Navigator.pop(context);
+                        Navigator.pop(context, id);
                       },
                     ),
                   ],

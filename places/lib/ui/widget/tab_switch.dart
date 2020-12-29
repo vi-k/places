@@ -20,9 +20,9 @@ class TabSwitch extends StatelessWidget {
     final theme = MyTheme.of(context);
 
     return Container(
-      height: MyThemeData.smallButtonHeight,
+      height: smallButtonHeight,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(MyThemeData.tabsSwitchRadius),
+        borderRadius: BorderRadius.circular(tabsSwitchRadius),
         color: theme.backgroundSecond,
       ),
       child: Row(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/sight.dart';
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 
@@ -24,12 +24,12 @@ class SightCategoryFilter extends StatelessWidget {
     final theme = MyTheme.of(context);
 
     return Container(
-      margin: MyThemeData.commonPadding,
-      width: MyThemeData.filtersCategorySize,
+      margin: commonPadding,
+      width: filtersCategorySize,
       child: Column(
         children: [
           SizedBox(
-            height: MyThemeData.filtersCategorySize,
+            height: filtersCategorySize,
             child: Stack(
               children: [
                 Material(
@@ -50,15 +50,15 @@ class SightCategoryFilter extends StatelessWidget {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Container(
-                      width: 16,
-                      height: 16,
+                      width: tickChoiceSize,
+                      height: tickChoiceSize,
                       decoration: BoxDecoration(
                         color: theme.mainTextColor2,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: SvgPicture.asset(
-                          assetTickChoice,
+                          Svg24.tick,
                           color: theme.inverseTextColor,
                         ),
                       ),
@@ -67,9 +67,7 @@ class SightCategoryFilter extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            height: MyThemeData.filtersCategorySpacing,
-          ),
+          const SizedBox(height: commonSpacing1_2),
           Text(
             category.text,
             textAlign: TextAlign.center,

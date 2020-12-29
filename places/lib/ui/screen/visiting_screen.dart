@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../mocks.dart';
 import '../res/strings.dart';
@@ -43,7 +44,7 @@ class _VisitingScreenState extends State<VisitingScreen>
         appBar: SmallAppBar(
           title: stringFavorite,
           bottom: Padding(
-            padding: MyThemeData.commonPaddingLBR,
+            padding: commonPaddingLBR,
             child: TabSwitch(
               tabs: _visitingScreenTabs,
               tabController: tabController,
@@ -55,14 +56,21 @@ class _VisitingScreenState extends State<VisitingScreen>
           children: [
             Tab(
               child: CardList(
-                  cardType: SightCardType.wishlist,
-                  iterable:
-                      mocks.where((element) => element.visitTime != null)),
+                cardType: SightCardType.wishlist,
+                list: (context) => context
+                    .watch<Mocks>()
+                    .favorites
+                    .where((element) => !element.visited),
+              ),
             ),
             Tab(
               child: CardList(
-                  cardType: SightCardType.visited,
-                  iterable: mocks.where((element) => element.visited != null)),
+                cardType: SightCardType.visited,
+                list: (context) => context
+                    .watch<Mocks>()
+                    .favorites
+                    .where((element) => element.visited),
+              ),
             ),
           ],
         ),
