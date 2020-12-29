@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import 'my_theme.dart';
 import 'small_button.dart';
@@ -11,13 +11,12 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmallAppBar({
     Key? key,
     required this.title,
-    EdgeInsetsGeometry? padding,
+    this.padding = commonPadding,
     this.back,
     this.button,
     this.onPressed,
     this.bottom,
   })  : assert(onPressed == null || button != null),
-        padding = padding ?? MyThemeData.shortAppBarPadding,
         super(key: key);
 
   /// Заголовок.
@@ -80,10 +79,10 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
               if (Navigator.canPop(context))
                 back == null
                     ? SvgButton(
+                        Svg24.back,
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        svg: assetBack,
                         color: theme.mainTextColor2,
                       )
                     : SmallButton(

@@ -10,6 +10,8 @@ import 'my_theme.dart';
 class SmallButton extends StatelessWidget {
   const SmallButton({
     Key? key,
+    this.width,
+    this.height = smallButtonHeight,
     this.color,
     this.highlightColor,
     this.splashColor,
@@ -21,6 +23,8 @@ class SmallButton extends StatelessWidget {
   })  : assert(svg == null || icon == null),
         super(key: key);
 
+  final double? width;
+  final double? height;
   final Color? color;
   final Color? highlightColor;
   final Color? splashColor;
@@ -39,17 +43,18 @@ class SmallButton extends StatelessWidget {
             : theme.textRegular14Light56);
 
     return SizedBox(
-      height: MyThemeData.smallButtonHeight,
+      width: width,
+      height: height,
       child: svg == null && icon == null
           ? FlatButton(
               color: color,
               highlightColor: highlightColor ?? theme.app.highlightColor,
               splashColor: splashColor ?? theme.app.splashColor,
-              height: MyThemeData.smallButtonHeight,
+              height: smallButtonHeight,
               minWidth: 0,
               shape: RoundedRectangleBorder(
                 borderRadius:
-                    BorderRadius.circular(MyThemeData.smallButtonRadius),
+                    BorderRadius.circular(smallButtonRadius),
               ),
               onPressed: onPressed,
               child: Text(
@@ -61,11 +66,11 @@ class SmallButton extends StatelessWidget {
               color: color ?? Colors.transparent,
               highlightColor: highlightColor ?? theme.app.highlightColor,
               splashColor: splashColor ?? theme.app.splashColor,
-              height: MyThemeData.smallButtonHeight,
+              height: smallButtonHeight,
               minWidth: 0,
               shape: RoundedRectangleBorder(
                 borderRadius:
-                    BorderRadius.circular(MyThemeData.smallButtonRadius),
+                    BorderRadius.circular(smallButtonRadius),
               ),
               onPressed: onPressed,
               icon: icon ??

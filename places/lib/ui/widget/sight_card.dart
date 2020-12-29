@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
 import '../../mocks.dart';
-import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
@@ -13,74 +14,94 @@ import 'svg_button.dart';
 enum SightCardType { list, wishlist, visited }
 
 /// Виджет: Карточка интересного места.
-class SightCard extends StatelessWidget {
+class SightCard extends StatefulWidget {
   const SightCard({
     Key? key,
-    required this.sight,
+    required this.sightId,
     required this.type,
+    this.onLongPress,
   }) : super(key: key);
 
-  final Sight sight;
+  final int sightId;
   final SightCardType type;
+  final void Function()? onLongPress;
 
+  @override
+  _SightCardState createState() => _SightCardState();
+}
+
+class _SightCardState extends State<SightCard> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
-    return AspectRatio(
-      aspectRatio: 3 / 2,
-      child: Card(
-        margin: EdgeInsets.zero,
-        elevation: 2,
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildTop(),
-                _buildBottom(theme),
-              ],
-            ),
-            // Поверх карточки невидимая кнопка
-            MaterialButton(
-              padding: EdgeInsets.zero,
-              highlightColor: theme.app.highlightColor,
-              splashColor: theme.app.splashColor,
-              onPressed: () {
-                Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SightDetails(sight: sight),
-                    ));
-              },
-              child: _buildSignatures(theme),
-            ),
-          ],
+    final sight = context.watch<Mocks>()[widget.sightId];
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - commonPadding.horizontal,
+      child: AspectRatio(
+        aspectRatio: cardAspectRatio,
+        child: Card(
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildTop(sight),
+                  _buildBottom(theme, sight),
+                ],
+              ),
+              // Поверх карточки невидимая кнопка
+              MaterialButton(
+                padding: EdgeInsets.zero,
+                highlightColor: theme.app.highlightColor,
+                splashColor: theme.app.splashColor,
+                onLongPress: widget.onLongPress,
+                onPressed: () {
+                  Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SightDetails(sightId: sight.id),
+                      ));
+                },
+                child: _buildSignatures(theme, sight),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Верхняя часть карточки (фотография).
-  Widget _buildTop() => Expanded(
-        child: LoadableImage(
-          url: sight.url,
+  Widget _buildTop(Sight sight) => Expanded(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: LoadableImage(
+                url: sight.photos.isEmpty ? '' : sight.photos[0],
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                color: highlightColorDark2,
+              ),
+            ),
+          ],
         ),
       );
 
-  // Строка кнопок поверх картинки.
-  Widget _buildSignatures(MyThemeData theme) {
+  Widget _buildSignatures(MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
-    final textColor = textStyle.color;
+    final mocks = context.watch<Mocks>();
 
     return Container(
       alignment: Alignment.topLeft,
-      padding: MyThemeData.cardSignaturesPadding,
+      padding: cardSignaturesPadding,
       child: Row(
         children: [
           SmallButton(
-            highlightColor: theme.highlightColorOnImage,
-            splashColor: theme.splashColorOnImage,
+            highlightColor: highlightColorDark2,
+            splashColor: splashColorDark2,
             label: sight.category.text.toLowerCase(),
             style: textStyle,
             onPressed: () {
@@ -88,44 +109,44 @@ class SightCard extends StatelessWidget {
             },
           ),
           const Spacer(),
-          if (type == SightCardType.list) ...[
+          if (widget.type == SightCardType.list) ...[
             SignatureButton(
-              svg: assetFavorite,
-              color: textColor,
+              svg: mocks.isFavorite(sight.id) ? Svg24.heartFull : Svg24.heart,
+              color: textStyle.color,
               onPressed: () {
-                print('Favorite');
+                context.read<Mocks>().toggleFavorite(sight.id);
               },
             ),
           ],
-          if (type == SightCardType.wishlist) ...[
+          if (widget.type == SightCardType.wishlist) ...[
             SignatureButton(
-              svg: assetCalendar,
-              color: textColor,
+              svg: Svg24.calendar,
+              color: textStyle.color,
               onPressed: () {
                 print('Schedule');
               },
             ),
             SignatureButton(
-              svg: assetClose,
-              color: textColor,
+              svg: Svg24.close,
+              color: textStyle.color,
               onPressed: () {
-                print('Remove from wishlist');
+                context.read<Mocks>().removeFromFavorite(sight.id);
               },
             ),
           ],
-          if (type == SightCardType.visited) ...[
+          if (widget.type == SightCardType.visited) ...[
             SignatureButton(
-              svg: assetShare,
-              color: textColor,
+              svg: Svg24.share,
+              color: textStyle.color,
               onPressed: () {
                 print('Share');
               },
             ),
             SignatureButton(
-              svg: assetClose,
-              color: textColor,
+              svg: Svg24.close,
+              color: textStyle.color,
               onPressed: () {
-                print('Remove from visited');
+                context.read<Mocks>().removeFromFavorite(sight.id);
               },
             ),
           ],
@@ -134,10 +155,9 @@ class SightCard extends StatelessWidget {
     );
   }
 
-  // Нижняя (текстовая) часть карточки.
-  Widget _buildBottom(MyThemeData theme) => Expanded(
+  Widget _buildBottom(MyThemeData theme, Sight sight) => Expanded(
         child: Container(
-          padding: MyThemeData.commonPadding,
+          padding: commonPadding,
           child: RichText(
             overflow: TextOverflow.ellipsis,
             maxLines: 4,
@@ -170,15 +190,11 @@ class SignatureButton extends StatelessWidget {
   final void Function() onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
-
-    return SvgButton(
-      highlightColor: theme.highlightColorOnImage,
-      splashColor: theme.splashColorOnImage,
-      svg: svg,
-      color: color,
-      onPressed: onPressed,
-    );
-  }
+  Widget build(BuildContext context) => SvgButton(
+        svg,
+        highlightColor: highlightColorDark2,
+        splashColor: splashColorDark2,
+        color: color,
+        onPressed: onPressed,
+      );
 }

@@ -10,10 +10,10 @@ class Section extends StatelessWidget {
   Section(
     this.name, {
     required this.child,
-    double top = MyThemeData.sectionTop,
-    double left = MyThemeData.sectionHSpacing,
-    double right = MyThemeData.sectionHSpacing,
-    double spacing = MyThemeData.sectionVSpacing,
+    double top = sectionTop,
+    double left = commonSpacing,
+    double right = commonSpacing,
+    double spacing = commonSpacing3_4,
     bool applyPaddingToChild = true,
   })  : namePadding = EdgeInsets.only(
             left: left, top: top, right: right, bottom: spacing),

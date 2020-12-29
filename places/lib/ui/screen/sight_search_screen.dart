@@ -24,7 +24,7 @@ class _SightSearchScreenState extends State<SightSearchScreen> {
       appBar: const SmallAppBar(
         title: stringSightList,
         bottom: Padding(
-          padding: MyThemeData.commonPadding,
+          padding: commonPadding,
           child: SearchBar(),
         ),
       ),
@@ -37,7 +37,7 @@ class _SightSearchScreenState extends State<SightSearchScreen> {
           ),
           Expanded(
             child: ListView(
-              children: [],
+              children: const [],
             ),
           ),
         ],

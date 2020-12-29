@@ -28,7 +28,7 @@ class BigAppBar extends StatelessWidget implements PreferredSizeWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: MyThemeData.appBarPadding,
+            padding: appBarPadding,
             child: Text(title, style: theme.textBold32Main),
           ),
           if (bottom != null) bottom!,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/filters_screen.dart';
 import 'my_theme.dart';
@@ -29,7 +30,7 @@ class _SearchBarState extends State<SearchBar> {
       children: [
         Material(
           color: theme.backgroundSecond,
-          borderRadius: BorderRadius.circular(MyThemeData.textFieldRadius),
+          borderRadius: BorderRadius.circular(textFieldRadius),
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
@@ -39,7 +40,7 @@ class _SearchBarState extends State<SearchBar> {
                 decoration: InputDecoration(
                   prefixIcon: UnconstrainedBox(
                     child: SvgPicture.asset(
-                      assetSearch,
+                      Svg24.search,
                       color: theme.lightTextColor56,
                     ),
                   ),
@@ -66,7 +67,7 @@ class _SearchBarState extends State<SearchBar> {
                 bottom: 0,
                 right: 4,
                 child: SvgButton(
-                  svg: assetFilter,
+                  Svg24.filter,
                   color: theme.accentColor,
                   onPressed: () {
                     Navigator.push<void>(
