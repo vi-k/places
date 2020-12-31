@@ -2,16 +2,16 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 
-import 'domain/sight.dart';
-import 'utils/maps.dart';
+import '../utils/maps.dart';
+import 'sight.dart';
 
 /// Моковые координаты.
 const myMockCoord = Coord(48.479672, 135.070692);
 
 /// Моковые данные.
 // ignore: prefer_mixin
-class Mocks extends IterableBase<Sight> with ChangeNotifier {
-  Mocks() {
+class MocksData extends IterableBase<Sight> with ChangeNotifier {
+  MocksData() {
     _mocks = [
       Sight(
         id: _mockId++,
@@ -108,6 +108,9 @@ class Mocks extends IterableBase<Sight> with ChangeNotifier {
   int _index(int id) => _mocks.indexWhere((element) => element.id == id);
 
   Sight operator [](int id) => _mocks[_index(id)];
+
+  @override
+  String toString() => 'MocksData(length: ${_mocks.length})';
 
   int add(Sight sight) {
     final id = _mockId++;

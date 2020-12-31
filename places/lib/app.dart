@@ -1,43 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'domain/settings.dart';
-import 'mocks.dart';
+import 'domain/mocks_data.dart';
+import 'domain/settings_data.dart';
 import 'ui/res/themes.dart';
 import 'ui/screen/sight_list_screen.dart';
-import 'ui/widget/my_theme.dart';
+import 'ui/widget/mocks.dart';
+import 'ui/widget/settings.dart';
 
 class App extends StatefulWidget {
-  static _AppState of(BuildContext context) =>
-      context.findRootAncestorStateOfType<_AppState>()!;
-
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  late Settings settings;
-
   @override
-  void initState() {
-    super.initState();
-
-    settings = Settings(
-      isDark: true,
-      onUpdate: () {
-        setState(() {});
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => MyTheme(
-        myThemeData: settings.isDark ? myDarkTheme : myLightTheme,
-        child: MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => Mocks()),
-          ],
-          child: AppBody(),
+  Widget build(BuildContext context) => Settings(
+        create: () => SettingsData(isDark: true),
+        child: Mocks(
+          create: () => MocksData(),
+          child: Builder(
+              builder: (context) => MyTheme(
+                    myThemeData: Settings.of(context, listen: true).isDark
+                        ? myDarkTheme
+                        : myLightTheme,
+                    child: AppBody(),
+                  )),
         ),
       );
 }

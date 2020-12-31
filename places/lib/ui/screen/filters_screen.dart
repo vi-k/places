@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/filter.dart';
+import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
-import '../../mocks.dart';
 import '../../utils/maps.dart';
 import '../../utils/range.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
-import '../widget/my_theme.dart';
+import '../widget/mocks.dart';
 import '../widget/section.dart';
 import '../widget/sight_type_filter.dart';
 import '../widget/small_app_bar.dart';
@@ -192,7 +192,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return '$prefix$stringRangeTo $endValue';
   }
 
-  Future<int> calcCardCount() async => context.read<Mocks>().where((element) {
+  Future<int> calcCardCount() async => Mocks.of(context).where((element) {
         if (!filter.hasCategory(element.category)) return false;
 
         final d = element.coord.distance(myMockCoord);

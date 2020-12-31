@@ -7,7 +7,6 @@ import '../res/themes.dart';
 import '../screen/settings_screen.dart';
 import '../screen/sight_list_screen.dart';
 import '../screen/visiting_screen.dart';
-import 'my_theme.dart';
 
 /// BottomNavigator приложения.
 class AppNavigationBar extends StatelessWidget {

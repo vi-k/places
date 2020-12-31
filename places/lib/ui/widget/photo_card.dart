@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../res/const.dart';
 import '../res/svg.dart';
-import '../res/themes.dart';
 import 'loadable_image.dart';
 
 /// Виджет: фотокарточка для создания нового места.

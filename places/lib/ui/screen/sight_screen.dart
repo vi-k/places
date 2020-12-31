@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
+import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
-import '../../mocks.dart';
 import '../../utils/focus.dart';
 import '../../utils/maps.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
-import '../widget/my_theme.dart';
+import '../widget/mocks.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
@@ -310,9 +310,9 @@ class _SightScreenState extends State<SightScreen> {
                         );
 
                         if (id == null) {
-                          id = context.read<Mocks>().add(newSight);
+                          id = Mocks.of(context).add(newSight);
                         } else {
-                          context.read<Mocks>().replace(id, newSight);
+                          Mocks.of(context).replace(id, newSight);
                         }
 
                         Navigator.pop(context);

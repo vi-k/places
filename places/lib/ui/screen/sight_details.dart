@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/loadable_image.dart';
-import '../widget/my_theme.dart';
+import '../widget/mocks.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 import 'sight_screen.dart';
@@ -39,7 +38,7 @@ class _SightDetailsState extends State<SightDetails>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final sight = context.read<Mocks>()[widget.sightId];
+    final sight = Mocks.of(context)[widget.sightId];
 
     _tabController?.dispose();
     _tabController = TabController(
@@ -55,8 +54,7 @@ class _SightDetailsState extends State<SightDetails>
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-
-    final sight = context.watch<Mocks>()[widget.sightId];
+    final sight = Mocks.of(context, listen: true)[widget.sightId];
 
     return Scaffold(
       body: SingleChildScrollView(

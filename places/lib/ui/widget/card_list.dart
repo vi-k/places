@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
-import 'my_theme.dart';
+import 'mocks.dart';
 import 'sight_card.dart';
 
 /// Виджет: Список карточек.
@@ -51,7 +50,7 @@ class _CardListState extends State<CardList> {
                   key: ValueKey(sight.id),
                   direction: DismissDirection.endToStart,
                   onDismissed: (_) {
-                    context.read<Mocks>().removeFromFavorite(sight.id);
+                    Mocks.of(context).removeFromFavorite(sight.id);
                   },
                   background: _buildBackground(theme),
                   child: _buildCard(sight),
@@ -75,7 +74,7 @@ class _CardListState extends State<CardList> {
                   targetIndex != value &&
                   targetIndex != value + 1,
               onAccept: (value) {
-                context.read<Mocks>().moveFavorite(value, targetIndex);
+                Mocks.of(context).moveFavorite(value, targetIndex);
               },
               builder: (context, candidateData, _) => candidateData.isNotEmpty
                   ? Column(

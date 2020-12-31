@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'loadable_image.dart';
-import 'my_theme.dart';
+import 'mocks.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
@@ -34,8 +34,7 @@ class _SightCardState extends State<SightCard> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-
-    final sight = context.watch<Mocks>()[widget.sightId];
+    final sight = Mocks.of(context, listen: true)[widget.sightId];
 
     return SizedBox(
       width: MediaQuery.of(context).size.width - commonPadding.horizontal,
@@ -92,7 +91,7 @@ class _SightCardState extends State<SightCard> {
 
   Widget _buildSignatures(MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
-    final mocks = context.watch<Mocks>();
+    final mocks = Mocks.of(context, listen: true);
 
     return Container(
       alignment: Alignment.topLeft,
@@ -114,7 +113,7 @@ class _SightCardState extends State<SightCard> {
               svg: mocks.isFavorite(sight.id) ? Svg24.heartFull : Svg24.heart,
               color: textStyle.color,
               onPressed: () {
-                context.read<Mocks>().toggleFavorite(sight.id);
+                Mocks.of(context).toggleFavorite(sight.id);
               },
             ),
           ],
@@ -130,7 +129,7 @@ class _SightCardState extends State<SightCard> {
               svg: Svg24.close,
               color: textStyle.color,
               onPressed: () {
-                context.read<Mocks>().removeFromFavorite(sight.id);
+                Mocks.of(context).removeFromFavorite(sight.id);
               },
             ),
           ],
@@ -146,7 +145,7 @@ class _SightCardState extends State<SightCard> {
               svg: Svg24.close,
               color: textStyle.color,
               onPressed: () {
-                context.read<Mocks>().removeFromFavorite(sight.id);
+                Mocks.of(context).removeFromFavorite(sight.id);
               },
             ),
           ],

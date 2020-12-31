@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
-import 'my_theme.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 

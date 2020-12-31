@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../mocks.dart';
+import '../../domain/mocks_data.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
-import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/big_app_bar.dart';
 import '../widget/card_list.dart';
+import '../widget/mocks.dart';
 import '../widget/search_bar.dart';
 import '../widget/sight_card.dart';
 import 'sight_screen.dart';
@@ -42,7 +42,7 @@ class _SightListScreenState extends State<SightListScreen> {
         ),
         body: CardList(
           cardType: SightCardType.list,
-          list: (context) => context.watch<Mocks>().toList()
+          list: (context) => Mocks.of(context, listen: true).toList()
             ..sort((a, b) => a.coord
                 .distance(myMockCoord)
                 .compareTo(b.coord.distance(myMockCoord))),
