@@ -1,61 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../domain/category.dart';
 import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
 import '../../utils/focus.dart';
 import '../../utils/maps.dart';
 import '../res/const.dart';
 import '../res/strings.dart';
+import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
+import '../widget/failed.dart';
+import '../widget/loadable_data.dart';
 import '../widget/mocks.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
+import 'category_select_screen.dart';
 
 /// Экран добавления места.
-class SightScreen extends StatefulWidget {
-  const SightScreen({
+class SightEditScreen extends StatefulWidget {
+  const SightEditScreen({
     Key? key,
-    this.sight,
+    this.sightId,
   }) : super(key: key);
 
-  final Sight? sight;
+  final int? sightId;
 
   @override
-  _SightScreenState createState() => _SightScreenState();
+  _SightEditScreenState createState() => _SightEditScreenState();
 }
 
-class _SightScreenState extends State<SightScreen> {
+class _SightEditScreenState extends State<SightEditScreen> {
+  Future<Sight>? _sight;
+  Future<Category>? _category;
   final _formKey = GlobalKey<FormState>();
-  SightCategory? _category;
+  int? _categoryId;
   final _photos = <String>[];
   var _mockPhotosCounter = 0;
   String? _name;
   double? _lat;
   double? _lon;
   String? _details;
+  late TextEditingController _nameController;
+  late TextEditingController _latController;
+  late TextEditingController _lonController;
+  late TextEditingController _detailsController;
 
-  bool get isNew => widget.sight == null;
+  bool get isNew => _sight == null;
 
   @override
   void initState() {
     super.initState();
 
-    // В экране редактирования нам не нужно следить за изменениями.
-    // А прочитать данные из провайдера можем и здесь.
-    if (!isNew) {
-      final sight = widget.sight!;
-      _photos.addAll(sight.photos);
-      _category = sight.category;
-      _name = sight.name;
-      _lat = sight.coord.lat;
-      _lon = sight.coord.lon;
-      _details = sight.details;
+    _nameController = TextEditingController();
+    _latController = TextEditingController();
+    _lonController = TextEditingController();
+    _detailsController = TextEditingController();
+
+    if (widget.sightId != null) {
+      _loadSight(widget.sightId!);
     }
+  }
+
+  // Загружает информацию о месте.
+  void _loadSight(int sightId) {
+    _sight = Mocks.of(context).sightById2(sightId).then((sight) {
+      _photos
+        ..clear()
+        ..addAll(sight.photos);
+      _categoryId = sight.categoryId;
+      _nameController.value = TextEditingValue(text: sight.name);
+      _latController.value =
+          TextEditingValue(text: sight.coord.lat.toStringAsFixed(6));
+      _lonController.value =
+          TextEditingValue(text: sight.coord.lon.toStringAsFixed(6));
+      _detailsController.value = TextEditingValue(text: sight.details);
+
+      _loadCategory();
+
+      return sight;
+    });
+
+    _category = Future.value(null);
+  }
+
+  // Загружает информацию о категории.
+  void _loadCategory() {
+    _category = Mocks.of(context).categoryById2(_categoryId!);
   }
 
   @override
@@ -67,17 +103,35 @@ class _SightScreenState extends State<SightScreen> {
         title: isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
-      body: Column(
+      body: isNew
+          ? _buildBody(_formKey, theme)
+          : LoadableData<Sight>(
+              future: _sight!,
+              error: (context, error) => Failed(
+                error.toString(),
+                onRepeat: () {
+                  _loadSight(widget.sightId!);
+                  setState(() {});
+                },
+              ),
+              background: _buildBody(null, theme),
+              builder: (context, _, sight) => _buildBody(_formKey, theme),
+            ),
+    );
+  }
+
+  // Содержимое экрана.
+  Widget _buildBody(Key? key, MyThemeData theme) => Column(
         children: [
           Form(
-            key: _formKey,
+            key: key,
             child: Expanded(
               child: ListView(
                 children: [
-                  _buildPhotoGallery(context),
+                  _buildPhotoGallery(),
                   _buildCategory(theme),
                   _buildName(),
-                  ..._buildCoord(context, theme),
+                  ..._buildCoord(theme),
                   _buildDetails(),
                 ],
               ),
@@ -85,12 +139,10 @@ class _SightScreenState extends State<SightScreen> {
           ),
           _buildDone(context),
         ],
-      ),
-    );
-  }
+      );
 
-  Widget _buildPhotoGallery(BuildContext context) =>
-      SingleChildScrollView(
+  // Фотографии мест.
+  Widget _buildPhotoGallery() => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
           padding: const EdgeInsets.only(top: 24),
@@ -137,53 +189,72 @@ class _SightScreenState extends State<SightScreen> {
         ),
       );
 
+  // Категория.
   Widget _buildCategory(MyThemeData theme) => Section(
         stringCategory,
-        // Временное решение для выбора категории вместо отдельного экрана
-        child: DropdownButtonFormField<SightCategory>(
-          value: _category,
-          items: [
-            for (final category in SightCategory.values)
-              DropdownMenuItem(
-                value: category,
-                child: Text(category.text),
-              ),
-          ],
-          decoration: const InputDecoration(
-            hintText: stringUnselected,
-          ),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) {
-            if (value == null) return stringRequiredField;
-            return null;
-          },
-          onChanged: (value) {
-            _category = value;
-            FocusScope.of(context).nextEditableTextFocus();
-          },
-        ),
-        // Заготовка для выбора категории с помощью дополнительного экрана
-        // spacing: 0,
-        // applyPaddingToChild: false,
-        // child: ListTile(
-        //   title: Text(
-        //     stringUnselected,
-        //     style: theme.textRegular16Light,
-        //   ),
-        //   trailing: SvgPicture.asset(
-        //     assetForward,
-        //     color: theme.mainTextColor2,
-        //   ),
-        //   onTap: () {},
-        // ),
+        spacing: 0,
+        applyPaddingToChild: false,
+        child: _category == null
+            ? _buildCategoryTile(theme, null, loaded: false)
+            : LoadableData<Category>(
+                future: _category!,
+                error: (context, error) => Failed(
+                      error.toString(),
+                      onRepeat: () {
+                        _loadCategory();
+                        setState(() {});
+                      },
+                    ),
+                loader: (_) => const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: commonPaddingLR,
+                        child: SizedBox(
+                          width: commonSpacing,
+                          height: commonSpacing,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                builder: (context, done, category) =>
+                    _buildCategoryTile(theme, category, loaded: true)),
       );
 
+  ListTile _buildCategoryTile(MyThemeData theme, Category? category,
+          {required bool loaded}) =>
+      ListTile(
+        title: Text(
+          loaded ? (category?.name ?? '') : stringUnselected,
+          style: theme.textRegular16Light,
+        ),
+        trailing: SvgPicture.asset(
+          Svg24.view,
+          color: theme.mainTextColor2,
+        ),
+        onTap: () {
+          Navigator.push<int>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CategorySelectScreen(id: _categoryId),
+              )).then((value) {
+            if (value != null) {
+              _categoryId = value;
+              _loadCategory();
+              setState(() {});
+            }
+          });
+        },
+      );
+
+  // Название.
   Widget _buildName() => Section(
         stringName,
         child: TextFormField(
-          initialValue: _name ?? 'Моя работа', // Временно. Для тестов
-          decoration: const InputDecoration(
-            hintText: stringNewPlaceFakeName,
+          controller: _nameController,
+          decoration: InputDecoration(
+            hintText: isNew ? stringNewPlaceFakeName : '',
           ),
           textInputAction: TextInputAction.next,
           onEditingComplete: () {
@@ -197,18 +268,19 @@ class _SightScreenState extends State<SightScreen> {
         ),
       );
 
-  List<Widget> _buildCoord(BuildContext context, MyThemeData theme) => [
+  // Координаты.
+  List<Widget> _buildCoord(MyThemeData theme) => [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Section(
                 stringLatitude,
                 right: 0,
                 child: TextFormField(
-                  initialValue: _lat?.toStringAsFixed(6) ??
-                      '48.506642', // Временно. Для тестов
-                  decoration: const InputDecoration(
-                    hintText: stringNewPlaceFakeLatitude,
+                  controller: _latController,
+                  decoration: InputDecoration(
+                    hintText: isNew ? stringNewPlaceFakeLatitude : '',
                   ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
@@ -216,7 +288,18 @@ class _SightScreenState extends State<SightScreen> {
                     FocusScope.of(context).nextEditableTextFocus();
                   },
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: _checkCoord,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return stringRequiredField;
+                    }
+
+                    final lat = double.tryParse(value);
+                    if (lat == null || lat < -90 || lat > 90) {
+                      return stringInvalidValue;
+                    }
+
+                    return null;
+                  },
                   onSaved: (value) {
                     _lat = double.parse(value!);
                   },
@@ -229,15 +312,25 @@ class _SightScreenState extends State<SightScreen> {
                 stringLongitude,
                 left: 0,
                 child: TextFormField(
-                  initialValue: _lon?.toStringAsFixed(6) ??
-                      '135.138573', // Временно. Для тестов
+                  controller: _lonController,
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: const InputDecoration(
-                    hintText: stringNewPlaceFakeLongitude,
+                  decoration: InputDecoration(
+                    hintText: isNew ? stringNewPlaceFakeLongitude : '',
                   ),
-                  validator: _checkCoord,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return stringRequiredField;
+                    }
+
+                    final lon = double.tryParse(value);
+                    if (lon == null || lon < -180 || lon > 180) {
+                      return stringInvalidValue;
+                    }
+
+                    return null;
+                  },
                   onEditingComplete: () {
                     FocusScope.of(context).nextEditableTextFocus();
                   },
@@ -261,10 +354,11 @@ class _SightScreenState extends State<SightScreen> {
         ),
       ];
 
+  // Описание.
   Widget _buildDetails() => Section(
         stringDescription,
         child: TextFormField(
-          initialValue: _details,
+          controller: _detailsController,
           minLines: 3,
           maxLines: 10,
           textInputAction: TextInputAction.done,
@@ -274,6 +368,7 @@ class _SightScreenState extends State<SightScreen> {
         ),
       );
 
+  // Кнопка создания/сохранения
   Widget _buildDone(BuildContext context) => Container(
         width: double.infinity,
         padding: commonPadding,
@@ -298,7 +393,7 @@ class _SightScreenState extends State<SightScreen> {
                       onPressed: () {
                         _formKey.currentState!.save();
 
-                        var id = widget.sight?.id;
+                        var id = widget.sightId;
 
                         final newSight = Sight(
                           id: id ?? 0,
@@ -306,13 +401,13 @@ class _SightScreenState extends State<SightScreen> {
                           coord: Coord(_lat!, _lon!),
                           photos: _photos,
                           details: _details!,
-                          category: _category!,
+                          categoryId: _categoryId!,
                         );
 
                         if (id == null) {
-                          id = Mocks.of(context).add(newSight);
+                          id = Mocks.of(context).addSight(newSight);
                         } else {
-                          Mocks.of(context).replace(id, newSight);
+                          Mocks.of(context).replaceSight(id, newSight);
                         }
 
                         Navigator.pop(context);
@@ -326,14 +421,4 @@ class _SightScreenState extends State<SightScreen> {
           },
         ),
       );
-
-  String? _checkCoord(String? value) {
-    if (value == null || value.isEmpty) {
-      return stringRequiredField;
-    }
-
-    if (double.tryParse(value) == null) return stringInvalidValue;
-
-    return null;
-  }
 }

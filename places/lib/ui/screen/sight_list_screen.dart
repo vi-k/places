@@ -9,7 +9,7 @@ import '../widget/card_list.dart';
 import '../widget/mocks.dart';
 import '../widget/search_bar.dart';
 import '../widget/sight_card.dart';
-import 'sight_screen.dart';
+import 'sight_edit_screen.dart';
 import 'sight_search_screen.dart';
 
 /// Экран: Список интересных мест.
@@ -42,7 +42,7 @@ class _SightListScreenState extends State<SightListScreen> {
         ),
         body: CardList(
           cardType: SightCardType.list,
-          list: (context) => Mocks.of(context, listen: true).toList()
+          list: (context) => Mocks.of(context, listen: true).sights
             ..sort((a, b) => a.coord
                 .distance(myMockCoord)
                 .compareTo(b.coord.distance(myMockCoord))),
@@ -54,7 +54,7 @@ class _SightListScreenState extends State<SightListScreen> {
             Navigator.push<int>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const SightScreen(),
+                  builder: (context) => const SightEditScreen(),
                 ));
           },
           icon: const Icon(Icons.add),

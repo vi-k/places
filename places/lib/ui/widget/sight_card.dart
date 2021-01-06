@@ -34,7 +34,7 @@ class _SightCardState extends State<SightCard> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    final sight = Mocks.of(context, listen: true)[widget.sightId];
+    final sight = Mocks.of(context, listen: true).sightById(widget.sightId);
 
     return SizedBox(
       width: MediaQuery.of(context).size.width - commonPadding.horizontal,
@@ -92,6 +92,8 @@ class _SightCardState extends State<SightCard> {
   Widget _buildSignatures(MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
     final mocks = Mocks.of(context, listen: true);
+    final category =
+        Mocks.of(context, listen: true).categoryById(sight.categoryId);
 
     return Container(
       alignment: Alignment.topLeft,
@@ -101,7 +103,7 @@ class _SightCardState extends State<SightCard> {
           SmallButton(
             highlightColor: highlightColorDark2,
             splashColor: splashColorDark2,
-            label: sight.category.text.toLowerCase(),
+            label: category.name.toLowerCase(),
             style: textStyle,
             onPressed: () {
               print('Filter by category');

@@ -9,7 +9,7 @@ import '../widget/loadable_image.dart';
 import '../widget/mocks.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
-import 'sight_screen.dart';
+import 'sight_edit_screen.dart';
 
 /// Экран детализации места.
 class SightDetails extends StatefulWidget {
@@ -38,7 +38,7 @@ class _SightDetailsState extends State<SightDetails>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final sight = Mocks.of(context)[widget.sightId];
+    final sight = Mocks.of(context).sightById(widget.sightId);
 
     _tabController?.dispose();
     _tabController = TabController(
@@ -48,13 +48,12 @@ class _SightDetailsState extends State<SightDetails>
     _tabController!.addListener(() {
       setState(() {});
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    final sight = Mocks.of(context, listen: true)[widget.sightId];
+    final sight = Mocks.of(context, listen: true).sightById(widget.sightId);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -105,31 +104,36 @@ class _SightDetailsState extends State<SightDetails>
               ),
       );
 
-  List<Widget> _buildText(MyThemeData theme, Sight sight) => [
-        Text(
-          sight.name,
-          style: theme.textBold24Main,
-        ),
-        Row(
-          children: [
-            Text(
-              sight.category.text,
-              style: theme.textBold14Light,
-            ),
-            const SizedBox(width: commonSpacing),
-            Text(
-              'закрыто до 09:00', // Временно
-              style: theme.textRegular14Light,
-            ),
-          ],
-        ),
-        const SizedBox(height: commonSpacing3_2),
-        Text(
-          sight.details,
-          style: theme.textRegular14Light,
-        ),
-        const SizedBox(height: commonSpacing3_2),
-      ];
+  List<Widget> _buildText(MyThemeData theme, Sight sight) {
+    final category =
+        Mocks.of(context, listen: true).categoryById(sight.categoryId);
+
+    return [
+      Text(
+        sight.name,
+        style: theme.textBold24Main,
+      ),
+      Row(
+        children: [
+          Text(
+            category.name,
+            style: theme.textBold14Light,
+          ),
+          const SizedBox(width: commonSpacing),
+          Text(
+            'закрыто до 09:00', // Временно
+            style: theme.textRegular14Light,
+          ),
+        ],
+      ),
+      const SizedBox(height: commonSpacing3_2),
+      Text(
+        sight.details,
+        style: theme.textRegular14Light,
+      ),
+      const SizedBox(height: commonSpacing3_2),
+    ];
+  }
 
   List<Widget> _buildButtons() => [
         StandartButton(
@@ -168,22 +172,8 @@ class _SightDetailsState extends State<SightDetails>
             Navigator.push<int>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SightScreen(sight: sight),
+                  builder: (context) => SightEditScreen(sightId: sight.id),
                 ));
-            // if (newSight != null) {
-            //   setState(() {
-            //     _sight = newSight;
-            //     _changed = true;
-            //     // Обновляем tabController. Для этого нужно, чтобы
-            //     // виджет был наследником TickerProviderStateMixin,
-            //     // а не SingleTickerProviderStateMixin.
-            //     _tabController.dispose();
-            //     _tabController = TabController(
-            //       length: _sight.photos.length,
-            //       vsync: this,
-            //     );
-            //   });
-            // }
           },
         )
       ];

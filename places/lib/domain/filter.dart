@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import '../utils/maps.dart';
 import '../utils/range.dart';
-import 'sight.dart';
 
 /// Фильтр.
 ///
@@ -10,32 +9,33 @@ import 'sight.dart';
 /// - По расстоянию до места.
 class Filter {
   Filter({
-    Set<SightCategory>? categories,
+    Set<int>? excludedCategories,
     this.distance = const Range<Distance>(Distance(0), Distance(10000)),
-  }) : categories = UnmodifiableSetView<SightCategory>(
-            categories ?? {...SightCategory.values});
+  }) : excludedCategories = UnmodifiableSetView<int>(excludedCategories ?? {});
 
   // Категории сохраняем в немодифицируемом сете, чтобы гарантировать
   // иммутабельность класса.
-  final UnmodifiableSetView<SightCategory> categories;
+  final UnmodifiableSetView<int> excludedCategories;
   final Range<Distance> distance;
 
-  bool hasCategory(SightCategory type) => categories.contains(type);
+  bool hasCategory(int category) => !excludedCategories.contains(category);
 
-  Filter toggleCategory(SightCategory type) {
-    final s = categories.toSet();
-    hasCategory(type) ? s.remove(type) : s.add(type);
-    return copyWith(categories: s);
+  Filter toggleCategory(int category) {
+    final exclusions = excludedCategories.toSet();
+    hasCategory(category)
+        ? exclusions.add(category)
+        : exclusions.remove(category);
+    return copyWith(excludedCategories: exclusions);
   }
 
   Filter copyWith({
-    Set<SightCategory>? categories,
+    Set<int>? excludedCategories,
     Range<Distance>? distance,
   }) =>
       Filter(
-        categories: categories == null
-            ? this.categories
-            : UnmodifiableSetView<SightCategory>(categories),
+        excludedCategories: excludedCategories == null
+            ? this.excludedCategories
+            : UnmodifiableSetView<int>(excludedCategories),
         distance: distance ?? this.distance,
       );
 }
