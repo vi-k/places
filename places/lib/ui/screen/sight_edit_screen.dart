@@ -233,20 +233,23 @@ class _SightEditScreenState extends State<SightEditScreen> {
           Svg24.view,
           color: theme.mainTextColor2,
         ),
-        onTap: () {
-          Navigator.push<int>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CategorySelectScreen(id: _categoryId),
-              )).then((value) {
-            if (value != null) {
-              _categoryId = value;
-              _loadCategory();
-              setState(() {});
-            }
-          });
-        },
+        onTap: _getCategory,
       );
+
+  // Получение категории.
+  void _getCategory() {
+    Navigator.push<int>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CategorySelectScreen(id: _categoryId),
+        )).then((value) {
+      if (value != null) {
+        _categoryId = value;
+        _loadCategory();
+        setState(() {});
+      }
+    });
+  }
 
   // Название.
   Widget _buildName() => Section(
@@ -376,6 +379,17 @@ class _SightEditScreenState extends State<SightEditScreen> {
           label: isNew ? stringCreate : stringSave,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
+              // Если не выбрана категория, предупреждаем об этом пользователя
+              // и отправляем его на страницу выбора категории.
+              if (_categoryId == null) {
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                      const SnackBar(content: Text(stringNoCategory)));
+                _getCategory();
+                return;
+              }
+
               showDialog<void>(
                 context: context,
                 barrierDismissible: true,

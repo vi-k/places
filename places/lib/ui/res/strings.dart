@@ -30,6 +30,7 @@ const stringNewPlaceFakeName = 'Фортросс';
 const stringNewPlaceFakeLatitude = '38.514262';
 const stringNewPlaceFakeLongitude = '-123.243574';
 const stringNo = 'Нет';
+const stringNoCategory = 'Не выбрана категория';
 const stringRangeFrom = 'от';
 const stringRangeTo = 'до';
 const stringRequiredField = 'Это обязательное поле';
