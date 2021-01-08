@@ -11,7 +11,7 @@ import 'mocks.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
-enum SightCardType { list, wishlist, visited }
+enum SightCardType { list, favorites, visited }
 
 /// Виджет: Карточка интересного места.
 class SightCard extends StatefulWidget {
@@ -119,7 +119,7 @@ class _SightCardState extends State<SightCard> {
               },
             ),
           ],
-          if (widget.type == SightCardType.wishlist) ...[
+          if (widget.type == SightCardType.favorites) ...[
             SignatureButton(
               svg: Svg24.calendar,
               color: textStyle.color,
@@ -147,7 +147,7 @@ class _SightCardState extends State<SightCard> {
               svg: Svg24.close,
               color: textStyle.color,
               onPressed: () {
-                Mocks.of(context).removeFromFavorite(sight.id);
+                Mocks.of(context).removeFromVisited(sight.id);
               },
             ),
           ],

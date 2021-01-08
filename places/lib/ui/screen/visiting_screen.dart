@@ -55,18 +55,14 @@ class _VisitingScreenState extends State<VisitingScreen>
           children: [
             Tab(
               child: CardList(
-                cardType: SightCardType.wishlist,
-                list: (context) => Mocks.of(context, listen: true)
-                    .favorites
-                    .where((element) => !element.visited),
+                cardType: SightCardType.favorites,
+                list: (context) => Mocks.of(context, listen: true).favorites,
               ),
             ),
             Tab(
               child: CardList(
                 cardType: SightCardType.visited,
-                list: (context) => Mocks.of(context, listen: true)
-                    .favorites
-                    .where((element) => element.visited),
+                list: (context) => Mocks.of(context, listen: true).visited,
               ),
             ),
           ],

@@ -42,6 +42,7 @@ const stringSightListTitle = 'Список\nинтересных мест';
 const stringSightList = 'Список интересных мест';
 const stringToFavorite = 'В Избранное';
 const stringToSchedule = 'Запланировать';
+const stringToVisited = 'Посетил';
 const stringUnselected = 'Не выбрано';
 // const stringVisitedPlaces = 'Посещённые места';
 const stringVisited = 'Посетил';

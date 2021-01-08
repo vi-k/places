@@ -57,7 +57,7 @@ class MocksData extends ChangeNotifier {
         ],
         details: 'Хабаровский краевой музей имени Н.И. Гродекова',
         categoryId: 3,
-        // visited: true,
+        visited: true,
         visitedTime: DateTime(2021, 1, 3),
       ),
       Sight(
@@ -115,7 +115,7 @@ class MocksData extends ChangeNotifier {
         details:
             'Городской парк культуры и отдыха "Динамо" - большой красивый парк в центре Хабаровска. Площадь парка - 31 гектар.',
         categoryId: 5,
-        // visited: true,
+        visited: true,
         visitedTime: DateTime(2020, 12, 12),
       ),
       Sight(
@@ -131,9 +131,10 @@ class MocksData extends ChangeNotifier {
       ),
     ];
 
-    _favoriteSet = <int>{0, 1, 2, 3, 5};
+    _favoriteSet = <int>{2, 3, 4};
   }
 
+  /// Категории.
   var _categoriesNextId = 1;
   late final List<Category> _categories;
   int _categoryIndex(int id) => _categories.indexWhere((e) => e.id == id);
@@ -144,6 +145,7 @@ class MocksData extends ChangeNotifier {
     }
     return _categories;
   }
+
   Category categoryById(int id) => _categories[_categoryIndex(id)];
   Future<Category> categoryById2(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
@@ -153,12 +155,10 @@ class MocksData extends ChangeNotifier {
     return _categories[_categoryIndex(id)];
   }
 
+  /// Достопримечательности.
   var _sightsNextId = 1;
   late final List<Sight> _sights;
-  late Set<int> _favoriteSet;
   int _sightIndex(int id) => _sights.indexWhere((e) => e.id == id);
-
-  // late Filter? _filter;
 
   List<Sight> get sights => _sights;
   Sight sightById(int id) => _sights[_sightIndex(id)];
@@ -169,10 +169,14 @@ class MocksData extends ChangeNotifier {
     }
     return _sights[_sightIndex(id)];
   }
+
+  /// Избранное.
+  late Set<int> _favoriteSet;
   Iterable<Sight> get favorites => _favoriteSet.map<Sight>(sightById);
+  Iterable<Sight> get visited => _sights.where((e) => e.visited);
 
+  // late Filter? _filter;
   // Future<Filter> get filter async {
-
   // }
 
   @override
@@ -220,6 +224,18 @@ class MocksData extends ChangeNotifier {
       id,
       ..._favoriteSet.skip(newPos),
     };
+    notifyListeners();
+  }
+
+  void addToVisited(int id) {
+    final sight = sightById(id).copyWith(visited: true);
+    replaceSight(id, sight);
+    notifyListeners();
+  }
+
+  void removeFromVisited(int id) {
+    final sight = sightById(id).copyWith(visited: false);
+    replaceSight(id, sight);
     notifyListeners();
   }
 }
