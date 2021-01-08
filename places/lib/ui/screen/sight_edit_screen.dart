@@ -144,48 +144,45 @@ class _SightEditScreenState extends State<SightEditScreen> {
   // Фотографии мест.
   Widget _buildPhotoGallery() => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 24),
-          child: Row(
-            children: [
+        child: Row(
+          children: [
+            const SizedBox(width: commonSpacing),
+            AddPhotoCard(
+              onPressed: () {
+                // Временно добавляем моковые фотографии.
+                if (_mockPhotosCounter >= mockPhotos.length) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Добавили всё, что можно')),
+                  );
+                } else {
+                  setState(() {
+                    _photos.add(mockPhotos[_mockPhotosCounter++]);
+                  });
+                }
+              },
+            ),
+            for (final photo in _photos) ...[
               const SizedBox(width: commonSpacing),
-              AddPhotoCard(
-                onPressed: () {
-                  // Временно добавляем моковые фотографии.
-                  if (_mockPhotosCounter >= mockPhotos.length) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Добавили всё, что можно')),
-                    );
-                  } else {
-                    setState(() {
-                      _photos.add(mockPhotos[_mockPhotosCounter++]);
-                    });
-                  }
+              Dismissible(
+                key: ValueKey(photo),
+                direction: DismissDirection.up,
+                onDismissed: (_) {
+                  setState(() {
+                    _photos.remove(photo);
+                  });
                 },
-              ),
-              for (final photo in _photos) ...[
-                const SizedBox(width: commonSpacing),
-                Dismissible(
-                  key: ValueKey(photo),
-                  direction: DismissDirection.up,
-                  onDismissed: (_) {
+                child: PhotoCard(
+                  url: photo,
+                  onClose: () {
                     setState(() {
                       _photos.remove(photo);
                     });
                   },
-                  child: PhotoCard(
-                    url: photo,
-                    onClose: () {
-                      setState(() {
-                        _photos.remove(photo);
-                      });
-                    },
-                  ),
                 ),
-              ],
-              const SizedBox(width: commonSpacing),
+              ),
             ],
-          ),
+            const SizedBox(width: commonSpacing),
+          ],
         ),
       );
 
