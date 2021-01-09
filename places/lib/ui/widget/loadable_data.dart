@@ -30,14 +30,12 @@ class _LoadableDataState<T> extends State<LoadableData<T>> {
         future: widget.future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return widget.error(context, snapshot.error!);
-            } else {//if (snapshot.hasData) {
-              return Container(
-                key: _key,
-                child: widget.builder(context, true, snapshot.data),
-              );
-            }
+            return snapshot.hasError
+                ? widget.error(context, snapshot.error!)
+                : Container(
+                    key: _key,
+                    child: widget.builder(context, true, snapshot.data),
+                  );
           }
 
           return Stack(

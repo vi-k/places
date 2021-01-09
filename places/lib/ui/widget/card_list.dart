@@ -125,11 +125,9 @@ class _CardListState extends State<CardList> {
   Widget _buildCard(Sight sight) => SightCard(
         type: widget.cardType,
         sightId: sight.id,
-        onLongPress: () {
-          setState(() {
-            _draggableMode = !_draggableMode;
-          });
-        },
+        onLongPress: widget.cardType != SightCardType.favorites
+            ? null
+            : () => setState(() => _draggableMode = !_draggableMode),
       );
 
   Widget _buildCardBack(MyThemeData theme, [Color? color]) => AspectRatio(

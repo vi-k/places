@@ -19,6 +19,7 @@ import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
+import '../widget/small_loader.dart';
 import '../widget/standart_button.dart';
 import 'category_select_screen.dart';
 
@@ -69,7 +70,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
   // Загружает информацию о месте.
   void _loadSight(int sightId) {
-    _sight = Mocks.of(context).sightById2(sightId).then((sight) {
+    _sight = Mocks.of(context).sightById(sightId).then((sight) {
       _photos
         ..clear()
         ..addAll(sight.photos);
@@ -91,7 +92,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
   // Загружает информацию о категории.
   void _loadCategory() {
-    _category = Mocks.of(context).categoryById2(_categoryId!);
+    _category = Mocks.of(context).categoryById(_categoryId!);
   }
 
   @override
@@ -206,13 +207,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: commonPaddingLR,
-                        child: SizedBox(
-                          width: commonSpacing,
-                          height: commonSpacing,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        ),
+                        child: SmallLoader(),
                       ),
                     ),
                 builder: (context, done, category) =>

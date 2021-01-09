@@ -49,6 +49,7 @@ const plusIconSize = 40.0;
 const clearIconSize = 20.0;
 const clearButtonSize = 24.0;
 const cardAspectRatio = 3 / 2;
+const deafultIconSize = 24.0;
 
 /// Отступы.
 const commonPadding = EdgeInsets.all(16);
@@ -60,5 +61,6 @@ const appBarPadding = EdgeInsets.only(left: 16, top: 40, right: 16, bottom: 16);
 const detailsPadding =
     EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 16);
 const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
+const cardSignaturesPadding2 = EdgeInsets.only(left: 8, right: 8);
 const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
