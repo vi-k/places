@@ -13,8 +13,8 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
 import '../widget/failed.dart';
-import '../widget/loadable_data.dart';
 import '../widget/mocks.dart';
+import '../widget/new_loadable_data.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
@@ -37,7 +37,6 @@ class SightEditScreen extends StatefulWidget {
 }
 
 class _SightEditScreenState extends State<SightEditScreen> {
-  Future<Sight>? _sight;
   Future<Category>? _category;
   final _formKey = GlobalKey<FormState>();
   int? _categoryId;
@@ -52,7 +51,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
   late TextEditingController _lonController;
   late TextEditingController _detailsController;
 
-  bool get isNew => _sight == null;
+  bool get isNew => widget.sightId == null;
 
   @override
   void initState() {
@@ -62,38 +61,11 @@ class _SightEditScreenState extends State<SightEditScreen> {
     _latController = TextEditingController();
     _lonController = TextEditingController();
     _detailsController = TextEditingController();
-
-    if (widget.sightId != null) {
-      _loadSight(widget.sightId!);
-    }
-  }
-
-  // Загружает информацию о месте.
-  void _loadSight(int sightId) {
-    _sight = Mocks.of(context).sightById(sightId).then((sight) {
-      _photos
-        ..clear()
-        ..addAll(sight.photos);
-      _categoryId = sight.categoryId;
-      _nameController.value = TextEditingValue(text: sight.name);
-      _latController.value =
-          TextEditingValue(text: sight.coord.lat.toStringAsFixed(6));
-      _lonController.value =
-          TextEditingValue(text: sight.coord.lon.toStringAsFixed(6));
-      _detailsController.value = TextEditingValue(text: sight.details);
-
-      _loadCategory();
-
-      return sight;
-    });
-
-    _category = Future.value(null);
   }
 
   // Загружает информацию о категории.
-  void _loadCategory() {
-    _category = Mocks.of(context).categoryById(_categoryId!);
-  }
+  void _loadCategory() =>
+      _category = Mocks.of(context).categoryById(_categoryId!);
 
   @override
   Widget build(BuildContext context) {
@@ -106,14 +78,30 @@ class _SightEditScreenState extends State<SightEditScreen> {
       ),
       body: isNew
           ? _buildBody(_formKey, theme)
-          : LoadableData<Sight>(
-              future: _sight!,
-              error: (context, error) => Failed(
+          : NewLoadableData<Sight>(
+              load: () => widget.sightId == null
+                  ? Future.value(null)
+                  : Mocks.of(context).sightById(widget.sightId!).then((sight) {
+                      _photos
+                        ..clear()
+                        ..addAll(sight.photos);
+                      _categoryId = sight.categoryId;
+                      _nameController.value =
+                          TextEditingValue(text: sight.name);
+                      _latController.value = TextEditingValue(
+                          text: sight.coord.lat.toStringAsFixed(6));
+                      _lonController.value = TextEditingValue(
+                          text: sight.coord.lon.toStringAsFixed(6));
+                      _detailsController.value =
+                          TextEditingValue(text: sight.details);
+
+                      _loadCategory();
+
+                      return sight;
+                    }),
+              error: (context, error, onReload) => Failed(
                 error.toString(),
-                onRepeat: () {
-                  _loadSight(widget.sightId!);
-                  setState(() {});
-                },
+                onRepeat: onReload,
               ),
               background: _buildBody(null, theme),
               builder: (context, _, sight) => _buildBody(_formKey, theme),
@@ -194,9 +182,9 @@ class _SightEditScreenState extends State<SightEditScreen> {
         applyPaddingToChild: false,
         child: _category == null
             ? _buildCategoryTile(theme, null, loaded: false)
-            : LoadableData<Category>(
-                future: _category!,
-                error: (context, error) => Failed(
+            : NewLoadableData<Category>(
+                future: _category,
+                error: (context, error, _) => Failed(
                       error.toString(),
                       onRepeat: () {
                         _loadCategory();
@@ -236,9 +224,10 @@ class _SightEditScreenState extends State<SightEditScreen> {
           builder: (context) => CategorySelectScreen(id: _categoryId),
         )).then((value) {
       if (value != null) {
-        _categoryId = value;
-        _loadCategory();
-        setState(() {});
+        setState(() {
+          _categoryId = value;
+          _loadCategory();
+        });
       }
     });
   }

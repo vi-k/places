@@ -7,9 +7,9 @@ import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/failed.dart';
-import '../widget/loadable_data.dart';
 import '../widget/loadable_image.dart';
 import '../widget/mocks.dart';
+import '../widget/new_loadable_data.dart';
 import '../widget/small_button.dart';
 import '../widget/small_loader.dart';
 import '../widget/standart_button.dart';
@@ -31,16 +31,8 @@ class SightDetails extends StatefulWidget {
 
 class _SightDetailsState extends State<SightDetails>
     with TickerProviderStateMixin {
-  late Future<Sight> _sight;
-  var _category = Future<Category>.value(null);
+  Future<Category> _category = Future.value(null);
   TabController? _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadSight();
-  }
 
   @override
   void dispose() {
@@ -48,23 +40,9 @@ class _SightDetailsState extends State<SightDetails>
     super.dispose();
   }
 
-  // Загружает информацию о месте.
-  void _loadSight() {
-    _sight = Mocks.of(context).sightById(widget.sightId).then((sight) {
-      _updateTabController(sight);
-
-      _category = Mocks.of(context).categoryById(sight.categoryId);
-
-      return sight;
-    });
-
-    _category = Future.value(null);
-  }
-
   // Загружает информацию о категории.
-  void _loadCategory(int categoryId) {
-    _category = Mocks.of(context).categoryById(categoryId);
-  }
+  void _loadCategory(int categoryId) =>
+      _category = Mocks.of(context).categoryById(categoryId);
 
   void _updateTabController(Sight sight) {
     _tabController?.dispose();
@@ -82,13 +60,17 @@ class _SightDetailsState extends State<SightDetails>
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      body: LoadableData<Sight>(
-          future: _sight,
-          error: (context, error) => Failed(
+      body: NewLoadableData<Sight>(
+          load: () => Mocks.of(context).sightById(widget.sightId).then((sight) {
+                _updateTabController(sight);
+                _loadCategory(sight.categoryId);
+                return sight;
+              }),
+          error: (context, error, onReload) => Failed(
                 error.toString(),
-                onRepeat: () => setState(_loadSight),
+                onRepeat: onReload,
               ),
-          builder: (context, done, sight) => ListView(
+          builder: (context, _, sight) => ListView(
                 children: [
                   _buildGallery(theme, sight),
                   Padding(
@@ -142,14 +124,15 @@ class _SightDetailsState extends State<SightDetails>
         ),
         Row(
           children: [
-            LoadableData<Category>(
+            NewLoadableData<Category>(
               future: _category,
-              error: (context, error) => SvgButton(
+              error: (context, error, _) => SvgButton(
                 Svg24.refresh,
                 color: theme.lightTextColor,
-                onPressed: () => setState(() {
+                onPressed: () {
                   _loadCategory(sight!.categoryId);
-                }),
+                  setState(() {});
+                },
               ),
               loader: (_) => Center(
                 child: SmallLoader(color: theme.lightTextColor),

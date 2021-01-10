@@ -8,9 +8,9 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'failed.dart';
-import 'loadable_data.dart';
 import 'loadable_image.dart';
 import 'mocks.dart';
+import 'new_loadable_data.dart';
 import 'small_button.dart';
 import 'small_loader.dart';
 import 'svg_button.dart';
@@ -35,31 +35,11 @@ class SightCard extends StatefulWidget {
 }
 
 class _SightCardState extends State<SightCard> {
-  late Future<Sight> _sight;
   var _category = Future<Category>.value(null);
 
-  @override
-  void initState() {
-    super.initState();
-
-    _loadSight();
-  }
-
-  // Загружает информацию о месте.
-  void _loadSight() {
-    _sight = Mocks.of(context).sightById(widget.sightId).then((sight) {
-      _category = Mocks.of(context).categoryById(sight.categoryId);
-
-      return sight;
-    });
-
-    _category = Future.value(null);
-  }
-
   // Загружает информацию о категории.
-  void _loadCategory(int categoryId) {
-    _category = Mocks.of(context).categoryById(categoryId);
-  }
+  void _loadCategory(int categoryId) =>
+      _category = Mocks.of(context).categoryById(categoryId);
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +50,17 @@ class _SightCardState extends State<SightCard> {
       child: AspectRatio(
         aspectRatio: cardAspectRatio,
         child: Card(
-          child: LoadableData<Sight>(
-            future: _sight,
-            error: (context, error) => Failed(
+          child: NewLoadableData<Sight>(
+            load: () =>
+                Mocks.of(context).sightById(widget.sightId).then((sight) {
+              _category = Mocks.of(context).categoryById(sight.categoryId);
+              return sight;
+            }),
+            error: (context, error, onReload) => Failed(
               error.toString(),
-              onRepeat: () => setState(_loadSight),
+              onRepeat: onReload,
             ),
-            builder: (context, done, sight) => Stack(
+            builder: (context, _, sight) => Stack(
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,18 +153,19 @@ class _SightCardState extends State<SightCard> {
   }
 
   Widget _buildSignatureCategory(TextStyle textStyle, Sight? sight) =>
-      LoadableData<Category>(
+      NewLoadableData<Category>(
         future: _category,
-        error: (context, error) => Padding(
+        error: (context, error, _) => Padding(
           padding: cardSignaturesPadding2,
           child: SvgButton(
             Svg24.refresh,
             color: textStyle.color,
             highlightColor: highlightColorDark2,
             splashColor: splashColorDark2,
-            onPressed: () => setState(() {
+            onPressed: () {
               _loadCategory(sight!.categoryId);
-            }),
+              setState(() {});
+            },
           ),
         ),
         loader: (_) => Padding(

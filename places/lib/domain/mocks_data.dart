@@ -202,6 +202,7 @@ class MocksData extends ChangeNotifier {
   }
 
   bool isFavorite(int id) => _favoriteSet.contains(id);
+  Future<bool> isFavorite2(int id) async => _favoriteSet.contains(id);
 
   void addToFavorite(int id) {
     _favoriteSet.add(id);
