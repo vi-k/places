@@ -123,6 +123,9 @@ class _SightEditScreenState extends State<SightEditScreen> {
       );
 
   // Фотографии мест.
+  // ListView для строки не очень подходит, т.к. занимает всё пространтсво
+  // по вертикали. Можно ограничить только явным указанием размера. В то время
+  // как SingleChildScrollView + Row подстраиваются под размер. Это удобнее.
   Widget _buildPhotoGallery() => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
