@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import '../../domain/category.dart';
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
+import '../widget/failed.dart';
 import '../widget/loadable_image.dart';
-import '../widget/my_theme.dart';
+import '../widget/loader.dart';
+import '../widget/mocks.dart';
 import '../widget/small_button.dart';
+import '../widget/small_loader.dart';
 import '../widget/standart_button.dart';
-import 'sight_screen.dart';
+import '../widget/svg_button.dart';
+import 'sight_edit_screen.dart';
 
 /// Экран детализации места.
 class SightDetails extends StatefulWidget {
@@ -28,6 +32,7 @@ class SightDetails extends StatefulWidget {
 class _SightDetailsState extends State<SightDetails>
     with TickerProviderStateMixin {
   TabController? _tabController;
+  var _modified = false;
 
   @override
   void dispose() {
@@ -35,12 +40,7 @@ class _SightDetailsState extends State<SightDetails>
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final sight = context.read<Mocks>()[widget.sightId];
-
+  void _updateTabController(Sight sight) {
     _tabController?.dispose();
     _tabController = TabController(
       length: sight.photos.length,
@@ -49,74 +49,106 @@ class _SightDetailsState extends State<SightDetails>
     _tabController!.addListener(() {
       setState(() {});
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
-    final sight = context.watch<Mocks>()[widget.sightId];
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildGallery(theme, sight),
-            Padding(
-              padding: detailsPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ..._buildText(theme, sight),
-                  ..._buildButtons(),
-                  ..._buildEditButton(sight),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: WillPopScope(
+        // Перехватываем `pop`, чтобы передать значение.
+        onWillPop: () async {
+          Navigator.pop(context, _modified);
+          return false;
+        },
+        child: Loader<Sight>(
+            load: () =>
+                Mocks.of(context).sightById(widget.sightId).then((sight) {
+                  _updateTabController(sight);
+                  return sight;
+                }),
+            error: (context, error) => Failed(
+                  error.toString(),
+                  onRepeat: () => Loader.of<Sight>(context).reload(),
+                ),
+            builder: (context, state, sight) => ListView(
+                  children: [
+                    _buildGallery(theme, sight),
+                    Padding(
+                      padding: detailsPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ..._buildText(theme, sight),
+                          ..._buildButtons(),
+                          ..._buildEditButton(context),
+                        ],
+                      ),
+                    ),
+                  ],
+                )),
       ),
     );
   }
 
-  Widget _buildGallery(MyThemeData theme, Sight sight) => SizedBox(
+  Widget _buildGallery(MyThemeData theme, Sight? sight) => SizedBox(
         height: detailsImageSize,
-        child: sight.photos.isEmpty
-            ? Center(
-                child: Text(
-                  'Нет фотографий',
-                  style: theme.textRegular16Light56,
-                ),
-              )
-            : TabBarView(
-                controller: _tabController,
-                children: [
-                  for (final url in sight.photos)
-                    Tab(
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: LoadableImage(
-                          url: url,
-                        ),
-                      ),
+        child: sight == null
+            ? null
+            : sight.photos.isEmpty
+                ? Center(
+                    child: Text(
+                      'Нет фотографий',
+                      style: theme.textRegular16Light56,
                     ),
-                ],
-              ),
+                  )
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      for (final url in sight.photos)
+                        Tab(
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: double.infinity,
+                            child: LoadableImage(
+                              url: url,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
       );
 
-  List<Widget> _buildText(MyThemeData theme, Sight sight) => [
+  List<Widget> _buildText(MyThemeData theme, Sight? sight) => [
         Text(
-          sight.name,
+          sight?.name ?? '',
           style: theme.textBold24Main,
         ),
         Row(
           children: [
-            Text(
-              sight.category.text,
-              style: theme.textBold14Light,
+            Loader<Category>(
+              tag: sight?.categoryId,
+              load: sight == null
+                  ? null
+                  : () => Mocks.of(context).categoryById(sight.categoryId),
+              loader: (_) => Center(
+                child: SmallLoader(color: theme.lightTextColor),
+              ),
+              error: (context, error) => SvgButton(
+                Svg24.refresh,
+                color: theme.lightTextColor,
+                onPressed: () => Loader.of<Category>(context).reload(),
+              ),
+              builder: (context, done, category) => category == null
+                  ? const SizedBox(
+                      height: smallButtonHeight,
+                      width: smallButtonHeight,
+                    )
+                  : Text(
+                      category.name,
+                      style: theme.textBold14Light,
+                    ),
             ),
             const SizedBox(width: commonSpacing),
             Text(
@@ -127,7 +159,7 @@ class _SightDetailsState extends State<SightDetails>
         ),
         const SizedBox(height: commonSpacing3_2),
         Text(
-          sight.details,
+          sight?.details ?? '',
           style: theme.textRegular14Light,
         ),
         const SizedBox(height: commonSpacing3_2),
@@ -160,7 +192,7 @@ class _SightDetailsState extends State<SightDetails>
         ),
       ];
 
-  List<Widget> _buildEditButton(Sight sight) => [
+  List<Widget> _buildEditButton(BuildContext context) => [
         const SizedBox(height: commonSpacing1_2),
         const Divider(height: 2),
         const SizedBox(height: commonSpacing3_2),
@@ -170,22 +202,14 @@ class _SightDetailsState extends State<SightDetails>
             Navigator.push<int>(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SightScreen(sight: sight),
-                ));
-            // if (newSight != null) {
-            //   setState(() {
-            //     _sight = newSight;
-            //     _changed = true;
-            //     // Обновляем tabController. Для этого нужно, чтобы
-            //     // виджет был наследником TickerProviderStateMixin,
-            //     // а не SingleTickerProviderStateMixin.
-            //     _tabController.dispose();
-            //     _tabController = TabController(
-            //       length: _sight.photos.length,
-            //       vsync: this,
-            //     );
-            //   });
-            // }
+                  builder: (context) =>
+                      SightEditScreen(sightId: widget.sightId),
+                )).then((value) {
+              if (value != null) {
+                _modified = true;
+                Loader.of<Sight>(context).reload();
+              }
+            });
           },
         )
       ];

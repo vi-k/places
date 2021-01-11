@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../domain/sight.dart';
+import '../../domain/category.dart';
+import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
-import 'my_theme.dart';
 
 /// Виджет: категория места.
 class SightCategoryFilter extends StatelessWidget {
@@ -15,7 +15,7 @@ class SightCategoryFilter extends StatelessWidget {
     required this.onPressed,
   }) : super(key: key);
 
-  final SightCategory category;
+  final Category category;
   final bool active;
   final void Function() onPressed;
 
@@ -39,10 +39,12 @@ class SightCategoryFilter extends StatelessWidget {
                   child: InkWell(
                     onTap: onPressed,
                     child: Center(
-                      child: SvgPicture.asset(
-                        category.asset,
-                        color: theme.accentColor,
-                      ),
+                      child: category.svg == null
+                          ? null
+                          : SvgPicture.asset(
+                              category.svg!,
+                              color: theme.accentColor,
+                            ),
                     ),
                   ),
                 ),
@@ -69,7 +71,7 @@ class SightCategoryFilter extends StatelessWidget {
           ),
           const SizedBox(height: commonSpacing1_2),
           Text(
-            category.text,
+            category.name,
             textAlign: TextAlign.center,
             style: theme.textRegular12Main,
           ),

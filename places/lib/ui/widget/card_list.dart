@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
-import 'my_theme.dart';
+import 'mocks.dart';
 import 'sight_card.dart';
 
 /// Виджет: Список карточек.
@@ -49,11 +48,31 @@ class _CardListState extends State<CardList> {
               ? _buildCard(sight)
               : Dismissible(
                   key: ValueKey(sight.id),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) {
-                    context.read<Mocks>().removeFromFavorite(sight.id);
+                  direction: widget.cardType == SightCardType.favorites
+                      ? DismissDirection.horizontal
+                      : DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    if (direction == DismissDirection.endToStart) {
+                      if (widget.cardType == SightCardType.favorites) {
+                        Mocks.of(context).removeFromFavorite(sight.id);
+                      } else if (widget.cardType == SightCardType.visited) {
+                        Mocks.of(context).removeFromVisited(sight.id);
+                      }
+                    } else if (direction == DismissDirection.startToEnd) {
+                      Mocks.of(context).removeFromFavorite(sight.id);
+                      Mocks.of(context).addToVisited(sight.id);
+                    }
                   },
-                  background: _buildBackground(theme),
+                  background: _buildBackground(theme,
+                      color: theme.accentColor,
+                      svg: Svg24.tick,
+                      label: stringToVisited,
+                      alignment: Alignment.centerLeft),
+                  secondaryBackground: _buildBackground(theme,
+                      color: theme.attentionColor,
+                      svg: Svg24.bucket,
+                      label: stringDelete,
+                      alignment: Alignment.centerRight),
                   child: _buildCard(sight),
                 );
         },
@@ -75,7 +94,7 @@ class _CardListState extends State<CardList> {
                   targetIndex != value &&
                   targetIndex != value + 1,
               onAccept: (value) {
-                context.read<Mocks>().moveFavorite(value, targetIndex);
+                Mocks.of(context).moveFavorite(value, targetIndex);
               },
               builder: (context, candidateData, _) => candidateData.isNotEmpty
                   ? Column(
@@ -106,11 +125,9 @@ class _CardListState extends State<CardList> {
   Widget _buildCard(Sight sight) => SightCard(
         type: widget.cardType,
         sightId: sight.id,
-        onLongPress: () {
-          setState(() {
-            _draggableMode = !_draggableMode;
-          });
-        },
+        onLongPress: widget.cardType != SightCardType.favorites
+            ? null
+            : () => setState(() => _draggableMode = !_draggableMode),
       );
 
   Widget _buildCardBack(MyThemeData theme, [Color? color]) => AspectRatio(
@@ -121,32 +138,38 @@ class _CardListState extends State<CardList> {
         ),
       );
 
-  Widget _buildBackground(MyThemeData theme) {
+  Widget _buildBackground(
+    MyThemeData theme, {
+    required Color color,
+    required String svg,
+    required String label,
+    required Alignment alignment,
+  }) {
     final textStyle = theme.textMiddle12White;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: commonSpacing),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.attentionColor,
+          color: color,
           borderRadius: const BorderRadius.all(
             Radius.circular(commonSpacing),
           ),
         ),
         child: Align(
-          alignment: Alignment.centerRight,
+          alignment: alignment,
           child: Padding(
             padding: commonPadding,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset(
-                  Svg24.bucket,
+                  svg,
                   color: textStyle.color,
                 ),
                 const SizedBox(height: commonSpacing1_2),
                 Text(
-                  stringDelete,
+                  label,
                   style: textStyle,
                 ),
               ],

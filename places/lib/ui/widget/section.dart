@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../res/const.dart';
 import '../res/themes.dart';
-import 'my_theme.dart';
 
 /// Виджет: Раздел.
 ///

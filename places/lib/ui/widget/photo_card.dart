@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
+import '../res/const.dart';
 import '../res/svg.dart';
-import '../res/themes.dart';
 import 'loadable_image.dart';
+import 'svg_button.dart';
 
 /// Виджет: фотокарточка для создания нового места.
 class PhotoCard extends StatelessWidget {
@@ -36,30 +36,16 @@ class PhotoCard extends StatelessWidget {
                   type: MaterialType.transparency,
                   child: Align(
                     alignment: Alignment.topRight,
-                    // Использую GestureDetector по условиям задачи, хотя он тут
-                    // не очень хорошо подходит.
-                    child: GestureDetector(
-                      onTap: onClose,
-                      child: Padding(
-                        padding: clearPadding,
-                        child: SvgPicture.asset(
-                          Svg24.clear,
-                          width: clearIconSize,
-                          height: clearIconSize,
-                          color: mainColor100,
-                        ),
-                      ),
+                    child: SvgButton(
+                      Svg24.clear,
+                      iconSize: clearIconSize,
+                      width: clearButtonSize,
+                      height: clearButtonSize,
+                      color: mainColor100,
+                      highlightColor: highlightColorDark2,
+                      splashColor: splashColorDark2,
+                      onPressed: onClose,
                     ),
-                    // child: SvgButton(
-                    //   assetClear,
-                    //   iconSize: clearIconSize,
-                    //   width: clearButtonSize,
-                    //   height: clearButtonSize,
-                    //   color: mainColor100,
-                    //   highlightColor: highlightColorDark2,
-                    //   splashColor: splashColorDark2,
-                    //   onPressed: onClose,
-                    // ),
                   ),
                 ),
               ),

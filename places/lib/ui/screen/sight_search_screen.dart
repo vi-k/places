@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
-import '../widget/my_theme.dart';
 import '../widget/search_bar.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';

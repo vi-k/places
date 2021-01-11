@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../app.dart';
+import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
-import '../widget/my_theme.dart';
+import '../widget/settings.dart';
 import '../widget/small_app_bar.dart';
 
 /// Экран настроек.
@@ -29,9 +29,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               stringIsDark,
               style: theme.textRegular14Main,
             ),
-            value: App.of(context).settings.isDark,
+            value: Settings.of(context, listen: true).isDark,
             onChanged: (value) {
-              App.of(context).settings.isDark = value;
+              Settings.of(context).isDark = value;
             },
           ),
           const _ListDivider(),

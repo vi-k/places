@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import '../../domain/category.dart';
+import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
-import '../../mocks.dart';
+import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
+import 'failed.dart';
 import 'loadable_image.dart';
-import 'my_theme.dart';
+import 'loader.dart';
+import 'mocks.dart';
 import 'small_button.dart';
+import 'small_loader.dart';
 import 'svg_button.dart';
 
-enum SightCardType { list, wishlist, visited }
+enum SightCardType { list, favorites, visited }
 
 /// Виджет: Карточка интересного места.
 class SightCard extends StatefulWidget {
@@ -35,52 +39,63 @@ class _SightCardState extends State<SightCard> {
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
-    final sight = context.watch<Mocks>()[widget.sightId];
-
     return SizedBox(
       width: MediaQuery.of(context).size.width - commonPadding.horizontal,
       child: AspectRatio(
         aspectRatio: cardAspectRatio,
         child: Card(
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTop(sight),
-                  _buildBottom(theme, sight),
-                ],
-              ),
-              // Поверх карточки невидимая кнопка
-              MaterialButton(
-                padding: EdgeInsets.zero,
-                highlightColor: theme.app.highlightColor,
-                splashColor: theme.app.splashColor,
-                onLongPress: widget.onLongPress,
-                onPressed: () {
-                  Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SightDetails(sightId: sight.id),
-                      ));
-                },
-                child: _buildSignatures(theme, sight),
-              ),
-            ],
+          child: Loader<Sight>(
+            load: () => Mocks.of(context).sightById(widget.sightId),
+            error: (context, error) => Failed(
+              error.toString(),
+              onRepeat: () => Loader.of<Sight>(context).reload(),
+            ),
+            builder: (context, _, sight) => Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildTop(sight),
+                    _buildBottom(theme, sight),
+                  ],
+                ),
+                // Поверх карточки невидимая кнопка
+                MaterialButton(
+                  padding: EdgeInsets.zero,
+                  highlightColor: theme.app.highlightColor,
+                  splashColor: theme.app.splashColor,
+                  onLongPress: widget.onLongPress,
+                  onPressed: () {
+                    Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SightDetails(sightId: widget.sightId),
+                        )).then((modified) {
+                      if (modified!) {
+                        Loader.of<Sight>(context).reload();
+                      }
+                    });
+                  },
+                  child: _buildSignatures(theme, sight),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTop(Sight sight) => Expanded(
+  Widget _buildTop(Sight? sight) => Expanded(
         child: Stack(
           children: [
-            Positioned.fill(
-              child: LoadableImage(
-                url: sight.photos.isEmpty ? '' : sight.photos[0],
+            if (sight != null)
+              Positioned.fill(
+                child: LoadableImage(
+                  url: sight.photos.isEmpty ? '' : sight.photos[0],
+                ),
               ),
-            ),
             Positioned.fill(
               child: Container(
                 color: highlightColorDark2,
@@ -90,111 +105,116 @@ class _SightCardState extends State<SightCard> {
         ),
       );
 
-  Widget _buildSignatures(MyThemeData theme, Sight sight) {
+  Widget _buildSignatures(MyThemeData theme, Sight? sight) {
     final textStyle = theme.textBold14White;
-    final mocks = context.watch<Mocks>();
+    final color = textStyle.color!;
+    final mocks = Mocks.of(context, listen: true);
 
     return Container(
       alignment: Alignment.topLeft,
       padding: cardSignaturesPadding,
       child: Row(
         children: [
-          SmallButton(
-            highlightColor: highlightColorDark2,
-            splashColor: splashColorDark2,
-            label: sight.category.text.toLowerCase(),
-            style: textStyle,
-            onPressed: () {
-              print('Filter by category');
-            },
-          ),
+          _buildSignatureCategory(textStyle, sight),
           const Spacer(),
-          if (widget.type == SightCardType.list) ...[
-            SignatureButton(
-              svg: mocks.isFavorite(sight.id) ? Svg24.heartFull : Svg24.heart,
-              color: textStyle.color,
-              onPressed: () {
-                context.read<Mocks>().toggleFavorite(sight.id);
-              },
-            ),
-          ],
-          if (widget.type == SightCardType.wishlist) ...[
-            SignatureButton(
-              svg: Svg24.calendar,
-              color: textStyle.color,
-              onPressed: () {
-                print('Schedule');
-              },
-            ),
-            SignatureButton(
-              svg: Svg24.close,
-              color: textStyle.color,
-              onPressed: () {
-                context.read<Mocks>().removeFromFavorite(sight.id);
-              },
-            ),
+          if (widget.type == SightCardType.list)
+            _buildSignatureButton(
+                mocks.isFavorite(widget.sightId)
+                    ? Svg24.heartFull
+                    : Svg24.heart,
+                textStyle.color!, () {
+              Mocks.of(context).toggleFavorite(widget.sightId);
+            }),
+          if (widget.type == SightCardType.favorites) ...[
+            _buildSignatureButton(Svg24.calendar, color, () {
+              print('Schedule');
+            }),
+            _buildSignatureButton(Svg24.close, color, () {
+              Mocks.of(context).removeFromFavorite(widget.sightId);
+            }),
           ],
           if (widget.type == SightCardType.visited) ...[
-            SignatureButton(
-              svg: Svg24.share,
-              color: textStyle.color,
-              onPressed: () {
-                print('Share');
-              },
-            ),
-            SignatureButton(
-              svg: Svg24.close,
-              color: textStyle.color,
-              onPressed: () {
-                context.read<Mocks>().removeFromFavorite(sight.id);
-              },
-            ),
+            _buildSignatureButton(Svg24.share, color, () {
+              print('Share');
+            }),
+            _buildSignatureButton(Svg24.close, color, () {
+              Mocks.of(context).removeFromVisited(widget.sightId);
+            }),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildBottom(MyThemeData theme, Sight sight) => Expanded(
-        child: Container(
-          padding: commonPadding,
-          child: RichText(
-            overflow: TextOverflow.ellipsis,
-            maxLines: 4,
-            text: TextSpan(
-              text: '${sight.name}\n',
-              style: theme.textMiddle16Main,
-              children: [
-                TextSpan(
-                  //text: sight.details,
-                  text: '${myMockCoord.distance(sight.coord)}',
-                  style: theme.textRegular14Light,
-                ),
-              ],
-            ),
+  Widget _buildSignatureCategory(TextStyle textStyle, Sight? sight) =>
+      Loader<Category>(
+        tag: sight?.categoryId,
+        load: sight == null
+            ? null
+            : () => Mocks.of(context).categoryById(sight.categoryId),
+        loader: (_) => Center(
+          child: SmallLoader(color: textStyle.color),
+        ),
+        error: (context, error) => Padding(
+          padding: cardSignaturesPadding2,
+          child: SvgButton(
+            Svg24.refresh,
+            color: textStyle.color,
+            highlightColor: highlightColorDark2,
+            splashColor: splashColorDark2,
+            onPressed: () => Loader.of<Category>(context).reload(),
           ),
         ),
+        builder: (context, _, category) => category == null
+            ? const Padding(
+                padding: cardSignaturesPadding2,
+                child: SizedBox(
+                  height: smallButtonHeight,
+                  width: smallButtonHeight,
+                ),
+              )
+            : SmallButton(
+                highlightColor: highlightColorDark2,
+                splashColor: splashColorDark2,
+                label: category.name.toLowerCase(),
+                style: textStyle,
+                onPressed: () {
+                  Loader.of<Sight>(context).reload();
+                  //print('Filter by category');
+                },
+              ),
       );
-}
 
-class SignatureButton extends StatelessWidget {
-  const SignatureButton({
-    Key? key,
-    required this.svg,
-    required this.color,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final String svg;
-  final Color? color;
-  final void Function() onPressed;
-
-  @override
-  Widget build(BuildContext context) => SvgButton(
+  Widget _buildSignatureButton(
+          String svg, Color color, void Function() onPressed) =>
+      SvgButton(
         svg,
         highlightColor: highlightColorDark2,
         splashColor: splashColorDark2,
         color: color,
         onPressed: onPressed,
+      );
+
+  Widget _buildBottom(MyThemeData theme, Sight? sight) => Expanded(
+        child: Container(
+          padding: commonPadding,
+          child: sight == null
+              ? null
+              : RichText(
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 4,
+                  text: TextSpan(
+                    text: '${sight.name}\n',
+                    style: theme.textMiddle16Main,
+                    children: [
+                      TextSpan(
+                        //text: sight.details,
+                        text: '${myMockCoord.distance(sight.coord)}',
+                        style: theme.textRegular14Light,
+                      ),
+                    ],
+                  ),
+                ),
+        ),
       );
 }
