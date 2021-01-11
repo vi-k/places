@@ -72,7 +72,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
         back: stringCancel,
       ),
       body: isNew
-          ? _buildBody(_formKey, theme)
+          ? _buildBody(context, _formKey, theme)
           : Loader<Sight>(
               load: () => widget.sightId == null
                   ? Future.value(null)
@@ -96,20 +96,20 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 error.toString(),
                 onRepeat: () => Loader.of<Sight>(context).reload(),
               ),
-              builder: (context, _, sight) => _buildBody(_formKey, theme),
+              builder: (context, _, sight) => _buildBody(context, _formKey, theme),
             ),
     );
   }
 
   // Содержимое экрана.
-  Widget _buildBody(Key? key, MyThemeData theme) => Column(
+  Widget _buildBody(BuildContext context, Key? key, MyThemeData theme) => Column(
         children: [
           Form(
             key: key,
             child: Expanded(
               child: ListView(
                 children: [
-                  _buildPhotoGallery(),
+                  _buildPhotoGallery(context),
                   _buildCategory(theme),
                   _buildName(),
                   ..._buildCoord(theme),
@@ -123,10 +123,10 @@ class _SightEditScreenState extends State<SightEditScreen> {
       );
 
   // Фотографии мест.
-  // ListView для строки не очень подходит, т.к. занимает всё пространтсво
+  // ListView для строки не очень подходит, т.к. занимает всё пространство
   // по вертикали. Можно ограничить только явным указанием размера. В то время
   // как SingleChildScrollView + Row подстраиваются под размер. Это удобнее.
-  Widget _buildPhotoGallery() => SingleChildScrollView(
+  Widget _buildPhotoGallery(BuildContext context) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
@@ -141,6 +141,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 } else {
                   setState(() {
                     _photos.add(mockPhotos[_mockPhotosCounter++]);
+                    Loader.of<Sight>(context).setState(() {});
                   });
                 }
               },
