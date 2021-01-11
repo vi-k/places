@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../ui/res/svg.dart';
@@ -134,24 +132,30 @@ class MocksData extends ChangeNotifier {
     _favoriteSet = <int>{2, 3, 4};
   }
 
+  bool get _randomBool => false;
+
+  // var _randomBoolValue = 0;
+  // bool get _randomBool {
+  //   if (++_randomBoolValue > 1) _randomBoolValue = 0;
+  //   return _randomBoolValue != 0;
+  //   // return Random().nextBool();
+  // }
+
   /// Категории.
   var _categoriesNextId = 1;
   late final List<Category> _categories;
   int _categoryIndex(int id) => _categories.indexWhere((e) => e.id == id);
+  Category _categoryById(int id) => _categories[_categoryIndex(id)];
+
   Future<List<Category>> get categories async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _categories;
   }
 
-  Category categoryById(int id) => _categories[_categoryIndex(id)];
-  Future<Category> categoryById2(int id) async {
+  Future<Category> categoryById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _categories[_categoryIndex(id)];
   }
 
@@ -159,20 +163,18 @@ class MocksData extends ChangeNotifier {
   var _sightsNextId = 1;
   late final List<Sight> _sights;
   int _sightIndex(int id) => _sights.indexWhere((e) => e.id == id);
+  Sight _sightById(int id) => _sights[_sightIndex(id)];
 
   List<Sight> get sights => _sights;
-  Sight sightById(int id) => _sights[_sightIndex(id)];
-  Future<Sight> sightById2(int id) async {
+  Future<Sight> sightById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _sights[_sightIndex(id)];
   }
 
   /// Избранное.
   late Set<int> _favoriteSet;
-  Iterable<Sight> get favorites => _favoriteSet.map<Sight>(sightById);
+  Iterable<Sight> get favorites => _favoriteSet.map<Sight>(_sightById);
   Iterable<Sight> get visited => _sights.where((e) => e.visited);
 
   // late Filter? _filter;
@@ -200,6 +202,7 @@ class MocksData extends ChangeNotifier {
   }
 
   bool isFavorite(int id) => _favoriteSet.contains(id);
+  Future<bool> isFavorite2(int id) async => _favoriteSet.contains(id);
 
   void addToFavorite(int id) {
     _favoriteSet.add(id);
@@ -228,13 +231,13 @@ class MocksData extends ChangeNotifier {
   }
 
   void addToVisited(int id) {
-    final sight = sightById(id).copyWith(visited: true);
+    final sight = _sightById(id).copyWith(visited: true);
     replaceSight(id, sight);
     notifyListeners();
   }
 
   void removeFromVisited(int id) {
-    final sight = sightById(id).copyWith(visited: false);
+    final sight = _sightById(id).copyWith(visited: false);
     replaceSight(id, sight);
     notifyListeners();
   }
