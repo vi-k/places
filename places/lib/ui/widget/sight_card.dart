@@ -218,18 +218,3 @@ class _SightCardState extends State<SightCard> {
         ),
       );
 }
-
-class TestCategory extends StatefulWidget {
-  @override
-  _TestCategoryState createState() => _TestCategoryState();
-}
-
-class _TestCategoryState extends State<TestCategory> {
-  int i = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    // return Text(Loader.of<Category>(context).data?.name ?? '-');
-    return Text('${i++}');
-  }
-}
