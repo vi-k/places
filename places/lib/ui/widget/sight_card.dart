@@ -9,8 +9,8 @@ import '../res/themes.dart';
 import '../screen/sight_details.dart';
 import 'failed.dart';
 import 'loadable_image.dart';
+import 'loader.dart';
 import 'mocks.dart';
-import 'new_loadable_data.dart';
 import 'small_button.dart';
 import 'small_loader.dart';
 import 'svg_button.dart';
@@ -35,12 +35,6 @@ class SightCard extends StatefulWidget {
 }
 
 class _SightCardState extends State<SightCard> {
-  var _category = Future<Category>.value(null);
-
-  // Загружает информацию о категории.
-  void _loadCategory(int categoryId) =>
-      _category = Mocks.of(context).categoryById(categoryId);
-
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
@@ -50,15 +44,11 @@ class _SightCardState extends State<SightCard> {
       child: AspectRatio(
         aspectRatio: cardAspectRatio,
         child: Card(
-          child: NewLoadableData<Sight>(
-            load: () =>
-                Mocks.of(context).sightById(widget.sightId).then((sight) {
-              _category = Mocks.of(context).categoryById(sight.categoryId);
-              return sight;
-            }),
-            error: (context, error, onReload) => Failed(
+          child: Loader<Sight>(
+            load: () => Mocks.of(context).sightById(widget.sightId),
+            error: (context, error) => Failed(
               error.toString(),
-              onRepeat: onReload,
+              onRepeat: () => Loader.of<Sight>(context).reload(),
             ),
             builder: (context, _, sight) => Stack(
               children: [
@@ -76,12 +66,16 @@ class _SightCardState extends State<SightCard> {
                   splashColor: theme.app.splashColor,
                   onLongPress: widget.onLongPress,
                   onPressed: () {
-                    Navigator.push<void>(
+                    Navigator.push<bool>(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
                               SightDetails(sightId: widget.sightId),
-                        ));
+                        )).then((modified) {
+                      if (modified!) {
+                        Loader.of<Sight>(context).reload();
+                      }
+                    });
                   },
                   child: _buildSignatures(theme, sight),
                 ),
@@ -153,28 +147,25 @@ class _SightCardState extends State<SightCard> {
   }
 
   Widget _buildSignatureCategory(TextStyle textStyle, Sight? sight) =>
-      NewLoadableData<Category>(
-        future: _category,
-        error: (context, error, _) => Padding(
+      Loader<Category>(
+        tag: sight?.categoryId,
+        load: sight == null
+            ? null
+            : () => Mocks.of(context).categoryById(sight.categoryId),
+        loader: (_) => Center(
+          child: SmallLoader(color: textStyle.color),
+        ),
+        error: (context, error) => Padding(
           padding: cardSignaturesPadding2,
           child: SvgButton(
             Svg24.refresh,
             color: textStyle.color,
             highlightColor: highlightColorDark2,
             splashColor: splashColorDark2,
-            onPressed: () {
-              _loadCategory(sight!.categoryId);
-              setState(() {});
-            },
+            onPressed: () => Loader.of<Category>(context).reload(),
           ),
         ),
-        loader: (_) => Padding(
-          padding: cardSignaturesPadding2,
-          child: Center(
-            child: SmallLoader(color: textStyle.color),
-          ),
-        ),
-        builder: (context, done, category) => category == null
+        builder: (context, _, category) => category == null
             ? const Padding(
                 padding: cardSignaturesPadding2,
                 child: SizedBox(
@@ -188,7 +179,8 @@ class _SightCardState extends State<SightCard> {
                 label: category.name.toLowerCase(),
                 style: textStyle,
                 onPressed: () {
-                  print('Filter by category');
+                  Loader.of<Sight>(context).reload();
+                  //print('Filter by category');
                 },
               ),
       );
@@ -225,4 +217,19 @@ class _SightCardState extends State<SightCard> {
                 ),
         ),
       );
+}
+
+class TestCategory extends StatefulWidget {
+  @override
+  _TestCategoryState createState() => _TestCategoryState();
+}
+
+class _TestCategoryState extends State<TestCategory> {
+  int i = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    // return Text(Loader.of<Category>(context).data?.name ?? '-');
+    return Text('${i++}');
+  }
 }

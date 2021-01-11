@@ -6,33 +6,17 @@ import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/failed.dart';
-import '../widget/loadable_data.dart';
+import '../widget/loader.dart';
 import '../widget/mocks.dart';
 import '../widget/small_app_bar.dart';
 
-class CategorySelectScreen extends StatefulWidget {
+class CategorySelectScreen extends StatelessWidget {
   const CategorySelectScreen({
     Key? key,
     this.id,
   }) : super(key: key);
 
   final int? id;
-
-  @override
-  _CategorySelectScreenState createState() => _CategorySelectScreenState();
-}
-
-class _CategorySelectScreenState extends State<CategorySelectScreen> {
-  late Future<List<Category>> categories;
-  late int? id;
-
-  @override
-  void initState() {
-    super.initState();
-
-    id = widget.id;
-    categories = Mocks.of(context).categories;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,30 +26,26 @@ class _CategorySelectScreenState extends State<CategorySelectScreen> {
       appBar: const SmallAppBar(
         title: stringCategory,
       ),
-      body: LoadableData<List<Category>>(
-        future: categories,
+      body: Loader<List<Category>>(
+        load: () => Mocks.of(context).categories,
         error: (context, error) => Failed(
           error.toString(),
-          onRepeat: () {
-            setState(() {
-              categories = Mocks.of(context).categories;
-            });
-          },
+          onRepeat: () => Loader.of<List<Category>>(context).reload(),
         ),
-        builder: (context, _, data) => data == null
-            ? null
-            : ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) =>
-                    _buildCategoryTile(theme, data[index]),
-              ),
+        builder: (context, _, data) => ListView.builder(
+          itemCount: data?.length ?? 0,
+          itemBuilder: (context, index) =>
+              _buildCategoryTile(context, theme, data![index]),
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryTile(MyThemeData theme, Category category) => ListTile(
+  Widget _buildCategoryTile(
+          BuildContext context, MyThemeData theme, Category category) =>
+      ListTile(
         title: Text(category.name),
-        trailing: category.id == widget.id
+        trailing: category.id == id
             ? SvgPicture.asset(
                 Svg24.tick,
                 color: theme.accentColor,

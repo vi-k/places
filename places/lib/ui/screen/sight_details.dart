@@ -8,8 +8,8 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/failed.dart';
 import '../widget/loadable_image.dart';
+import '../widget/loader.dart';
 import '../widget/mocks.dart';
-import '../widget/new_loadable_data.dart';
 import '../widget/small_button.dart';
 import '../widget/small_loader.dart';
 import '../widget/standart_button.dart';
@@ -31,18 +31,14 @@ class SightDetails extends StatefulWidget {
 
 class _SightDetailsState extends State<SightDetails>
     with TickerProviderStateMixin {
-  Future<Category> _category = Future.value(null);
   TabController? _tabController;
+  var _modified = false;
 
   @override
   void dispose() {
     _tabController?.dispose();
     super.dispose();
   }
-
-  // Загружает информацию о категории.
-  void _loadCategory(int categoryId) =>
-      _category = Mocks.of(context).categoryById(categoryId);
 
   void _updateTabController(Sight sight) {
     _tabController?.dispose();
@@ -60,32 +56,39 @@ class _SightDetailsState extends State<SightDetails>
     final theme = MyTheme.of(context);
 
     return Scaffold(
-      body: NewLoadableData<Sight>(
-          load: () => Mocks.of(context).sightById(widget.sightId).then((sight) {
-                _updateTabController(sight);
-                _loadCategory(sight.categoryId);
-                return sight;
-              }),
-          error: (context, error, onReload) => Failed(
-                error.toString(),
-                onRepeat: onReload,
-              ),
-          builder: (context, _, sight) => ListView(
-                children: [
-                  _buildGallery(theme, sight),
-                  Padding(
-                    padding: detailsPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ..._buildText(theme, sight),
-                        ..._buildButtons(),
-                        ..._buildEditButton(),
-                      ],
+      body: WillPopScope(
+        // Перехватываем `pop`, чтобы передать значение.
+        onWillPop: () async {
+          Navigator.pop(context, _modified);
+          return false;
+        },
+        child: Loader<Sight>(
+            load: () =>
+                Mocks.of(context).sightById(widget.sightId).then((sight) {
+                  _updateTabController(sight);
+                  return sight;
+                }),
+            error: (context, error) => Failed(
+                  error.toString(),
+                  onRepeat: () => Loader.of<Sight>(context).reload(),
+                ),
+            builder: (context, state, sight) => ListView(
+                  children: [
+                    _buildGallery(theme, sight),
+                    Padding(
+                      padding: detailsPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ..._buildText(theme, sight),
+                          ..._buildButtons(),
+                          ..._buildEditButton(context),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              )),
+                  ],
+                )),
+      ),
     );
   }
 
@@ -124,18 +127,18 @@ class _SightDetailsState extends State<SightDetails>
         ),
         Row(
           children: [
-            NewLoadableData<Category>(
-              future: _category,
-              error: (context, error, _) => SvgButton(
-                Svg24.refresh,
-                color: theme.lightTextColor,
-                onPressed: () {
-                  _loadCategory(sight!.categoryId);
-                  setState(() {});
-                },
-              ),
+            Loader<Category>(
+              tag: sight?.categoryId,
+              load: sight == null
+                  ? null
+                  : () => Mocks.of(context).categoryById(sight.categoryId),
               loader: (_) => Center(
                 child: SmallLoader(color: theme.lightTextColor),
+              ),
+              error: (context, error) => SvgButton(
+                Svg24.refresh,
+                color: theme.lightTextColor,
+                onPressed: () => Loader.of<Category>(context).reload(),
               ),
               builder: (context, done, category) => category == null
                   ? const SizedBox(
@@ -189,7 +192,7 @@ class _SightDetailsState extends State<SightDetails>
         ),
       ];
 
-  List<Widget> _buildEditButton() => [
+  List<Widget> _buildEditButton(BuildContext context) => [
         const SizedBox(height: commonSpacing1_2),
         const Divider(height: 2),
         const SizedBox(height: commonSpacing3_2),
@@ -201,7 +204,12 @@ class _SightDetailsState extends State<SightDetails>
                 MaterialPageRoute(
                   builder: (context) =>
                       SightEditScreen(sightId: widget.sightId),
-                ));
+                )).then((value) {
+              if (value != null) {
+                _modified = true;
+                Loader.of<Sight>(context).reload();
+              }
+            });
           },
         )
       ];

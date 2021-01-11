@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../ui/res/svg.dart';
@@ -134,6 +132,15 @@ class MocksData extends ChangeNotifier {
     _favoriteSet = <int>{2, 3, 4};
   }
 
+  bool get _randomBool => false;
+
+  // var _randomBoolValue = 0;
+  // bool get _randomBool {
+  //   if (++_randomBoolValue > 1) _randomBoolValue = 0;
+  //   return _randomBoolValue != 0;
+  //   // return Random().nextBool();
+  // }
+
   /// Категории.
   var _categoriesNextId = 1;
   late final List<Category> _categories;
@@ -142,18 +149,13 @@ class MocksData extends ChangeNotifier {
 
   Future<List<Category>> get categories async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _categories;
   }
 
   Future<Category> categoryById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-    // if (true) { // Для тестирования
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _categories[_categoryIndex(id)];
   }
 
@@ -166,9 +168,7 @@ class MocksData extends ChangeNotifier {
   List<Sight> get sights => _sights;
   Future<Sight> sightById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    if (Random().nextBool()) {
-      return Future.error('Network failed');
-    }
+    if (_randomBool) return Future.error('Network failed');
     return _sights[_sightIndex(id)];
   }
 

@@ -13,8 +13,8 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
 import '../widget/failed.dart';
+import '../widget/loader.dart';
 import '../widget/mocks.dart';
-import '../widget/new_loadable_data.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
 import '../widget/small_app_bar.dart';
@@ -37,7 +37,6 @@ class SightEditScreen extends StatefulWidget {
 }
 
 class _SightEditScreenState extends State<SightEditScreen> {
-  Future<Category>? _category;
   final _formKey = GlobalKey<FormState>();
   int? _categoryId;
   final _photos = <String>[];
@@ -63,10 +62,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
     _detailsController = TextEditingController();
   }
 
-  // Загружает информацию о категории.
-  void _loadCategory() =>
-      _category = Mocks.of(context).categoryById(_categoryId!);
-
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
@@ -78,7 +73,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
       ),
       body: isNew
           ? _buildBody(_formKey, theme)
-          : NewLoadableData<Sight>(
+          : Loader<Sight>(
               load: () => widget.sightId == null
                   ? Future.value(null)
                   : Mocks.of(context).sightById(widget.sightId!).then((sight) {
@@ -95,15 +90,12 @@ class _SightEditScreenState extends State<SightEditScreen> {
                       _detailsController.value =
                           TextEditingValue(text: sight.details);
 
-                      _loadCategory();
-
                       return sight;
                     }),
-              error: (context, error, onReload) => Failed(
+              error: (context, error) => Failed(
                 error.toString(),
-                onRepeat: onReload,
+                onRepeat: () => Loader.of<Sight>(context).reload(),
               ),
-              background: _buildBody(null, theme),
               builder: (context, _, sight) => _buildBody(_formKey, theme),
             ),
     );
@@ -180,23 +172,19 @@ class _SightEditScreenState extends State<SightEditScreen> {
         stringCategory,
         spacing: 0,
         applyPaddingToChild: false,
-        child: _category == null
+        child: _categoryId == null
             ? _buildCategoryTile(theme, null, loaded: false)
-            : NewLoadableData<Category>(
-                future: _category,
-                error: (context, error, _) => Failed(
-                      error.toString(),
-                      onRepeat: () {
-                        _loadCategory();
-                        setState(() {});
-                      },
+            : Loader<Category>(
+                tag: _categoryId,
+                load: _categoryId == null
+                    ? null
+                    : () => Mocks.of(context).categoryById(_categoryId!),
+                loader: (_) => const Center(
+                      child: SmallLoader(),
                     ),
-                loader: (_) => const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: commonPaddingLR,
-                        child: SmallLoader(),
-                      ),
+                error: (context, error) => Failed(
+                      error.toString(),
+                      onRepeat: () => Loader.of<Category>(context).reload(),
                     ),
                 builder: (context, done, category) =>
                     _buildCategoryTile(theme, category, loaded: true)),
@@ -226,7 +214,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
       if (value != null) {
         setState(() {
           _categoryId = value;
-          _loadCategory();
         });
       }
     });

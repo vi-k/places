@@ -15,7 +15,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) => Settings(
-        create: () => SettingsData(isDark: false),
+        create: () => SettingsData(isDark: true),
         child: Mocks(
           create: () => MocksData(),
           child: Builder(
