@@ -29,26 +29,25 @@ class SightDetails extends StatefulWidget {
   _SightDetailsState createState() => _SightDetailsState();
 }
 
-class _SightDetailsState extends State<SightDetails>
-    with TickerProviderStateMixin {
-  TabController? _tabController;
+class _SightDetailsState extends State<SightDetails> {
   var _modified = false;
+  final _controller = PageController();
+  var _currentPage = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {
+        _currentPage = _controller.page ?? 0;
+      });
+    });
+  }
 
   @override
   void dispose() {
-    _tabController?.dispose();
     super.dispose();
-  }
-
-  void _updateTabController(Sight sight) {
-    _tabController?.dispose();
-    _tabController = TabController(
-      length: sight.photos.length,
-      vsync: this,
-    );
-    _tabController!.addListener(() {
-      setState(() {});
-    });
+    _controller.dispose();
   }
 
   @override
@@ -63,11 +62,7 @@ class _SightDetailsState extends State<SightDetails>
           return false;
         },
         child: Loader<Sight>(
-            load: () =>
-                Mocks.of(context).sightById(widget.sightId).then((sight) {
-                  _updateTabController(sight);
-                  return sight;
-                }),
+            load: () => Mocks.of(context).sightById(widget.sightId),
             error: (context, error) => Failed(
                   error.toString(),
                   onRepeat: () => Loader.of<Sight>(context).reload(),
@@ -103,16 +98,40 @@ class _SightDetailsState extends State<SightDetails>
                       style: theme.textRegular16Light56,
                     ),
                   )
-                : TabBarView(
-                    controller: _tabController,
+                : Stack(
                     children: [
-                      for (final url in sight.photos)
-                        Tab(
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: LoadableImage(
-                              url: url,
+                      PageView(
+                        controller: _controller,
+                        //physics: const BouncingScrollPhysics(),
+                        children: [
+                          for (final url in sight.photos)
+                            Tab(
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: double.infinity,
+                                child: LoadableImage(
+                                  url: url,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      if (sight.photos.length > 1)
+                        Positioned(
+                          bottom: 0,
+                          left: _currentPage *
+                                  MediaQuery.of(context).size.width /
+                                  sight.photos.length -
+                              commonSpacing1_2,
+                          child: Container(
+                            height: commonSpacing1_2,
+                            width: MediaQuery.of(context).size.width /
+                                    sight.photos.length +
+                                commonSpacing,
+                            decoration: BoxDecoration(
+                              color: theme.mainTextColor2,
+                              borderRadius:
+                                  BorderRadius.circular(commonSpacing1_2),
                             ),
                           ),
                         ),
