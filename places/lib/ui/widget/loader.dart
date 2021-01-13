@@ -127,7 +127,8 @@ class _LoaderState<T> extends State<Loader<T>> {
   @override
   Widget build(BuildContext context) => _LoadScope(
         state: this,
-        child: _child ?? (_child = Builder(builder: _buildChild)),
+        // child: _child ?? (_child = Builder(builder: _buildChild)),
+        child: _child = Builder(builder: _buildChild),
       );
 
   Widget _buildChild(BuildContext context) => _state == LoadingState.failed
