@@ -6,6 +6,7 @@ import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
 import '../widget/settings.dart';
 import '../widget/small_app_bar.dart';
+import 'onboarding_screen.dart';
 
 /// Экран настроек.
 class SettingsScreen extends StatefulWidget {
@@ -45,7 +46,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 color: theme.accentColor,
               ),
               onTap: () {
-                print('Смотреть туториал');
+                Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OnboardingScreen(),
+                    ));
               }),
           const _ListDivider(),
         ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../res/const.dart';
 import '../res/themes.dart';
-
 
 /// Виджет: Стандартная универсальная кнопка.
 ///
@@ -25,24 +25,27 @@ class StandartButton extends StatelessWidget {
     final theme = MyTheme.of(context);
     final textStyle = theme.textBold14White;
 
-    return svg == null
-      ? RaisedButton(
-          onPressed: onPressed,
-          child: Text(
-            label.toUpperCase(),
-            style: textStyle,
-          ),
-        )
-      : RaisedButton.icon(
-          onPressed: onPressed,
-          icon: SvgPicture.asset(
-            svg!,
-            color: textStyle.color,
-          ),
-          label: Text(
-            label.toUpperCase(),
-            style: textStyle,
-          ),
-        );
+    return ConstrainedBox(
+      constraints: const BoxConstraints.tightFor(height: standartButtonHeight),
+      child: svg == null
+          ? RaisedButton(
+              onPressed: onPressed,
+              child: Text(
+                label.toUpperCase(),
+                style: textStyle,
+              ),
+            )
+          : RaisedButton.icon(
+              onPressed: onPressed,
+              icon: SvgPicture.asset(
+                svg!,
+                color: textStyle.color,
+              ),
+              label: Text(
+                label.toUpperCase(),
+                style: textStyle,
+              ),
+            ),
+    );
   }
 }

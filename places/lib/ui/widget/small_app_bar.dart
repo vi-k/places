@@ -91,7 +91,9 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                      ),
+                      )
+              else
+                const SizedBox.shrink(),
               if (button != null)
                 SmallButton(
                   style: theme.textMiddle16Accent,
