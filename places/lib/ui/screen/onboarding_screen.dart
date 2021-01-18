@@ -61,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ..._buildTop(context, theme, translate),
+          ..._buildTop(theme, translate),
           Expanded(
             child: PageView(
               controller: _controller,
@@ -94,8 +94,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  List<Widget> _buildTop(
-      BuildContext context, MyThemeData theme, double translate) {
+  List<Widget> _buildTop(MyThemeData theme, double translate) {
     final top = MediaQuery.of(context).padding.top + commonSpacing1_2;
 
     return [

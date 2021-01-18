@@ -10,6 +10,7 @@ const stringCreate = 'Создать';
 const stringDelete = 'Удалить';
 const stringDescription = 'Описание';
 const stringDistance = 'Расстояние';
+const stringDoCancel = 'Выйти без сохранения?';
 const stringDoCreate = 'Создать?';
 const stringDoSave = 'Сохранить?';
 const stringEdit = 'Редактировать';

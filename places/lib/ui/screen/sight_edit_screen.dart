@@ -31,7 +31,7 @@ class SightEditScreen extends StatefulWidget {
   }) : super(key: key);
 
   /// Идентификатор места.
-  /// 
+  ///
   /// Если передан `null`, то новое место.
   final int? sightId;
 
@@ -41,6 +41,7 @@ class SightEditScreen extends StatefulWidget {
 
 class _SightEditScreenState extends State<SightEditScreen> {
   final _formKey = GlobalKey<FormState>();
+  Sight? _sight;
   int? _categoryId;
   final _photos = <String>[];
   var _mockPhotosCounter = 0;
@@ -55,6 +56,17 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
   bool get _isNew => widget.sightId == null;
 
+  bool _cmpLists(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    final bi = b.iterator;
+    for (final va in a) {
+      bi.moveNext();
+      if (va != bi.current) return false;
+    }
+
+    return true;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +75,61 @@ class _SightEditScreenState extends State<SightEditScreen> {
     _latController = TextEditingController();
     _lonController = TextEditingController();
     _detailsController = TextEditingController();
+  }
+
+  // Проверяет данные перед сохранением.
+  bool _validate() {
+    if (!_formKey.currentState!.validate()) return false;
+
+    // Если не выбрана категория, предупреждаем об этом пользователя
+    // и отправляем его на страницу выбора категории.
+    if (_categoryId == null) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text(stringNoCategory)));
+      _getCategory();
+      return false;
+    }
+
+    return true;
+  }
+
+  // Проверяет, нужно ли сохранять.
+  bool _needSave({bool forced = false}) {
+    _formKey.currentState!.save();
+
+    final sight = _sight;
+    if (sight == null) return true;
+
+    return forced ||
+        sight.name != _name ||
+        sight.categoryId != _categoryId ||
+        sight.coord.lat != _lat ||
+        sight.coord.lon != _lon ||
+        sight.details != _details ||
+        !_cmpLists(sight.photos, _photos);
+  }
+
+  // Сохраняет изменения.
+  int _save() {
+    var id = widget.sightId;
+
+    final newSight = Sight(
+      id: id ?? 0,
+      name: _name!,
+      coord: Coord(_lat!, _lon!),
+      photos: _photos,
+      details: _details!,
+      categoryId: _categoryId!,
+    );
+
+    if (id == null) {
+      id = Mocks.of(context).addSight(newSight);
+    } else {
+      Mocks.of(context).replaceSight(id, newSight);
+    }
+
+    return id;
   }
 
   @override
@@ -74,38 +141,100 @@ class _SightEditScreenState extends State<SightEditScreen> {
         title: _isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
-      body: _isNew
-          ? _buildBody(context, _formKey, theme)
-          : Loader<Sight>(
-              load: () => widget.sightId == null
-                  ? Future.value(null)
-                  : Mocks.of(context).sightById(widget.sightId!).then((sight) {
-                      _photos
-                        ..clear()
-                        ..addAll(sight.photos);
-                      _categoryId = sight.categoryId;
-                      _nameController.value =
-                          TextEditingValue(text: sight.name);
-                      _latController.value = TextEditingValue(
-                          text: sight.coord.lat.toStringAsFixed(6));
-                      _lonController.value = TextEditingValue(
-                          text: sight.coord.lon.toStringAsFixed(6));
-                      _detailsController.value =
-                          TextEditingValue(text: sight.details);
-
-                      return sight;
-                    }),
-              error: (context, error) => Failed(
-                error.toString(),
-                onRepeat: () => Loader.of<Sight>(context).reload(),
+      body: WillPopScope(
+        onWillPop: () async {
+          if (!_validate()) {
+            final exit = await showDialog<bool>(
+              context: context,
+              barrierDismissible: true,
+              builder: (_) => AlertDialog(
+                title: const Text(stringDoCancel),
+                actions: [
+                  SmallButton(
+                    label: stringCancel,
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  SmallButton(
+                    label: stringYes,
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
               ),
-              builder: (context, _, sight) => _buildBody(context, _formKey, theme),
+            );
+
+            return exit ?? false;
+          }
+
+          if (!_needSave()) return true;
+
+          await showDialog<void>(
+            context: context,
+            barrierDismissible: true,
+            builder: (_) => AlertDialog(
+              title: Text(_isNew ? stringDoCreate : stringDoSave),
+              actions: [
+                SmallButton(
+                  label: stringNo,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context, null);
+                  },
+                ),
+                SmallButton(
+                  label: stringYes,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context, _save());
+                  },
+                ),
+              ],
             ),
+          );
+
+          return false;
+        },
+        child: _isNew
+            ? _buildBody(context, _formKey, theme)
+            : Loader<Sight>(
+                load: () => widget.sightId == null
+                    ? Future.value(null)
+                    : Mocks.of(context)
+                        .sightById(widget.sightId!)
+                        .then((sight) {
+                        _sight = sight;
+                        _photos
+                          ..clear()
+                          ..addAll(sight.photos);
+                        _categoryId = sight.categoryId;
+                        _nameController.value =
+                            TextEditingValue(text: sight.name);
+                        _latController.value = TextEditingValue(
+                            text: sight.coord.lat.toStringAsFixed(6));
+                        _lonController.value = TextEditingValue(
+                            text: sight.coord.lon.toStringAsFixed(6));
+                        _detailsController.value =
+                            TextEditingValue(text: sight.details);
+
+                        return sight;
+                      }),
+                error: (context, error) => Failed(
+                  error.toString(),
+                  onRepeat: () => Loader.of<Sight>(context).reload(),
+                ),
+                builder: (context, _, sight) =>
+                    _buildBody(context, _formKey, theme),
+              ),
+      ),
     );
   }
 
   // Содержимое экрана.
-  Widget _buildBody(BuildContext context, Key? key, MyThemeData theme) => Column(
+  Widget _buildBody(BuildContext context, Key? key, MyThemeData theme) =>
+      Column(
         children: [
           Form(
             key: key,
@@ -353,60 +482,8 @@ class _SightEditScreenState extends State<SightEditScreen> {
         child: StandartButton(
           label: _isNew ? stringCreate : stringSave,
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Если не выбрана категория, предупреждаем об этом пользователя
-              // и отправляем его на страницу выбора категории.
-              if (_categoryId == null) {
-                ScaffoldMessenger.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                      const SnackBar(content: Text(stringNoCategory)));
-                _getCategory();
-                return;
-              }
-
-              showDialog<void>(
-                context: context,
-                barrierDismissible: true,
-                builder: (_) => AlertDialog(
-                  title: Text(_isNew ? stringDoCreate : stringDoSave),
-                  actions: [
-                    SmallButton(
-                      label: stringNo,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SmallButton(
-                      label: stringYes,
-                      onPressed: () {
-                        _formKey.currentState!.save();
-
-                        var id = widget.sightId;
-
-                        final newSight = Sight(
-                          id: id ?? 0,
-                          name: _name!,
-                          coord: Coord(_lat!, _lon!),
-                          photos: _photos,
-                          details: _details!,
-                          categoryId: _categoryId!,
-                        );
-
-                        if (id == null) {
-                          id = Mocks.of(context).addSight(newSight);
-                        } else {
-                          Mocks.of(context).replaceSight(id, newSight);
-                        }
-
-                        Navigator.pop(context);
-                        Navigator.pop(context, id);
-                      },
-                    ),
-                  ],
-                ),
-              );
-            }
+            if (!_validate()) return;
+            Navigator.pop(context, _needSave(forced: true) ? _save() : null);
           },
         ),
       );
