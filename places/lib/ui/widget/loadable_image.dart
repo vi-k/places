@@ -5,13 +5,14 @@ import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 
-/// Виджет: Загружаемая из сети картинка с индикатором прогресса внизу виджета.
+/// Виджет загружаемой из сети картинки с индикатором прогресса внизу виджета.
 class LoadableImage extends StatelessWidget {
   const LoadableImage({
     Key? key,
     required this.url,
   }) : super(key: key);
 
+  /// Url картинки.
   final String url;
 
   @override

@@ -30,6 +30,9 @@ class SightEditScreen extends StatefulWidget {
     this.sightId,
   }) : super(key: key);
 
+  /// Идентификатор места.
+  /// 
+  /// Если передан `null`, то новое место.
   final int? sightId;
 
   @override
@@ -50,7 +53,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
   late TextEditingController _lonController;
   late TextEditingController _detailsController;
 
-  bool get isNew => widget.sightId == null;
+  bool get _isNew => widget.sightId == null;
 
   @override
   void initState() {
@@ -68,10 +71,10 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
     return Scaffold(
       appBar: SmallAppBar(
-        title: isNew ? stringNewPlace : stringEdit,
+        title: _isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
-      body: isNew
+      body: _isNew
           ? _buildBody(context, _formKey, theme)
           : Loader<Sight>(
               load: () => widget.sightId == null
@@ -229,7 +232,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
         child: TextFormField(
           controller: _nameController,
           decoration: InputDecoration(
-            hintText: isNew ? stringNewPlaceFakeName : '',
+            hintText: _isNew ? stringNewPlaceFakeName : '',
           ),
           textInputAction: TextInputAction.next,
           onEditingComplete: () {
@@ -255,7 +258,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 child: TextFormField(
                   controller: _latController,
                   decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLatitude : '',
+                    hintText: _isNew ? stringNewPlaceFakeLatitude : '',
                   ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
@@ -292,7 +295,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
                   textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLongitude : '',
+                    hintText: _isNew ? stringNewPlaceFakeLongitude : '',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -348,7 +351,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
         width: double.infinity,
         padding: commonPadding,
         child: StandartButton(
-          label: isNew ? stringCreate : stringSave,
+          label: _isNew ? stringCreate : stringSave,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               // Если не выбрана категория, предупреждаем об этом пользователя
@@ -366,7 +369,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 context: context,
                 barrierDismissible: true,
                 builder: (_) => AlertDialog(
-                  title: Text(isNew ? stringDoCreate : stringDoSave),
+                  title: Text(_isNew ? stringDoCreate : stringDoSave),
                   actions: [
                     SmallButton(
                       label: stringNo,

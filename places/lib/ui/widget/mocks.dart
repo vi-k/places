@@ -17,9 +17,13 @@ class Mocks extends StatefulWidget {
     required this.child,
   }) : super(key: key);
 
+  /// Обратный вызов для создания объекта с данными.
   final MocksData Function() create;
+
   final Widget child;
 
+  /// Быстрый доступ к данным (используется [InheritedWidget],
+  /// см. ниже [_MocksScope]).
   static MocksData of(BuildContext context, {bool listen = false}) =>
       _MocksScope.of(context, listen: listen).state.data;
 

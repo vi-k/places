@@ -23,6 +23,7 @@ class SightDetails extends StatefulWidget {
     required this.sightId,
   }) : super(key: key);
 
+  /// Идентификатор места.
   final int sightId;
 
   @override

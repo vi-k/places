@@ -10,12 +10,16 @@ import '../widget/loader.dart';
 import '../widget/mocks.dart';
 import '../widget/small_app_bar.dart';
 
+/// Экран выбора категории.
 class CategorySelectScreen extends StatelessWidget {
   const CategorySelectScreen({
     Key? key,
     this.id,
   }) : super(key: key);
 
+  /// Идентификатор категории.
+  /// 
+  /// Если передан `null`, то категория не установлена.
   final int? id;
 
   @override

@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../res/const.dart';
 import '../res/themes.dart';
 
-/// Виджет: Кнопка-иконка для svg.
+/// Кнопка-иконка для svg.
 class SvgButton extends StatelessWidget {
   const SvgButton(
     this.svg, {
@@ -18,13 +18,26 @@ class SvgButton extends StatelessWidget {
     this.onPressed,
   }) : super(key: key);
 
+  /// Идентификатор ресурса (ассет) для SVG.
   final String svg;
+
+  /// Размер иконки. По умолчанию [deafultIconSize].
   final double iconSize;
+
+  /// Размеры кнопки. По умолчанию оба [smallButtonHeight].
   final double width;
   final double height;
+
+  /// Цвет кнопки, если нужен.
   final Color? color;
+
+  /// Цвета для Ripple-эффекта.
+  /// 
+  /// По умолчанию `Theme.highlightColor` и `Theme.splashColor`.
   final Color? highlightColor;
   final Color? splashColor;
+
+  /// Обратный вызов при нажатии.
   final void Function()? onPressed;
 
   @override

@@ -6,7 +6,7 @@ import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 
-/// Виджет: категория места.
+/// Виджет категории места.
 class SightCategoryFilter extends StatelessWidget {
   const SightCategoryFilter({
     Key? key,
@@ -15,8 +15,15 @@ class SightCategoryFilter extends StatelessWidget {
     required this.onPressed,
   }) : super(key: key);
 
+  /// Категория.
   final Category category;
+
+  /// Активна категория?
+  /// 
+  /// Флажок справа, что именно эта категория сейчас установлена для места.
   final bool active;
+
+  /// Обратный вызов при нажатии.
   final void Function() onPressed;
 
   @override

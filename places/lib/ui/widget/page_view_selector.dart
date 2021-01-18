@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../res/const.dart';
 import '../res/themes.dart';
 
+/// Селектор для PageView в виде линии и точек, плавно перетекающих друг
+/// в друга при изменении страницы.
 class PageViewSelector extends StatefulWidget {
   const PageViewSelector({
     Key? key,
@@ -10,7 +12,10 @@ class PageViewSelector extends StatefulWidget {
     required this.controller,
   }) : super(key: key);
 
+  /// Кол-во страниц (в контроллере не нашёл количества).
   final int count;
+
+  /// Контроллер от PageView для управления страницами.
   final PageController controller;
 
   @override

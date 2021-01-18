@@ -4,7 +4,7 @@ import '../res/const.dart';
 import '../res/themes.dart';
 import 'small_button.dart';
 
-/// Виджет: Переключатель табов.
+/// Переключатель табов.
 class TabSwitch extends StatelessWidget {
   const TabSwitch({
     Key? key,
@@ -12,7 +12,10 @@ class TabSwitch extends StatelessWidget {
     required this.tabController,
   }) : super(key: key);
 
+  /// Список названий табов.
   final List<String> tabs;
+
+  /// Контроллер табов.
   final TabController tabController;
 
   @override

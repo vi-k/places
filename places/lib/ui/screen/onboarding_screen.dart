@@ -10,6 +10,7 @@ import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
 import 'sight_list_screen.dart';
 
+/// Экран туториала.
 class OnboardingScreen extends StatefulWidget {
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();

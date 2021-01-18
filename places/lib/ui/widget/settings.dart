@@ -18,9 +18,13 @@ class Settings extends StatefulWidget {
     required this.child,
   }) : super(key: key);
 
+  /// Обратный вызов для создания объекта с данными.
   final SettingsData Function() create;
+
   final Widget child;
 
+  /// Быстрый доступ к данным (используется [InheritedWidget],
+  /// см. ниже [_SettingsScope]).
   static SettingsData of(BuildContext context, {bool listen = false}) =>
       _SettingsScope.of(context, listen: listen).state.data;
 
@@ -42,6 +46,11 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   var _needUpdate = false;
+
+  /// Сохраняем ссылку на данные.
+  /// 
+  /// Виджет не сможет менять их, когда ему захочется. Это нужно, чтобы не было
+  /// memory leaks.
   late SettingsData data;
 
   // Первичная инициализация виджета.

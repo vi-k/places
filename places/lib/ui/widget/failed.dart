@@ -7,6 +7,7 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import 'small_button.dart';
 
+/// Виджет ошибки.
 class Failed extends StatelessWidget {
   const Failed(
     this.error, {
@@ -14,7 +15,13 @@ class Failed extends StatelessWidget {
     this.onRepeat,
   }) : super(key: key);
 
+  /// Текст ошибки.
   final String error;
+
+  /// Обратный вызов, если есть желание и возможность повторить операцию,
+  /// приведшую к ошибке.
+  /// 
+  /// Если не `null`, будет добавлена кнопка для повторения.
   final void Function()? onRepeat;
 
   @override

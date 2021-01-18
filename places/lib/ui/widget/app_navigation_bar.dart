@@ -15,6 +15,7 @@ class AppNavigationBar extends StatelessWidget {
     required this.index,
   }) : super(key: key);
 
+  /// Текущая позиция.
   final int index;
 
   @override

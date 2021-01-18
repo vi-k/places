@@ -17,7 +17,7 @@ import 'svg_button.dart';
 
 enum SightCardType { list, favorites, visited }
 
-/// Виджет: Карточка интересного места.
+/// Карточка места.
 class SightCard extends StatefulWidget {
   const SightCard({
     Key? key,
@@ -26,8 +26,13 @@ class SightCard extends StatefulWidget {
     this.onLongPress,
   }) : super(key: key);
 
+  /// Идентификатор места.
   final int sightId;
+
+  /// Тип карточки: list, favorites, visited.
   final SightCardType type;
+
+  /// Обратный вызов для реализации перемещения карточек.
   final void Function()? onLongPress;
 
   @override

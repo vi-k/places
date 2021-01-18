@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../res/const.dart';
 import '../res/themes.dart';
 
-/// Виджет: Стандартная универсальная кнопка.
+/// Стандартная универсальная кнопка.
 ///
 /// Иконка, если нужна, берётся из ресурсов по имени, переданному в параметре
 /// [svg]. Текст кнопки передаётся в строке [label].
@@ -16,8 +16,13 @@ class StandartButton extends StatelessWidget {
     required this.onPressed,
   }) : super(key: key);
 
+  /// Идентификатор ресурса (ассет) для SVG.
   final String? svg;
+
+  /// Текст кнопки.
   final String label;
+
+  /// Обратный вызов при нажатии.
   final void Function() onPressed;
 
   @override

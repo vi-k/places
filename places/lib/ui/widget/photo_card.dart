@@ -5,7 +5,7 @@ import '../res/svg.dart';
 import 'loadable_image.dart';
 import 'svg_button.dart';
 
-/// Виджет: фотокарточка для создания нового места.
+/// Фотокарточка места для галереи.
 class PhotoCard extends StatelessWidget {
   const PhotoCard({
     Key? key,
@@ -13,7 +13,10 @@ class PhotoCard extends StatelessWidget {
     required this.onClose,
   }) : super(key: key);
 
+  /// Url фотографии.
   final String url;
+
+  /// Обратный вызов при закрытии/удалении фотокарточки.
   final void Function() onClose;
 
   @override

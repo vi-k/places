@@ -12,7 +12,7 @@ import '../widget/sight_card.dart';
 import 'sight_edit_screen.dart';
 import 'sight_search_screen.dart';
 
-/// Экран: Список интересных мест.
+/// Экран "Список интересных мест".
 class SightListScreen extends StatefulWidget {
   @override
   _SightListScreenState createState() => _SightListScreenState();
