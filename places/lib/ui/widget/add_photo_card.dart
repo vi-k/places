@@ -5,12 +5,14 @@ import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 
+/// Виджет добавления фотокарточки.
 class AddPhotoCard extends StatelessWidget {
   const AddPhotoCard({
     Key? key,
     required this.onPressed,
   }) : super(key: key);
 
+  /// Обратный вызов при нажатии.
   final void Function() onPressed;
 
   @override

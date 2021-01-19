@@ -23,33 +23,15 @@ class SightDetails extends StatefulWidget {
     required this.sightId,
   }) : super(key: key);
 
+  /// Идентификатор места.
   final int sightId;
 
   @override
   _SightDetailsState createState() => _SightDetailsState();
 }
 
-class _SightDetailsState extends State<SightDetails>
-    with TickerProviderStateMixin {
-  TabController? _tabController;
+class _SightDetailsState extends State<SightDetails> {
   var _modified = false;
-
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    super.dispose();
-  }
-
-  void _updateTabController(Sight sight) {
-    _tabController?.dispose();
-    _tabController = TabController(
-      length: sight.photos.length,
-      vsync: this,
-    );
-    _tabController!.addListener(() {
-      setState(() {});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,62 +45,32 @@ class _SightDetailsState extends State<SightDetails>
           return false;
         },
         child: Loader<Sight>(
-            load: () =>
-                Mocks.of(context).sightById(widget.sightId).then((sight) {
-                  _updateTabController(sight);
-                  return sight;
-                }),
-            error: (context, error) => Failed(
-                  error.toString(),
-                  onRepeat: () => Loader.of<Sight>(context).reload(),
-                ),
-            builder: (context, state, sight) => ListView(
+          load: () => Mocks.of(context).sightById(widget.sightId),
+          error: (context, error) => Failed(
+            error.toString(),
+            onRepeat: () => Loader.of<Sight>(context).reload(),
+          ),
+          builder: (context, state, sight) => ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              _Gallery(sight),
+              Padding(
+                padding: detailsPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildGallery(theme, sight),
-                    Padding(
-                      padding: detailsPadding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ..._buildText(theme, sight),
-                          ..._buildButtons(),
-                          ..._buildEditButton(context),
-                        ],
-                      ),
-                    ),
+                    ..._buildText(theme, sight),
+                    ..._buildButtons(),
+                    ..._buildEditButton(context),
                   ],
-                )),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
-
-  Widget _buildGallery(MyThemeData theme, Sight? sight) => SizedBox(
-        height: detailsImageSize,
-        child: sight == null
-            ? null
-            : sight.photos.isEmpty
-                ? Center(
-                    child: Text(
-                      'Нет фотографий',
-                      style: theme.textRegular16Light56,
-                    ),
-                  )
-                : TabBarView(
-                    controller: _tabController,
-                    children: [
-                      for (final url in sight.photos)
-                        Tab(
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: LoadableImage(
-                              url: url,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-      );
 
   List<Widget> _buildText(MyThemeData theme, Sight? sight) => [
         Text(
@@ -200,11 +152,11 @@ class _SightDetailsState extends State<SightDetails>
           label: stringEdit,
           onPressed: () {
             Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SightEditScreen(sightId: widget.sightId),
-                )).then((value) {
+              context,
+              MaterialPageRoute(
+                builder: (context) => SightEditScreen(sightId: widget.sightId),
+              ),
+            ).then((value) {
               if (value != null) {
                 _modified = true;
                 Loader.of<Sight>(context).reload();
@@ -213,4 +165,90 @@ class _SightDetailsState extends State<SightDetails>
           },
         )
       ];
+}
+
+class _Gallery extends StatefulWidget {
+  const _Gallery(
+    this.sight, {
+    Key? key,
+  }) : super(key: key);
+
+  final Sight? sight;
+
+  @override
+  _GalleryState createState() => _GalleryState();
+}
+
+class _GalleryState extends State<_Gallery> {
+  final _controller = PageController();
+  var _currentPage = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {
+        _currentPage = _controller.page ?? 0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = MyTheme.of(context);
+    final sight = widget.sight;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return SizedBox(
+      height: detailsImageSize,
+      child: sight == null
+          ? null
+          : sight.photos.isEmpty
+              ? Center(
+                  child: Text(
+                    stringNoPhotos,
+                    style: theme.textRegular16Light56,
+                  ),
+                )
+              : Stack(
+                  children: [
+                    PageView(
+                      controller: _controller,
+                      children: [
+                        for (final url in sight.photos)
+                          SizedBox(
+                            width: double.infinity,
+                            height: double.infinity,
+                            child: LoadableImage(
+                              url: url,
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (sight.photos.length > 1)
+                      Positioned(
+                        bottom: 0,
+                        left: _currentPage * screenWidth / sight.photos.length -
+                            commonSpacing1_2,
+                        child: Container(
+                          height: commonSpacing1_2,
+                          width:
+                              screenWidth / sight.photos.length + commonSpacing,
+                          decoration: BoxDecoration(
+                            color: theme.mainTextColor2,
+                            borderRadius:
+                                BorderRadius.circular(commonSpacing1_2),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+    );
+  }
 }

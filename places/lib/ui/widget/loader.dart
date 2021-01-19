@@ -4,9 +4,9 @@ enum LoadingState { waiting, loading, failed, done }
 
 /// Виджет для загрузки данных и их предоставления вниз по дереву.
 ///
-/// Доступ: `Load<T>.of(context)`.
+/// Доступ: `Loader<T>.of(context)`.
 ///
-/// Для подписки на изменения: `Load.of(context, listen: true)`. В отличие от
+/// Для подписки на изменения: `Loader.of(context, listen: true)`. В отличие от
 /// аналогичных вызовов в SDK прослушивание по умолчанию отключено!
 @immutable
 class Loader<T> extends StatefulWidget {
@@ -30,7 +30,9 @@ class Loader<T> extends StatefulWidget {
   /// Накладывается поверх виджета данных.
   final Widget Function(BuildContext context)? loader;
 
-  // Виджет ошибки.
+  /// Виджет ошибки.
+  /// 
+  /// Например: [Failed].
   final Widget Function(BuildContext context, Object error) error;
 
   /// Виджет данных. [state] не может быть `LoadingState.failed`.

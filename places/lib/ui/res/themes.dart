@@ -69,6 +69,7 @@ class MyThemeData {
     textMiddle18Main2 = _textMiddle18.withColor(mainTextColor2);
     textMiddle18Light56 = _textMiddle18.withColor(lightTextColor56);
     textBold24Main = _textBold24.withColor(mainTextColor);
+    textBold24Main2 = _textBold24.withColor(mainTextColor2);
     textBold32Main = _textBold32.withColor(mainTextColor);
   }
 
@@ -111,6 +112,7 @@ class MyThemeData {
   late final TextStyle textMiddle18Main2;
   late final TextStyle textMiddle18Light56;
   late final TextStyle textBold24Main;
+  late final TextStyle textBold24Main2;
   late final TextStyle textBold32Main;
 
   final InputDecorationTheme specialInputDecorationTheme;

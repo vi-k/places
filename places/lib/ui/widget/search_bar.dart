@@ -8,13 +8,17 @@ import '../res/themes.dart';
 import '../screen/filters_screen.dart';
 import 'svg_button.dart';
 
-/// Виджет: Поле поиска.
+/// Поле поиска.
 class SearchBar extends StatefulWidget {
   const SearchBar({
     Key? key,
     this.onTap,
   }) : super(key: key);
 
+  /// Обратный вызов при нажатии на поле.
+  /// 
+  /// Если не `null`, поле становится недоступно для ввода, на него только
+  /// можно нажать.
   final void Function()? onTap;
 
   @override

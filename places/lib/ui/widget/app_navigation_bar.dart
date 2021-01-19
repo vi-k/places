@@ -15,6 +15,7 @@ class AppNavigationBar extends StatelessWidget {
     required this.index,
   }) : super(key: key);
 
+  /// Текущая позиция.
   final int index;
 
   @override
@@ -30,10 +31,11 @@ class AppNavigationBar extends StatelessWidget {
         switch (index) {
           case 0:
             Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SightListScreen(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => SightListScreen(),
+              ),
+            );
             break;
 
           case 1:
@@ -41,18 +43,20 @@ class AppNavigationBar extends StatelessWidget {
 
           case 2:
             Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VisitingScreen(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => VisitingScreen(),
+              ),
+            );
             break;
 
           case 3:
             Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => SettingsScreen(),
+              ),
+            );
             break;
         }
       },

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../res/const.dart';
 import '../res/themes.dart';
 
-/// Виджет: большой AppBar (для страницы списка интересных мест).
+/// Большой AppBar (для страницы списка интересных мест).
 class BigAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BigAppBar({
     Key? key,
@@ -14,7 +14,7 @@ class BigAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Заголовок.
   final String title;
 
-  /// Виджет снизу AppBar'а.
+  /// Виджет под AppBar'ом.
   final Widget? bottom;
 
   @override

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../res/const.dart';
 
+/// Прогресс-индикатор загрузки для [Loadable] для небольших виджетов.
 class SmallLoader extends StatelessWidget {
   const SmallLoader({
     Key? key,
     this.color,
   }) : super(key: key);
 
+  /// Цвет прогресс-индикатора.
   final Color? color;
 
   @override

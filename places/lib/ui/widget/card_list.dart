@@ -9,7 +9,7 @@ import '../res/themes.dart';
 import 'mocks.dart';
 import 'sight_card.dart';
 
-/// Виджет: Список карточек.
+/// Список карточек.
 class CardList extends StatefulWidget {
   const CardList({
     Key? key,
@@ -17,7 +17,10 @@ class CardList extends StatefulWidget {
     required this.cardType,
   }) : super(key: key);
 
+  /// Список мест.
   final Iterable<Sight> Function(BuildContext context) list;
+
+  /// Тип карточки: list, favorites, visited.
   final SightCardType cardType;
 
   @override

@@ -6,7 +6,7 @@ import '../res/themes.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
-/// Виджет: малый AppBar.
+/// Малый AppBar.
 class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmallAppBar({
     Key? key,
@@ -31,10 +31,10 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Кнопка справа.
   final String? button;
 
-  /// Реакция на нажатие кнопки справа.
+  /// Обратный вызов при нажатии кнопки справа.
   final void Function()? onPressed;
 
-  /// Виджет снизу AppBar'а.
+  /// Виджет под AppBar'ом.
   final Widget? bottom;
 
   @override
@@ -91,7 +91,9 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                      ),
+                      )
+              else
+                const SizedBox.shrink(),
               if (button != null)
                 SmallButton(
                   style: theme.textMiddle16Accent,

@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../res/const.dart';
 import '../res/themes.dart';
 
-/// Виджет: Малая кнопка.
+/// Малая кнопка.
 ///
 /// Обычно для текстовых кнопок, не имеющих фона.
 class SmallButton extends StatelessWidget {
@@ -23,15 +23,33 @@ class SmallButton extends StatelessWidget {
   })  : assert(svg == null || icon == null),
         super(key: key);
 
+  /// Размеры, если нужны.
   final double? width;
   final double? height;
+
+  /// Цвет, если нужен. По умолчанию прозрачный.
   final Color? color;
+
+  /// Цвета для Ripple-эффекта.
+  /// 
+  /// По умолчанию `Theme.highlightColor` и `Theme.splashColor`.
   final Color? highlightColor;
   final Color? splashColor;
+
+  /// Стиль текста.
+  /// 
+  /// По умолчанию `MyTheme.textRegular14Main` или
+  /// `MyTheme.textRegular14Light56`, если [onPressed] не задан.
   final TextStyle? style;
-  final String? svg;
+
+  /// Иконка для кнопки или идентификатор ресурса (ассет) для SVG.
   final Widget? icon;
+  final String? svg;
+
+  /// Подпись.
   final String label;
+
+  /// Обратный вызов при нажатии.
   final void Function()? onPressed;
 
   @override
@@ -63,7 +81,7 @@ class SmallButton extends StatelessWidget {
               ),
             )
           : FlatButton.icon(
-              color: color ?? Colors.transparent,
+              color: color,
               highlightColor: highlightColor ?? theme.app.highlightColor,
               splashColor: splashColor ?? theme.app.splashColor,
               height: smallButtonHeight,

@@ -12,7 +12,7 @@ import '../widget/sight_card.dart';
 import 'sight_edit_screen.dart';
 import 'sight_search_screen.dart';
 
-/// Экран: Список интересных мест.
+/// Экран "Список интересных мест".
 class SightListScreen extends StatefulWidget {
   @override
   _SightListScreenState createState() => _SightListScreenState();
@@ -30,10 +30,11 @@ class _SightListScreenState extends State<SightListScreen> {
                 SearchBar(
                   onTap: () {
                     Navigator.push<void>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SightSearchScreen(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SightSearchScreen(),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -52,10 +53,11 @@ class _SightListScreenState extends State<SightListScreen> {
           isExtended: true,
           onPressed: () {
             Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SightEditScreen(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SightEditScreen(),
+              ),
+            );
           },
           icon: const Icon(Icons.add),
           label: Text(stringNewPlace.toUpperCase()),
