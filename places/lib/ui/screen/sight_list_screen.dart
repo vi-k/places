@@ -30,10 +30,11 @@ class _SightListScreenState extends State<SightListScreen> {
                 SearchBar(
                   onTap: () {
                     Navigator.push<void>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SightSearchScreen(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SightSearchScreen(),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -52,10 +53,11 @@ class _SightListScreenState extends State<SightListScreen> {
           isExtended: true,
           onPressed: () {
             Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SightEditScreen(),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SightEditScreen(),
+              ),
+            );
           },
           icon: const Icon(Icons.add),
           label: Text(stringNewPlace.toUpperCase()),

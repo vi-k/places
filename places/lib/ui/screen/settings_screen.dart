@@ -37,21 +37,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const _ListDivider(),
           ListTile(
-              title: Text(
-                stringWatchTutorial,
-                style: theme.textRegular14Main,
-              ),
-              trailing: Icon(
-                Icons.info_outline,
-                color: theme.accentColor,
-              ),
-              onTap: () {
-                Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => OnboardingScreen(),
-                    ));
-              }),
+            title: Text(
+              stringWatchTutorial,
+              style: theme.textRegular14Main,
+            ),
+            trailing: Icon(
+              Icons.info_outline,
+              color: theme.accentColor,
+            ),
+            onTap: () {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => OnboardingScreen(),
+                ),
+              );
+            },
+          ),
           const _ListDivider(),
         ],
       ),

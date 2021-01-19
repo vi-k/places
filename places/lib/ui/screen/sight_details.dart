@@ -36,7 +36,6 @@ class _SightDetailsState extends State<SightDetails> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    print('build');
 
     return Scaffold(
       body: WillPopScope(
@@ -153,11 +152,11 @@ class _SightDetailsState extends State<SightDetails> {
           label: stringEdit,
           onPressed: () {
             Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SightEditScreen(sightId: widget.sightId),
-                )).then((value) {
+              context,
+              MaterialPageRoute(
+                builder: (context) => SightEditScreen(sightId: widget.sightId),
+              ),
+            ).then((value) {
               if (value != null) {
                 _modified = true;
                 Loader.of<Sight>(context).reload();
@@ -213,7 +212,7 @@ class _GalleryState extends State<_Gallery> {
           : sight.photos.isEmpty
               ? Center(
                   child: Text(
-                    'Нет фотографий',
+                    stringNoPhotos,
                     style: theme.textRegular16Light56,
                   ),
                 )

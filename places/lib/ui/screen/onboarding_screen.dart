@@ -43,10 +43,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pop(context);
     } else {
       Navigator.pushReplacement<void, void>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SightListScreen(),
-          ));
+        context,
+        MaterialPageRoute(
+          builder: (context) => SightListScreen(),
+        ),
+      );
     }
   }
 
