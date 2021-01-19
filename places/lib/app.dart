@@ -23,17 +23,19 @@ class _AppState extends State<App> {
         child: Mocks(
           create: () => MocksData(),
           child: Builder(
-              builder: (context) => MyTheme(
-                    myThemeData: Settings.of(context, listen: true).isDark
-                        ? myDarkTheme
-                        : myLightTheme,
-                    child: Builder(
-                        builder: (context) => MaterialApp(
-                              title: 'Places',
-                              theme: MyTheme.of(context).app,
-                              home: OnboardingScreen(),
-                            )),
-                  )),
+            builder: (context) => MyTheme(
+              myThemeData: Settings.of(context, listen: true).isDark
+                  ? myDarkTheme
+                  : myLightTheme,
+              child: Builder(
+                builder: (context) => MaterialApp(
+                  title: 'Places',
+                  theme: MyTheme.of(context).app,
+                  home: OnboardingScreen(),
+                ),
+              ),
+            ),
+          ),
         ),
       );
 }

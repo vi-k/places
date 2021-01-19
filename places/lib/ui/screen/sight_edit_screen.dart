@@ -268,7 +268,9 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 // Временно добавляем моковые фотографии.
                 if (_mockPhotosCounter >= mockPhotos.length) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Добавили всё, что можно')),
+                    const SnackBar(
+                      content: Text('Добавили всё, что можно'),
+                    ),
                   );
                 } else {
                   setState(() {
@@ -343,10 +345,11 @@ class _SightEditScreenState extends State<SightEditScreen> {
   // Получение категории.
   void _getCategory() {
     Navigator.push<int>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CategorySelectScreen(id: _categoryId),
-        )).then((value) {
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategorySelectScreen(id: _categoryId),
+      ),
+    ).then((value) {
       if (value != null) {
         setState(() {
           _categoryId = value;
