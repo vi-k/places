@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/category.dart';
 import '../../domain/sight.dart';
@@ -50,19 +51,24 @@ class _SightDetailsState extends State<SightDetails> {
             error.toString(),
             onRepeat: () => Loader.of<Sight>(context).reload(),
           ),
-          builder: (context, state, sight) => ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              _Gallery(sight),
-              Padding(
-                padding: detailsPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+          builder: (context, state, sight) => CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                leading: _buildBack(theme),
+                expandedHeight: detailsImageSize,
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: _Gallery(sight),
+                ),
+              ),
+              SliverPadding(
+                padding: commonPaddingLR,
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
                     ..._buildText(theme, sight),
                     ..._buildButtons(),
                     ..._buildEditButton(context),
-                  ],
+                  ]),
                 ),
               ),
             ],
@@ -72,11 +78,34 @@ class _SightDetailsState extends State<SightDetails> {
     );
   }
 
+  Widget _buildBack(MyThemeData theme) => Center(
+        child: SizedBox(
+          width: verySmallButtonHeight,
+          height: verySmallButtonHeight,
+          child: MaterialButton(
+            padding: EdgeInsets.zero,
+            color: theme.backgroundFirst,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(textFieldRadius),
+            ),
+            onPressed: () {
+              Navigator.pop(context, _modified);
+            },
+            child: SvgPicture.asset(
+              Svg24.back,
+              color: theme.mainTextColor2,
+            ),
+          ),
+        ),
+      );
+
   List<Widget> _buildText(MyThemeData theme, Sight? sight) => [
+        const SizedBox(height: commonSpacing3_2),
         Text(
           sight?.name ?? '',
           style: theme.textBold24Main,
         ),
+        const SizedBox(height: dividerHeight),
         Row(
           children: [
             Loader<Category>(
@@ -98,7 +127,7 @@ class _SightDetailsState extends State<SightDetails> {
                       width: smallButtonHeight,
                     )
                   : Text(
-                      category.name,
+                      category.name.toLowerCase(),
                       style: theme.textBold14Light,
                     ),
             ),
@@ -126,7 +155,7 @@ class _SightDetailsState extends State<SightDetails> {
           },
         ),
         const SizedBox(height: commonSpacing3_2),
-        const Divider(height: 2),
+        const Divider(height: dividerHeight),
         const SizedBox(height: commonSpacing1_2),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -146,7 +175,7 @@ class _SightDetailsState extends State<SightDetails> {
 
   List<Widget> _buildEditButton(BuildContext context) => [
         const SizedBox(height: commonSpacing1_2),
-        const Divider(height: 2),
+        const Divider(height: dividerHeight),
         const SizedBox(height: commonSpacing3_2),
         StandartButton(
           label: stringEdit,
@@ -163,7 +192,8 @@ class _SightDetailsState extends State<SightDetails> {
               }
             });
           },
-        )
+        ),
+        const SizedBox(height: commonSpacing3_2),
       ];
 }
 
