@@ -160,8 +160,10 @@ InputBorder _border(Color? color, {bool focused = false}) => OutlineInputBorder(
                   focused ? textFieldFocusedBorderWidth : textFieldBorderWidth),
     );
 
+// Высота TextField = 40 (10 + 10 + 20 (размер шрифта))
 const _baseInputDecorationTheme = InputDecorationTheme(
-  contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+  isDense: true,
+  contentPadding: EdgeInsets.fromLTRB(12, 10, 12, 10),
 );
 
 final myLightTheme = MyThemeData(

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:places/ui/res/themes.dart';
 
 import '../../domain/mocks_data.dart';
 import '../res/const.dart';
 import '../res/strings.dart';
+import '../res/themes.dart';
 import '../widget/app_navigation_bar.dart';
-import '../widget/big_app_bar.dart';
-import '../widget/card_list.dart';
 import '../widget/mocks.dart';
 import '../widget/search_bar.dart';
 import '../widget/sight_card.dart';
@@ -23,119 +21,24 @@ class _SightListScreenState extends State<SightListScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
+    // Временное решение. В нормальном случае надо будет из репозитория
+    // получать готовый список через Future.
     final sights = Mocks.of(context, listen: true).sights
       ..sort((a, b) => a.coord
           .distance(myMockCoord)
           .compareTo(b.coord.distance(myMockCoord)));
 
     return Scaffold(
-      // appBar: BigAppBar(
-      //   title: stringSightListTitle,
-      //   bottom: Padding(
-      //     padding: commonPadding,
-      //     child: Column(
-      //       children: [
-      //         SearchBar(
-      //           onTap: () {
-      //             Navigator.push<void>(
-      //               context,
-      //               MaterialPageRoute(
-      //                 builder: (context) => SightSearchScreen(),
-      //               ),
-      //             );
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
       body: CustomScrollView(
         slivers: [
           SliverPersistentHeader(
             pinned: true,
-            delegate: _SliverTitleDelegate(),
+            delegate: _SliverTitleDelegate(
+              systemBarHeight: MediaQuery.of(context).padding.top,
+              bigTitleStyle: theme.textBold32Main,
+              smallTitleStyle: theme.textMiddle18Main2,
+            ),
           ),
-          // SliverAppBar(
-          //   titleSpacing: 0,
-          //   stretch: false,
-          //   pinned: true,
-          //   // backgroundColor: theme.backgroundFirst,
-          //   // collapsedHeight: 100,
-          //   expandedHeight: 300,
-          //   // title: Text(
-          //   //   stringSightListTitle,
-          //   //   maxLines: 2,
-          //   //   style: theme.textBold32Main,
-          //   // ),
-          //   centerTitle: true,
-          //   // title: Align(
-          //   //   alignment: Alignment.topCenter,
-          //   //   child: Container(
-          //   //     color: Colors.orange,
-          //   //     child: Wrap(
-          //   //       children: [
-          //   //         Text(
-          //   //           'Список ',
-          //   //           style: theme.textBold32Main,
-          //   //         ),
-          //   //         Text(
-          //   //           'интересных мест',
-          //   //           style: theme.textBold32Main,
-          //   //         ),
-          //   //       ],
-          //   //     ),
-          //   //   ),
-          //   // ),
-          //   toolbarHeight: 200,
-          //   floating: true,
-          //   backgroundColor: theme.backgroundFirst,
-          //   // backgroundColor: Colors.orange,
-          //   flexibleSpace: FlexibleSpaceBar(
-          //     collapseMode: CollapseMode.parallax,
-          //     // background: Text(
-          //     //   stringSightListTitle,
-          //     //   style: theme.textBold32Main,
-          //     // ),
-          //     stretchModes: [StretchMode.zoomBackground],
-          //     title: SafeArea(
-          //       child: Container(
-          //         color: Colors.orange,
-          //         child: Padding(
-          //           padding: commonPadding,
-          //           child: Wrap(
-          //             children: [
-          //               Text(
-          //                 'Список ',
-          //                 style: theme.textBold32Main,
-          //               ),
-          //               Text(
-          //                 'интересных мест',
-          //                 style: theme.textBold32Main,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //     titlePadding: commonPadding,
-          //   ),
-          //   bottom: PreferredSize(
-          //     preferredSize: const Size.fromHeight(100),
-          //     child: Padding(
-          //       padding: commonPadding,
-          //       child: SearchBar(
-          //         onTap: () {
-          //           Navigator.push<void>(
-          //             context,
-          //             MaterialPageRoute(
-          //               builder: (context) => SightSearchScreen(),
-          //             ),
-          //           );
-          //         },
-          //       ),
-          //     ),
-          //   ),
-          // ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
@@ -150,13 +53,6 @@ class _SightListScreenState extends State<SightListScreen> {
           ),
         ],
       ),
-      // body: CardList(
-      //   cardType: SightCardType.list,
-      //   list: (context) => Mocks.of(context, listen: true).sights
-      //     ..sort((a, b) => a.coord
-      //         .distance(myMockCoord)
-      //         .compareTo(b.coord.distance(myMockCoord))),
-      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         isExtended: true,
@@ -177,13 +73,29 @@ class _SightListScreenState extends State<SightListScreen> {
 }
 
 class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
+  _SliverTitleDelegate({
+    required this.systemBarHeight,
+    required this.bigTitleStyle,
+    required this.smallTitleStyle,
+  })   : bigTitleHeight = bigTitleStyle.fontSize! * bigTitleStyle.height!,
+        smallTitleHeight = smallTitleStyle.fontSize! * smallTitleStyle.height!;
+
+  final double systemBarHeight;
+  final TextStyle bigTitleStyle;
+  final TextStyle smallTitleStyle;
+  final double bigTitleHeight;
+  final double smallTitleHeight;
+
+  static const bigTitleOffset = 40;
+
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     final theme = MyTheme.of(context);
-    print(shrinkOffset);
-    var offset = (40 - shrinkOffset) / 40;
-    if (offset < 0) offset = 0;
+    final flexibleSpace = bigTitleOffset + bigTitleHeight;
+    final k = shrinkOffset >= flexibleSpace
+        ? 0.0
+        : (flexibleSpace - shrinkOffset) / flexibleSpace;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -193,31 +105,21 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
           padding: commonPadding,
           child: Column(
             children: [
-              Container(
-                child: SizedBox(height: MediaQuery.of(context).padding.top),
+              SizedBox(
+                height: systemBarHeight + k * bigTitleOffset,
               ),
-              SizedBox(height: offset * 40),
-              Container(
-                padding: commonPadding,
-                color: theme.backgroundFirst,
-                child: Align(
-                  alignment: Alignment(offset == 1.0 ? -1 : 0, 0),
-                  child: Wrap(
-                    children: [
-                      Text(
-                        'Список ',
-                        style: TextStyle.lerp(theme.textMiddle18Main2,
-                            theme.textBold32Main, offset),
-                      ),
-                      Text(
-                        'интересных мест',
-                        style: TextStyle.lerp(theme.textMiddle18Main2,
-                            theme.textBold32Main, offset),
-                      ),
-                    ],
+              Align(
+                alignment: Alignment(k == 1.0 ? -1 : 0, 0),
+                child: SizedBox(
+                  height: smallTitleHeight +
+                      (2 * bigTitleHeight - smallTitleHeight) * k,
+                  child: Text(
+                    stringSightList,
+                    style: TextStyle.lerp(smallTitleStyle, bigTitleStyle, k),
                   ),
                 ),
               ),
+              const SizedBox(height: commonSpacing),
               SearchBar(
                 onTap: () {
                   Navigator.push<void>(
@@ -227,7 +129,7 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
                     ),
                   );
                 },
-              )
+              ),
             ],
           ),
         ),
@@ -236,10 +138,17 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 200;
+  double get maxExtent =>
+      systemBarHeight +
+      bigTitleOffset +
+      commonSpacing +
+      2 * bigTitleHeight +
+      commonSpacing +
+      smallButtonHeight +
+      commonSpacing;
 
   @override
-  double get minExtent => 200;
+  double get minExtent => maxExtent;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
