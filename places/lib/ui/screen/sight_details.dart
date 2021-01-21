@@ -55,6 +55,7 @@ class _SightDetailsState extends State<SightDetails> {
             slivers: [
               SliverAppBar(
                 leading: _buildBack(theme),
+                backgroundColor: theme.backgroundFirst,
                 expandedHeight: detailsImageSize,
                 flexibleSpace: FlexibleSpaceBar(
                   collapseMode: CollapseMode.pin,

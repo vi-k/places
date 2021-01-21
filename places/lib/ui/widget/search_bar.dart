@@ -16,7 +16,7 @@ class SearchBar extends StatefulWidget {
   }) : super(key: key);
 
   /// Обратный вызов при нажатии на поле.
-  /// 
+  ///
   /// Если не `null`, поле становится недоступно для ввода, на него только
   /// можно нажать.
   final void Function()? onTap;
@@ -42,11 +42,19 @@ class _SearchBarState extends State<SearchBar> {
                 autofocus: true,
                 readOnly: widget.onTap != null,
                 decoration: InputDecoration(
+                  prefixIconConstraints: const BoxConstraints.tightFor(
+                    height: smallButtonHeight,
+                    width: smallButtonHeight,
+                  ),
                   prefixIcon: UnconstrainedBox(
                     child: SvgPicture.asset(
                       Svg24.search,
                       color: theme.lightTextColor56,
                     ),
+                  ),
+                  suffixIconConstraints: const BoxConstraints.tightFor(
+                    height: smallButtonHeight,
+                    width: smallButtonHeight,
                   ),
                   suffixIcon: const SizedBox(),
                   hintText: stringSearch,
@@ -69,7 +77,7 @@ class _SearchBarState extends State<SearchBar> {
               Positioned(
                 top: 0,
                 bottom: 0,
-                right: 4,
+                right: 0,
                 child: SvgButton(
                   Svg24.filter,
                   color: theme.accentColor,
