@@ -44,6 +44,7 @@ const smallButtonRadius = 40.0;
 const textFieldBorderWidth = 1.0;
 const textFieldFocusedBorderWidth = 2.0;
 const textFieldRadius = 8.0;
+const searchFieldRadius = 12.0;
 const tabsSwitchRadius = 40.0;
 const sectionTop = 24.0;
 const photoCardSize = 72.0;

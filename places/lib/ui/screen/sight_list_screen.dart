@@ -97,43 +97,38 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
         ? 0.0
         : (flexibleSpace - shrinkOffset) / flexibleSpace;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          color: theme.backgroundFirst,
-          padding: commonPadding,
-          child: Column(
-            children: [
-              SizedBox(
-                height: systemBarHeight + k * bigTitleOffset,
-              ),
-              Align(
-                alignment: Alignment(k == 1.0 ? -1 : 0, 0),
-                child: SizedBox(
-                  height: smallTitleHeight +
-                      (2 * bigTitleHeight - smallTitleHeight) * k,
-                  child: Text(
-                    stringSightList,
-                    style: TextStyle.lerp(smallTitleStyle, bigTitleStyle, k),
-                  ),
-                ),
-              ),
-              const SizedBox(height: commonSpacing),
-              SearchBar(
-                onTap: () {
-                  Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SightSearchScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
+    return Container(
+      color: theme.backgroundFirst,
+      padding: commonPadding,
+      child: Column(
+        children: [
+          SizedBox(
+            height: systemBarHeight + k * bigTitleOffset,
           ),
-        ),
-      ],
+          Align(
+            alignment: Alignment(k == 1.0 ? -1 : 0, 0),
+            child: SizedBox(
+              height: smallTitleHeight +
+                  (2 * bigTitleHeight - smallTitleHeight) * k,
+              child: Text(
+                stringSightList,
+                style: TextStyle.lerp(smallTitleStyle, bigTitleStyle, k),
+              ),
+            ),
+          ),
+          const SizedBox(height: commonSpacing),
+          SearchBar(
+            onTap: () {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SightSearchScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -148,7 +143,12 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
       commonSpacing;
 
   @override
-  double get minExtent => maxExtent;
+  double get minExtent => systemBarHeight +
+      commonSpacing +
+      smallTitleHeight +
+      commonSpacing +
+      smallButtonHeight +
+      commonSpacing;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>

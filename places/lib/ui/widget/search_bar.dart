@@ -34,7 +34,7 @@ class _SearchBarState extends State<SearchBar> {
       children: [
         Material(
           color: theme.backgroundSecond,
-          borderRadius: BorderRadius.circular(textFieldRadius),
+          borderRadius: BorderRadius.circular(searchFieldRadius),
           clipBehavior: Clip.antiAlias,
           child: Stack(
             children: [
