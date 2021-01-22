@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'domain/mocks_data.dart';
 import 'domain/settings_data.dart';
 import 'ui/res/themes.dart';
-import 'ui/screen/onboarding_screen.dart';
+import 'ui/screen/splash_screen.dart';
 import 'ui/widget/mocks.dart';
 import 'ui/widget/settings.dart';
 
@@ -31,7 +31,7 @@ class _AppState extends State<App> {
                 builder: (context) => MaterialApp(
                   title: 'Places',
                   theme: MyTheme.of(context).app,
-                  home: OnboardingScreen(),
+                  home: SplashScreen(),
                 ),
               ),
             ),
