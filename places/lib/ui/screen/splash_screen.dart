@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
     print('Затрачено: ${sw.elapsed}');
     print('Переход на следующий экран');
 
-    await Navigator.push<int>(
+    await Navigator.push<void>(
       context,
       MaterialPageRoute(
         builder: (context) => OnboardingScreen(),

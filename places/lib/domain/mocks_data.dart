@@ -145,7 +145,7 @@ class MocksData extends ChangeNotifier {
   var _categoriesNextId = 1;
   late final List<Category> _categories;
   int _categoryIndex(int id) => _categories.indexWhere((e) => e.id == id);
-  Category _categoryById(int id) => _categories[_categoryIndex(id)];
+  // Category _categoryById(int id) => _categories[_categoryIndex(id)];
 
   Future<List<Category>> get categories async {
     await Future<void>.delayed(const Duration(seconds: 2));
