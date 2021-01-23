@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'onboarding_screen.dart';
 
 /// Сплэш-скрин.
-/// 
+///
 /// Ждёт завершения инициализации. Показывается минимум 2 сек.
 class SplashScreen extends StatefulWidget {
   @override
@@ -38,10 +38,10 @@ class _SplashScreenState extends State<SplashScreen> {
     print('Затрачено: ${sw.elapsed}');
     print('Переход на следующий экран');
 
-    await Navigator.push<void>(
+    await Navigator.pushReplacement<void, void>(
       context,
       MaterialPageRoute(
-        builder: (context) => OnboardingScreen(),
+        builder: (_) => OnboardingScreen(),
       ),
     );
   }
