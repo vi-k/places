@@ -86,12 +86,14 @@ class _SearchBarState extends State<SearchBar> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => FiltersScreen(),
-                        )).then((value) {
-                      setState(() {});
-                    });
+                        )).then(
+                      (value) {
+                        setState(() {});
+                      },
+                    );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

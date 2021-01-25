@@ -202,25 +202,25 @@ class _SightEditScreenState extends State<SightEditScreen> {
             : Loader<Sight>(
                 load: () => widget.sightId == null
                     ? Future.value(null)
-                    : Mocks.of(context)
-                        .sightById(widget.sightId!)
-                        .then((sight) {
-                        _sight = sight;
-                        _photos
-                          ..clear()
-                          ..addAll(sight.photos);
-                        _categoryId = sight.categoryId;
-                        _nameController.value =
-                            TextEditingValue(text: sight.name);
-                        _latController.value = TextEditingValue(
-                            text: sight.coord.lat.toStringAsFixed(6));
-                        _lonController.value = TextEditingValue(
-                            text: sight.coord.lon.toStringAsFixed(6));
-                        _detailsController.value =
-                            TextEditingValue(text: sight.details);
+                    : Mocks.of(context).sightById(widget.sightId!).then(
+                        (sight) {
+                          _sight = sight;
+                          _photos
+                            ..clear()
+                            ..addAll(sight.photos);
+                          _categoryId = sight.categoryId;
+                          _nameController.value =
+                              TextEditingValue(text: sight.name);
+                          _latController.value = TextEditingValue(
+                              text: sight.coord.lat.toStringAsFixed(6));
+                          _lonController.value = TextEditingValue(
+                              text: sight.coord.lon.toStringAsFixed(6));
+                          _detailsController.value =
+                              TextEditingValue(text: sight.details);
 
-                        return sight;
-                      }),
+                          return sight;
+                        },
+                      ),
                 error: (context, error) => Failed(
                   error.toString(),
                   onRepeat: () => Loader.of<Sight>(context).reload(),

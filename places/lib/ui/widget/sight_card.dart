@@ -124,27 +124,33 @@ class _SightCardState extends State<SightCard> {
           const Spacer(),
           if (widget.type == SightCardType.list)
             _buildSignatureButton(
-                mocks.isFavorite(widget.sightId)
-                    ? Svg24.heartFull
-                    : Svg24.heart,
-                textStyle.color!, () {
-              Mocks.of(context).toggleFavorite(widget.sightId);
-            }),
+              mocks.isFavorite(widget.sightId) ? Svg24.heartFull : Svg24.heart,
+              textStyle.color!,
+              () => Mocks.of(context).toggleFavorite(widget.sightId),
+            ),
           if (widget.type == SightCardType.favorites) ...[
-            _buildSignatureButton(Svg24.calendar, color, () {
-              print('Schedule');
-            }),
-            _buildSignatureButton(Svg24.close, color, () {
-              Mocks.of(context).removeFromFavorite(widget.sightId);
-            }),
+            _buildSignatureButton(
+              Svg24.calendar,
+              color,
+              () => print('Schedule'),
+            ),
+            _buildSignatureButton(
+              Svg24.close,
+              color,
+              () => Mocks.of(context).removeFromFavorite(widget.sightId),
+            ),
           ],
           if (widget.type == SightCardType.visited) ...[
-            _buildSignatureButton(Svg24.share, color, () {
-              print('Share');
-            }),
-            _buildSignatureButton(Svg24.close, color, () {
-              Mocks.of(context).removeFromVisited(widget.sightId);
-            }),
+            _buildSignatureButton(
+              Svg24.share,
+              color,
+              () => print('Share'),
+            ),
+            _buildSignatureButton(
+              Svg24.close,
+              color,
+              () => Mocks.of(context).removeFromVisited(widget.sightId),
+            ),
           ],
         ],
       ),
