@@ -45,14 +45,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Icons.info_outline,
               color: theme.accentColor,
             ),
-            onTap: () {
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OnboardingScreen(),
-                ),
-              );
-            },
+            onTap: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => OnboardingScreen(),
+              ),
+            ),
           ),
           const _ListDivider(),
         ],

@@ -152,15 +152,11 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 actions: [
                   SmallButton(
                     label: stringCancel,
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
+                    onPressed: () => Navigator.pop(context, false),
                   ),
                   SmallButton(
                     label: stringYes,
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
+                    onPressed: () => Navigator.pop(context, true),
                   ),
                 ],
               ),
@@ -180,14 +176,18 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 SmallButton(
                   label: stringNo,
                   onPressed: () {
+                    // Закрываем диалог.
                     Navigator.pop(context);
+                    // Вовзращаемся назад без сохранения изменений.
                     Navigator.pop(context, null);
                   },
                 ),
                 SmallButton(
                   label: stringYes,
                   onPressed: () {
+                    // Закрываем диалог.
                     Navigator.pop(context);
+                    // Вовзращаемся назад с сохранением изменений.
                     Navigator.pop(context, _save());
                   },
                 ),
@@ -343,20 +343,18 @@ class _SightEditScreenState extends State<SightEditScreen> {
       );
 
   // Получение категории.
-  void _getCategory() {
-    Navigator.push<int>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CategorySelectScreen(id: _categoryId),
-      ),
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          _categoryId = value;
-        });
-      }
-    });
-  }
+  void _getCategory() => Navigator.push<int>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CategorySelectScreen(id: _categoryId),
+        ),
+      ).then((value) {
+        if (value != null) {
+          setState(() {
+            _categoryId = value;
+          });
+        }
+      });
 
   // Название.
   Widget _buildName() => Section(
@@ -486,6 +484,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
           label: _isNew ? stringCreate : stringSave,
           onPressed: () {
             if (!_validate()) return;
+            // Возвращаемся.
             Navigator.pop(context, _needSave(forced: true) ? _save() : null);
           },
         ),

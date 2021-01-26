@@ -18,7 +18,7 @@ class CategorySelectScreen extends StatelessWidget {
   }) : super(key: key);
 
   /// Идентификатор категории.
-  /// 
+  ///
   /// Если передан `null`, то категория не установлена.
   final int? id;
 
@@ -55,8 +55,6 @@ class CategorySelectScreen extends StatelessWidget {
                 color: theme.accentColor,
               )
             : null,
-        onTap: () {
-          Navigator.pop(context, category.id);
-        },
+        onTap: () => Navigator.pop(context, category.id),
       );
 }

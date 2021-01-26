@@ -30,6 +30,7 @@ class AppNavigationBar extends StatelessWidget {
       onTap: (index) {
         switch (index) {
           case 0:
+            // Список интересных мест.
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
@@ -39,9 +40,11 @@ class AppNavigationBar extends StatelessWidget {
             break;
 
           case 1:
+            // Карта.
             break;
 
           case 2:
+            // Хочу посетить/Посетил.
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
@@ -51,6 +54,7 @@ class AppNavigationBar extends StatelessWidget {
             break;
 
           case 3:
+            // Настройки.
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
