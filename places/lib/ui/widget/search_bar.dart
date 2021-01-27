@@ -81,16 +81,17 @@ class _SearchBarState extends State<SearchBar> {
                 child: SvgButton(
                   Svg24.filter,
                   color: theme.accentColor,
-                  onPressed: () => Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FiltersScreen(),
-                    ),
-                  ).then((value) {
+                  onPressed: () async {
+                    await Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FiltersScreen(),
+                        ));
+
                     setState(() {});
-                  }),
+                  },
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -180,17 +180,19 @@ class _SightDetailsState extends State<SightDetails> {
         const SizedBox(height: commonSpacing3_2),
         StandartButton(
           label: stringEdit,
-          onPressed: () => Navigator.push<int>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SightEditScreen(sightId: widget.sightId),
-            ),
-          ).then((value) {
-            if (value != null) {
+          onPressed: () async {
+            final sightId = await Navigator.push<int>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SightEditScreen(sightId: widget.sightId),
+              ),
+            );
+
+            if (sightId != null) {
               _modified = true;
               Loader.of<Sight>(context).reload();
             }
-          }),
+          },
         ),
         const SizedBox(height: commonSpacing3_2),
       ];

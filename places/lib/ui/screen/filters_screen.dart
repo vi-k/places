@@ -29,9 +29,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   set filter(Filter value) {
     _filter = value;
     _cardCount = null;
-    calcCardCount().then((value) => setState(() {
-          _cardCount = value;
-        }));
+    _recalcCardCount();
   }
 
   @override
@@ -72,9 +70,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             child: StandartButton(
               label: stringApply +
                   (_cardCount == null ? ' ...' : ' ($_cardCount)'),
-              onPressed: () {
-                print('Apply filter');
-              },
+              onPressed: () => print('Apply filter'),
             ),
           ),
         ],
@@ -106,7 +102,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             setState(() {
               filter = filter.copyWith(distance: _valuesToDistance(values));
             });
-            print('[${values.start}..${values.end}] - ${filter.distance}');
+            //print('[${values.start}..${values.end}] - ${filter.distance}');
           },
           min: 0,
           max: _distanceToValue(_maxDistance).toDouble(),
@@ -117,24 +113,25 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Section(
           stringCategories,
           child: FutureBuilder<List<Category>>(
-              future: Mocks.of(context, listen: true).categories,
-              builder: (context, snapshot) => !snapshot.hasData
-                  ? const Text('Loading')
-                  : Wrap(
-                      alignment: WrapAlignment.spaceEvenly,
-                      children: [
-                        for (final category in snapshot.data!)
-                          SightCategoryFilter(
-                            category: category,
-                            active: filter.hasCategory(category.id),
-                            onPressed: () {
-                              setState(() {
-                                filter = filter.toggleCategory(category.id);
-                              });
-                            },
-                          ),
-                      ],
-                    )),
+            future: Mocks.of(context, listen: true).categories,
+            builder: (context, snapshot) => !snapshot.hasData
+                ? const Text('Loading')
+                : Wrap(
+                    alignment: WrapAlignment.spaceEvenly,
+                    children: [
+                      for (final category in snapshot.data!)
+                        SightCategoryFilter(
+                          category: category,
+                          active: filter.hasCategory(category.id),
+                          onPressed: () {
+                            setState(() {
+                              filter = filter.toggleCategory(category.id);
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+          ),
         ),
       ];
 
@@ -196,10 +193,17 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return '$prefix$stringRangeTo $endValue';
   }
 
-  Future<int> calcCardCount() async => Mocks.of(context).sights.where((e) {
-        if (!filter.hasCategory(e.categoryId)) return false;
+  Future<void> _recalcCardCount() async {
+    // Пока реально это не ассинхронная функция.
+    final count = Mocks.of(context).sights.where((e) {
+      if (!filter.hasCategory(e.categoryId)) return false;
 
-        final d = e.coord.distance(myMockCoord);
-        return d >= filter.distance.start && d <= filter.distance.end;
-      }).length;
+      final d = e.coord.distance(myMockCoord);
+      return d >= filter.distance.start && d <= filter.distance.end;
+    }).length;
+
+    setState(() {
+      _cardCount = count;
+    });
+  }
 }
