@@ -31,7 +31,7 @@ class Loader<T> extends StatefulWidget {
   final Widget Function(BuildContext context)? loader;
 
   /// Виджет ошибки.
-  /// 
+  ///
   /// Например: [Failed].
   final Widget Function(BuildContext context, Object error) error;
 
@@ -83,11 +83,15 @@ class _LoaderState<T> extends State<Loader<T>> {
     });
   }
 
-  void _load() {
-    if (widget.load != null) {
+  Future<void> _load() async {
+    final load = widget.load;
+
+    if (load != null) {
       _child = null;
       _state = LoadingState.loading;
-      widget.load!().then((value) {
+
+      try {
+        final value = await load();
         if (mounted) {
           _error = null;
           _data = value;
@@ -95,8 +99,7 @@ class _LoaderState<T> extends State<Loader<T>> {
           _child = null;
           update();
         }
-        return value;
-      }, onError: (dynamic e) {
+      } on Object catch (e) {
         if (mounted) {
           _error = e;
           _data = null;
@@ -104,12 +107,15 @@ class _LoaderState<T> extends State<Loader<T>> {
           _child = null;
           update();
         }
-      });
+      }
     }
   }
 
   /// Перезагружает данные.
-  void reload() => setState(_load);
+  void reload() {
+    _load();
+    setState(() {});
+  }
 
   @override
   void initState() {

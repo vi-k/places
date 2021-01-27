@@ -56,14 +56,12 @@ class _SightListScreenState extends State<SightListScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         isExtended: true,
-        onPressed: () {
-          Navigator.push<int>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SightEditScreen(),
-            ),
-          );
-        },
+        onPressed: () => Navigator.push<int>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SightEditScreen(),
+          ),
+        ),
         icon: const Icon(Icons.add),
         label: Text(stringNewPlace.toUpperCase()),
       ),
@@ -118,14 +116,12 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
           ),
           const SizedBox(height: commonSpacing),
           SearchBar(
-            onTap: () {
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SightSearchScreen(),
-                ),
-              );
-            },
+            onTap: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SightSearchScreen(),
+              ),
+            ),
           ),
         ],
       ),
@@ -143,7 +139,8 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
       commonSpacing;
 
   @override
-  double get minExtent => systemBarHeight +
+  double get minExtent =>
+      systemBarHeight +
       commonSpacing +
       smallTitleHeight +
       commonSpacing +

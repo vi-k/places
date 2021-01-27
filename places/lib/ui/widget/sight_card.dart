@@ -70,17 +70,18 @@ class _SightCardState extends State<SightCard> {
                   highlightColor: theme.app.highlightColor,
                   splashColor: theme.app.splashColor,
                   onLongPress: widget.onLongPress,
-                  onPressed: () {
-                    Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SightDetails(sightId: widget.sightId),
-                        )).then((modified) {
-                      if (modified!) {
-                        Loader.of<Sight>(context).reload();
-                      }
-                    });
+                  onPressed: () async {
+                    final modified = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SightDetails(sightId: widget.sightId),
+                      ),
+                    );
+
+                    if (modified != null && modified) {
+                      Loader.of<Sight>(context).reload();
+                    }
                   },
                   child: _buildSignatures(theme, sight),
                 ),

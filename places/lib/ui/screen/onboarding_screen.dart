@@ -40,8 +40,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _skip() {
     if (Navigator.canPop(context)) {
+      // Если вызвали из настроек, то возвращаемся
       Navigator.pop(context);
     } else {
+      // Если это первый экран, то запускаем основной экран
       Navigator.pushReplacement<void, void>(
         context,
         MaterialPageRoute(
@@ -162,7 +164,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         padding: commonPadding,
         child: Transform.translate(
           offset: Offset(
-              0, (1 - translate) * (standartButtonHeight + commonSpacing)),
+            0,
+            (1 - translate) * (standartButtonHeight + commonSpacing),
+          ),
           child: StandartButton(
             label: stringStart,
             onPressed: _skip,

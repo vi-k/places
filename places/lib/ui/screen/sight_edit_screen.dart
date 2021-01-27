@@ -152,15 +152,11 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 actions: [
                   SmallButton(
                     label: stringCancel,
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
+                    onPressed: () => Navigator.pop(context, false),
                   ),
                   SmallButton(
                     label: stringYes,
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
+                    onPressed: () => Navigator.pop(context, true),
                   ),
                 ],
               ),
@@ -180,14 +176,18 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 SmallButton(
                   label: stringNo,
                   onPressed: () {
+                    // Закрываем диалог.
                     Navigator.pop(context);
+                    // Возвращаемся назад без сохранения изменений.
                     Navigator.pop(context, null);
                   },
                 ),
                 SmallButton(
                   label: stringYes,
                   onPressed: () {
+                    // Закрываем диалог.
                     Navigator.pop(context);
+                    // Возвращаемся назад с сохранением изменений.
                     Navigator.pop(context, _save());
                   },
                 ),
@@ -199,28 +199,29 @@ class _SightEditScreenState extends State<SightEditScreen> {
         },
         child: _isNew
             ? _buildBody(context, _formKey, theme)
-            : Loader<Sight>(
-                load: () => widget.sightId == null
-                    ? Future.value(null)
-                    : Mocks.of(context).sightById(widget.sightId!).then(
-                        (sight) {
-                          _sight = sight;
-                          _photos
-                            ..clear()
-                            ..addAll(sight.photos);
-                          _categoryId = sight.categoryId;
-                          _nameController.value =
-                              TextEditingValue(text: sight.name);
-                          _latController.value = TextEditingValue(
-                              text: sight.coord.lat.toStringAsFixed(6));
-                          _lonController.value = TextEditingValue(
-                              text: sight.coord.lon.toStringAsFixed(6));
-                          _detailsController.value =
-                              TextEditingValue(text: sight.details);
+            : Loader<Sight?>(
+                load: () async {
+                  if (widget.sightId == null) return null;
+                  final sight =
+                      await Mocks.of(context).sightById(widget.sightId!);
 
-                          return sight;
-                        },
-                      ),
+                  // Копируем все значения sight.
+                  _photos
+                    ..clear()
+                    ..addAll(sight.photos);
+                  _categoryId = sight.categoryId;
+                  _nameController.value = TextEditingValue(text: sight.name);
+                  _latController.value = TextEditingValue(
+                      text: sight.coord.lat.toStringAsFixed(6));
+                  _lonController.value = TextEditingValue(
+                      text: sight.coord.lon.toStringAsFixed(6));
+                  _detailsController.value =
+                      TextEditingValue(text: sight.details);
+
+                  // Полученный sight сохраняем, чтобы понять потом, были ли
+                  // сделаны изменения.
+                  return _sight = sight;
+                },
                 error: (context, error) => Failed(
                   error.toString(),
                   onRepeat: () => Loader.of<Sight>(context).reload(),
@@ -275,7 +276,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
                 } else {
                   setState(() {
                     _photos.add(mockPhotos[_mockPhotosCounter++]);
-                    Loader.of<Sight>(context).setState(() {});
                   });
                 }
               },
@@ -343,19 +343,19 @@ class _SightEditScreenState extends State<SightEditScreen> {
       );
 
   // Получение категории.
-  void _getCategory() {
-    Navigator.push<int>(
+  Future<void> _getCategory() async {
+    final categoryId = await Navigator.push<int>(
       context,
       MaterialPageRoute(
         builder: (context) => CategorySelectScreen(id: _categoryId),
       ),
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          _categoryId = value;
-        });
-      }
-    });
+    );
+
+    if (categoryId != null) {
+      setState(() {
+        _categoryId = categoryId;
+      });
+    }
   }
 
   // Название.
@@ -486,6 +486,7 @@ class _SightEditScreenState extends State<SightEditScreen> {
           label: _isNew ? stringCreate : stringSave,
           onPressed: () {
             if (!_validate()) return;
+            // Возвращаемся.
             Navigator.pop(context, _needSave(forced: true) ? _save() : null);
           },
         ),

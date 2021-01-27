@@ -32,6 +32,8 @@ class SightDetails extends StatefulWidget {
 }
 
 class _SightDetailsState extends State<SightDetails> {
+  // Отслеживаем изменения, чтобы уведомить вызывающую сторону о необходимости
+  // обновиться.
   var _modified = false;
 
   @override
@@ -39,8 +41,8 @@ class _SightDetailsState extends State<SightDetails> {
     final theme = MyTheme.of(context);
 
     return Scaffold(
+      // Перехватываем `pop`, чтобы передать значение.
       body: WillPopScope(
-        // Перехватываем `pop`, чтобы передать значение.
         onWillPop: () async {
           Navigator.pop(context, _modified);
           return false;
@@ -89,9 +91,7 @@ class _SightDetailsState extends State<SightDetails> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(textFieldRadius),
             ),
-            onPressed: () {
-              Navigator.pop(context, _modified);
-            },
+            onPressed: () => Navigator.pop(context, _modified),
             child: SvgPicture.asset(
               Svg24.back,
               color: theme.mainTextColor2,
@@ -180,18 +180,18 @@ class _SightDetailsState extends State<SightDetails> {
         const SizedBox(height: commonSpacing3_2),
         StandartButton(
           label: stringEdit,
-          onPressed: () {
-            Navigator.push<int>(
+          onPressed: () async {
+            final sightId = await Navigator.push<int>(
               context,
               MaterialPageRoute(
                 builder: (context) => SightEditScreen(sightId: widget.sightId),
               ),
-            ).then((value) {
-              if (value != null) {
-                _modified = true;
-                Loader.of<Sight>(context).reload();
-              }
-            });
+            );
+
+            if (sightId != null) {
+              _modified = true;
+              Loader.of<Sight>(context).reload();
+            }
           },
         ),
         const SizedBox(height: commonSpacing3_2),
