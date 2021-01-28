@@ -9,6 +9,7 @@ import 'standart_button.dart';
 
 enum ImageSource { camera, photo, file }
 
+/// Выбора источника фотографии места: камера, галерея, файл.
 class SelectImageSource extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
