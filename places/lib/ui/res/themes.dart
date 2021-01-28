@@ -13,15 +13,16 @@ const _textRegular = TextStyle(fontWeight: FontWeight.normal);
 const _textMiddle = TextStyle(fontWeight: FontWeight.w500);
 const _textBold = TextStyle(fontWeight: FontWeight.bold);
 
-final _textRegular12 = _textRegular.copyWith(fontSize: 12, height: 1.33);
-final _textMiddle12 = _textMiddle.copyWith(fontSize: 12, height: 1.33);
-final _textRegular14 = _textRegular.copyWith(fontSize: 14, height: 1.29);
-final _textBold14 = _textBold.copyWith(fontSize: 14, height: 1.29);
-final _textRegular16 = _textRegular.copyWith(fontSize: 16, height: 1.25);
-final _textMiddle16 = _textMiddle.copyWith(fontSize: 16, height: 1.25);
-final _textMiddle18 = _textMiddle.copyWith(fontSize: 18, height: 1.25);
+final _textRegular12 = _textRegular.copyWith(fontSize: 12, height: 16 / 12);
+final _textMiddle12 = _textMiddle.copyWith(fontSize: 12, height: 16 / 12);
+final _textRegular14 = _textRegular.copyWith(fontSize: 14, height: 18 / 14);
+final _textMiddle14 = _textBold.copyWith(fontSize: 14, height: 18 / 14);
+final _textBold14 = _textBold.copyWith(fontSize: 14, height: 18 / 14);
+final _textRegular16 = _textRegular.copyWith(fontSize: 16, height: 20 / 16);
+final _textMiddle16 = _textMiddle.copyWith(fontSize: 16, height: 20 / 16);
+final _textMiddle18 = _textMiddle.copyWith(fontSize: 18, height: 22.5 / 16);
 final _textBold24 = _textBold.copyWith(fontSize: 24, height: 1.2);
-final _textBold32 = _textBold.copyWith(fontSize: 32, height: 1.125);
+final _textBold32 = _textBold.copyWith(fontSize: 32, height: 36 / 32);
 
 extension on TextStyle {
   TextStyle withColor(Color color) => copyWith(color: color);
@@ -52,6 +53,9 @@ class MyThemeData {
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
     textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
+    
+    textMiddle14Accent = _textMiddle14.withColor(accentColor);
+    textMiddle14White = _textMiddle14.withColor(mainColor100);
 
     textBold14Light = _textBold14.withColor(lightTextColor);
     textBold14Inverse = _textBold14.withColor(inverseTextColor);
@@ -95,6 +99,9 @@ class MyThemeData {
   late final TextStyle textRegular14Main;
   late final TextStyle textRegular14Light;
   late final TextStyle textRegular14Light56;
+  
+  late final TextStyle textMiddle14Accent;
+  late final TextStyle textMiddle14White;
 
   late final TextStyle textBold14Inverse;
   late final TextStyle textBold14Light;

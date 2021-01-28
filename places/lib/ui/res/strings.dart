@@ -2,6 +2,7 @@
 
 const stringApply = 'Показать';
 const stringBuildRoute = 'Построить маршрут';
+const stringCamera = 'Камера';
 const stringCancel = 'Отмена';
 const stringCategories = 'Категории';
 const stringCategory = 'Категория';
@@ -16,6 +17,7 @@ const stringDoSave = 'Сохранить?';
 const stringEdit = 'Редактировать';
 const stringError = 'Ошибка';
 const stringFavorite = 'Избранное';
+const stringFile = 'Файл';
 const stringFilter = 'Фильтр';
 const stringInvalidValue = 'Неверное значение';
 const stringIsDark = 'Тёмная тема';
@@ -33,6 +35,8 @@ const stringNewPlaceFakeLongitude = '-123.243574';
 const stringNo = 'Нет';
 const stringNoCategory = 'Не выбрана категория';
 const stringNoPhotos = 'Нет фотографий';
+const stringOk = 'Ок';
+const stringPhoto = 'Фотография';
 const stringRangeFrom = 'от';
 const stringRangeTo = 'до';
 const stringRequiredField = 'Это обязательное поле';

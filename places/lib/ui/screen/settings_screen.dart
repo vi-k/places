@@ -66,9 +66,9 @@ class _ListDivider extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Divider(
-        indent: commonPadding.left,
-        endIndent: commonPadding.right,
-        height: 1,
+  Widget build(BuildContext context) => const Divider(
+        indent: commonSpacing,
+        endIndent: commonSpacing,
+        height: dividerHeight,
       );
 }

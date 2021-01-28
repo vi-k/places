@@ -11,10 +11,15 @@ import '../res/themes.dart';
 class StandartButton extends StatelessWidget {
   const StandartButton({
     Key? key,
+    this.color,
     this.svg,
     required this.label,
+    this.style,
     required this.onPressed,
   }) : super(key: key);
+
+  /// Цвет кнопки.
+  final Color? color;
 
   /// Идентификатор ресурса (ассет) для SVG.
   final String? svg;
@@ -22,18 +27,22 @@ class StandartButton extends StatelessWidget {
   /// Текст кнопки.
   final String label;
 
+  /// Стиль текста кнопки.
+  final TextStyle? style;
+
   /// Обратный вызов при нажатии.
   final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    final textStyle = theme.textBold14White;
+    final textStyle = style ?? theme.textMiddle14White;
 
     return ConstrainedBox(
       constraints: const BoxConstraints.tightFor(height: standartButtonHeight),
       child: svg == null
           ? RaisedButton(
+              color: color,
               onPressed: onPressed,
               child: Text(
                 label.toUpperCase(),
@@ -41,6 +50,7 @@ class StandartButton extends StatelessWidget {
               ),
             )
           : RaisedButton.icon(
+              color: color,
               onPressed: onPressed,
               icon: SvgPicture.asset(
                 svg!,

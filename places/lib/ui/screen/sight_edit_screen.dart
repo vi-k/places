@@ -17,6 +17,7 @@ import '../widget/loader.dart';
 import '../widget/mocks.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
+import '../widget/select_image_source.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
 import '../widget/small_loader.dart';
@@ -146,7 +147,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
           if (!_validate()) {
             final exit = await showDialog<bool>(
               context: context,
-              barrierDismissible: true,
               builder: (_) => AlertDialog(
                 title: const Text(stringDoCancel),
                 actions: [
@@ -169,7 +169,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
           await showDialog<void>(
             context: context,
-            barrierDismissible: true,
             builder: (_) => AlertDialog(
               title: Text(_isNew ? stringDoCreate : stringDoSave),
               actions: [
@@ -265,18 +264,61 @@ class _SightEditScreenState extends State<SightEditScreen> {
           children: [
             const SizedBox(width: commonSpacing),
             AddPhotoCard(
-              onPressed: () {
-                // Временно добавляем моковые фотографии.
-                if (_mockPhotosCounter >= mockPhotos.length) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Добавили всё, что можно'),
-                    ),
-                  );
-                } else {
-                  setState(() {
-                    _photos.add(mockPhotos[_mockPhotosCounter++]);
-                  });
+              onPressed: () async {
+                final imageSource = await showModalBottomSheet<ImageSource>(
+                  context: context,
+                  clipBehavior: Clip.antiAlias,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => SelectImageSource(),
+                );
+
+                if (imageSource == null) return;
+
+                switch (imageSource) {
+                  case ImageSource.photo:
+                    // Временно добавляем моковые фотографии.
+                    if (_mockPhotosCounter >= mockPhotos.length) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Добавили всё, что можно'),
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        _photos.add(mockPhotos[_mockPhotosCounter++]);
+                      });
+                    }
+                    break;
+
+                  case ImageSource.camera:
+                    await showDialog<void>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text(stringCamera),
+                        actions: [
+                          SmallButton(
+                            label: stringOk.toUpperCase(),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    );
+                    break;
+
+                  case ImageSource.file:
+                    await showDialog<void>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text(stringFile),
+                        actions: [
+                          SmallButton(
+                            label: stringOk.toUpperCase(),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    );
+                    break;
                 }
               },
             ),
