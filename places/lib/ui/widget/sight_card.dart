@@ -71,11 +71,26 @@ class _SightCardState extends State<SightCard> {
                   splashColor: theme.app.splashColor,
                   onLongPress: widget.onLongPress,
                   onPressed: () async {
-                    final modified = await Navigator.push<bool>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SightDetails(sightId: widget.sightId),
+                    // Внутри showModalBottomSheet
+                    // MediaQuery.of(context).padding.top возвращает 0.
+                    // Поэтому рассчитываем здесь.
+                    final maxHeight = MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).padding.top -
+                        appBarPadding.top;
+                    final modified = await showModalBottomSheet<bool>(
+                      context: context,
+                      clipBehavior: Clip.antiAlias,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                      ),
+                      isScrollControlled: true,
+                      builder: (context) => ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: maxHeight,
+                        ),
+                        child: SightDetails(sightId: widget.sightId),
                       ),
                     );
 

@@ -29,6 +29,8 @@ const splashColorLight = Color(0x30FFFFFF);
 const highlightColorDark2 = Colors.black26;
 const splashColorDark2 = Colors.black26;
 
+const bottomSheetThumbBackground = Colors.transparent;
+
 /// Публичные константы.
 const commonSpacing = 16.0;
 const commonSpacing1_2 = commonSpacing / 2; // 8
@@ -54,6 +56,8 @@ const clearIconSize = 20.0;
 const clearButtonSize = 24.0;
 const cardAspectRatio = 3 / 2;
 const deafultIconSize = 24.0;
+const bottomSheetThumbWidth = 40.0;
+const bottomSheetThumbHeight = 4.0;
 
 /// Отступы.
 const commonPadding = EdgeInsets.all(16);

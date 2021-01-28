@@ -40,43 +40,67 @@ class _SightDetailsState extends State<SightDetails> {
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
-    return Scaffold(
-      // Перехватываем `pop`, чтобы передать значение.
-      body: WillPopScope(
-        onWillPop: () async {
-          Navigator.pop(context, _modified);
-          return false;
-        },
-        child: Loader<Sight>(
-          load: () => Mocks.of(context).sightById(widget.sightId),
-          error: (context, error) => Failed(
-            error.toString(),
-            onRepeat: () => Loader.of<Sight>(context).reload(),
+    // Перехватываем `pop`, чтобы передать значение.
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, _modified);
+        return false;
+      },
+      child: Stack(
+        children: [
+          Loader<Sight>(
+            load: () => Mocks.of(context).sightById(widget.sightId),
+            error: (context, error) => Failed(
+              error.toString(),
+              onRepeat: () => Loader.of<Sight>(context).reload(),
+            ),
+            builder: (context, state, sight) => CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  // leading: _buildBack(theme),
+                  leading: const SizedBox(),
+                  backgroundColor: theme.backgroundFirst,
+                  expandedHeight: detailsImageSize,
+                  flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.pin,
+                    background: _Gallery(sight),
+                  ),
+                ),
+                SliverPadding(
+                  padding: commonPaddingLR,
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      ..._buildText(theme, sight),
+                      ..._buildButtons(),
+                      ..._buildEditButton(context),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
           ),
-          builder: (context, state, sight) => CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                leading: _buildBack(theme),
-                backgroundColor: theme.backgroundFirst,
-                expandedHeight: detailsImageSize,
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  background: _Gallery(sight),
+          Container(
+            height:
+                commonSpacing3_4 + bottomSheetThumbHeight + commonSpacing3_4,
+            color: bottomSheetThumbBackground,
+            child: Center(
+              child: Container(
+                width: bottomSheetThumbWidth,
+                height: bottomSheetThumbHeight,
+                decoration: BoxDecoration(
+                  color: mainColor100,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(commonSpacing1_2),
                 ),
               ),
-              SliverPadding(
-                padding: commonPaddingLR,
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    ..._buildText(theme, sight),
-                    ..._buildButtons(),
-                    ..._buildEditButton(context),
-                  ]),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: commonSpacing,
+            right: commonSpacing,
+            child: _buildClose(theme),
+          ),
+        ],
       ),
     );
   }
@@ -94,6 +118,26 @@ class _SightDetailsState extends State<SightDetails> {
             onPressed: () => Navigator.pop(context, _modified),
             child: SvgPicture.asset(
               Svg24.back,
+              color: theme.mainTextColor2,
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildClose(MyThemeData theme) => Center(
+        child: SizedBox(
+          width: smallButtonHeight,
+          height: smallButtonHeight,
+          child: MaterialButton(
+            elevation: 0,
+            padding: EdgeInsets.zero,
+            color: theme.backgroundFirst,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(smallButtonHeight),
+            ),
+            onPressed: () => Navigator.pop(context, _modified),
+            child: SvgPicture.asset(
+              Svg24.close,
               color: theme.mainTextColor2,
             ),
           ),
