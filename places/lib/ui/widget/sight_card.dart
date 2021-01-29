@@ -134,8 +134,6 @@ class _SightCardState extends State<SightCard> {
     final color = textStyle.color!;
     final mocks = Mocks.of(context, listen: true);
 
-    print(theme.app);
-
     return Container(
       alignment: Alignment.topLeft,
       padding: cardSignaturesPadding,
@@ -146,7 +144,7 @@ class _SightCardState extends State<SightCard> {
           if (widget.type == SightCardType.list)
             _buildSignatureButton(
               mocks.isFavorite(widget.sightId) ? Svg24.heartFull : Svg24.heart,
-              textStyle.color!,
+              color,
               () => Mocks.of(context).toggleFavorite(widget.sightId),
             ),
           if (widget.type == SightCardType.favorites) ...[
