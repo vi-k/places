@@ -241,18 +241,24 @@ class MocksData extends ChangeNotifier {
     replaceSight(id, sight);
     notifyListeners();
   }
-}
 
-/// Моковые фотографии.
-const mockPhotos = [
-  'https://top10.travel/wp-content/uploads/2014/12/hram-vasiliya-blazhennogo.jpg',
-  'https://img.gazeta.ru/files3/957/10301957/00-pic905-895x505-58873.jpg',
-  'https://way2day.com/wp-content/uploads/2018/06/Dostoprimechatelnosti-Turtsii.jpg',
-  'https://uploads.europa24.ru/rs/580w/news/2017-08/berlinskiy-dom-59819f21c5469.jpg',
-  'https://top10.travel/wp-content/uploads/2014/09/brandenburgskie-vorota-1.jpg',
-  'https://vibirai.ru/image/1155920.w640.jpg',
-  'https://kor.ill.in.ua/m/610x385/2445355.jpg',
-  'https://www.topkurortov.com/wp-content/uploads/2015/12/pizanskaya-bashnia.jpg',
-  'https://tripplanet.ru/wp-content/uploads/europe/england/london/london-dostoprimechatelnosti.jpg',
-  'https://crimeaguide.com/wp-content/uploads/2016/05/last.jpg',
-];
+  /// Моковые фотографии.
+  var _mockPhotosCounter = -1;
+  static const _mockPhotos = [
+    'https://top10.travel/wp-content/uploads/2014/12/hram-vasiliya-blazhennogo.jpg',
+    'https://img.gazeta.ru/files3/957/10301957/00-pic905-895x505-58873.jpg',
+    'https://way2day.com/wp-content/uploads/2018/06/Dostoprimechatelnosti-Turtsii.jpg',
+    'https://uploads.europa24.ru/rs/580w/news/2017-08/berlinskiy-dom-59819f21c5469.jpg',
+    'https://top10.travel/wp-content/uploads/2014/09/brandenburgskie-vorota-1.jpg',
+    'https://vibirai.ru/image/1155920.w640.jpg',
+    'https://kor.ill.in.ua/m/610x385/2445355.jpg',
+    'https://www.topkurortov.com/wp-content/uploads/2015/12/pizanskaya-bashnia.jpg',
+    'https://tripplanet.ru/wp-content/uploads/europe/england/london/london-dostoprimechatelnosti.jpg',
+    'https://crimeaguide.com/wp-content/uploads/2016/05/last.jpg',
+  ];
+
+  String get nextMockPhoto {
+    if (++_mockPhotosCounter >= _mockPhotos.length) _mockPhotosCounter = 0;
+    return _mockPhotos[_mockPhotosCounter];
+  }
+}

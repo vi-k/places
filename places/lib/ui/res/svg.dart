@@ -7,7 +7,7 @@ class Svg24 {
   static const clear = 'res/svg24/clear.svg';
   static const close = 'res/svg24/close.svg';
   static const delete = 'res/svg24/delete.svg';
-  static const fail = 'res/svg24/fail.svg';
+  static const file = 'res/svg24/file.svg';
   static const filter = 'res/svg24/filter.svg';
   static const geolocation = 'res/svg24/geolocation.svg';
   static const go = 'res/svg24/go.svg';

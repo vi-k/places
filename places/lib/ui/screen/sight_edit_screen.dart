@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/category.dart';
-import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
 import '../../utils/focus.dart';
 import '../../utils/maps.dart';
@@ -13,6 +12,7 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
 import '../widget/failed.dart';
+import '../widget/get_image.dart';
 import '../widget/loader.dart';
 import '../widget/mocks.dart';
 import '../widget/photo_card.dart';
@@ -44,7 +44,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
   Sight? _sight;
   int? _categoryId;
   final _photos = <String>[];
-  var _mockPhotosCounter = 0;
   String? _name;
   double? _lat;
   double? _lon;
@@ -146,7 +145,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
           if (!_validate()) {
             final exit = await showDialog<bool>(
               context: context,
-              barrierDismissible: true,
               builder: (_) => AlertDialog(
                 title: const Text(stringDoCancel),
                 actions: [
@@ -169,7 +167,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
 
           await showDialog<void>(
             context: context,
-            barrierDismissible: true,
             builder: (_) => AlertDialog(
               title: Text(_isNew ? stringDoCreate : stringDoSave),
               actions: [
@@ -265,19 +262,18 @@ class _SightEditScreenState extends State<SightEditScreen> {
           children: [
             const SizedBox(width: commonSpacing),
             AddPhotoCard(
-              onPressed: () {
-                // Временно добавляем моковые фотографии.
-                if (_mockPhotosCounter >= mockPhotos.length) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Добавили всё, что можно'),
-                    ),
-                  );
-                } else {
-                  setState(() {
-                    _photos.add(mockPhotos[_mockPhotosCounter++]);
-                  });
-                }
+              onPressed: () async {
+                final url = await showModalBottomSheet<String>(
+                  context: context,
+                  clipBehavior: Clip.antiAlias,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => GetImage(),
+                );
+
+                if (url == null) return;
+                setState(() {
+                  _photos.add(url);
+                });
               },
             ),
             for (final photo in _photos) ...[
