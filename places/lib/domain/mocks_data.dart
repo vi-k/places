@@ -56,7 +56,7 @@ class MocksData extends ChangeNotifier {
         details: 'Хабаровский краевой музей имени Н.И. Гродекова',
         categoryId: 3,
         visited: true,
-        visitedTime: DateTime(2021, 1, 3),
+        visitedDate: DateTime(2021, 1, 3),
       ),
       Sight(
         id: _sightsNextId++,
@@ -67,7 +67,6 @@ class MocksData extends ChangeNotifier {
         ],
         details: 'Чешская и европейская кухня. Фермерская пивоварня',
         categoryId: 4,
-        visitTime: DateTime(2021, 1, 4),
       ),
       Sight(
         id: _sightsNextId++,
@@ -79,7 +78,6 @@ class MocksData extends ChangeNotifier {
         details:
             'Гостиница «Интурист» расположена в историческом центре Хабаровска, в парке, в двух шагах от набережной реки Амур. Рядом с гостиницей находится деловая часть города: краеведческий, художественный и военный музеи, театры, концертные залы филармонии и дома офицеров Российской Армии, а также магазины, рестораны и банки.',
         categoryId: 2,
-        visitTime: DateTime(2021, 1, 4),
       ),
       Sight(
         id: _sightsNextId++,
@@ -90,7 +88,7 @@ class MocksData extends ChangeNotifier {
         ],
         details: 'Кафе-кондитерская.',
         categoryId: 1,
-        visitTime: DateTime(2020, 12, 20),
+        visitDate: DateTime(2020, 12, 20),
       ),
       Sight(
         id: _sightsNextId++,
@@ -114,7 +112,7 @@ class MocksData extends ChangeNotifier {
             'Городской парк культуры и отдыха "Динамо" - большой красивый парк в центре Хабаровска. Площадь парка - 31 гектар.',
         categoryId: 5,
         visited: true,
-        visitedTime: DateTime(2020, 12, 12),
+        visitedDate: DateTime(2020, 12, 12),
       ),
       Sight(
         id: _sightsNextId++,
