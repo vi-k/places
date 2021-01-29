@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'domain/mocks_data.dart';
 import 'domain/settings_data.dart';
@@ -31,6 +32,14 @@ class _AppState extends State<App> {
                 builder: (context) => MaterialApp(
                   title: 'Places',
                   theme: MyTheme.of(context).app,
+                  localizationsDelegates: const [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [
+                    Locale('ru'),
+                  ],
                   home: SplashScreen(),
                 ),
               ),

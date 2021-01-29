@@ -12,8 +12,8 @@ class Sight {
     required this.details,
     required this.categoryId,
     this.visited = false,
-    this.visitTime,
-    this.visitedTime,
+    this.visitDate,
+    this.visitedDate,
   }) : photos = UnmodifiableListView(photos);
 
   final int id;
@@ -23,8 +23,8 @@ class Sight {
   final String details;
   final int categoryId;
   final bool visited;
-  final DateTime? visitTime;
-  final DateTime? visitedTime;
+  final DateTime? visitDate;
+  final DateTime? visitedDate;
 
   @override
   String toString() => 'Sight(id: $id, $name, $categoryId, $coord ...)';
@@ -37,8 +37,8 @@ class Sight {
     String? details,
     int? categoryId,
     bool? visited,
-    DateTime? visitTime,
-    DateTime? visitedTime,
+    DateTime? visitDate,
+    DateTime? visitedDate,
   }) =>
       Sight(
         id: id ?? this.id,
@@ -48,7 +48,7 @@ class Sight {
         details: details ?? this.details,
         categoryId: categoryId ?? this.categoryId,
         visited: visited ?? this.visited,
-        visitTime: visitTime ?? this.visitTime,
-        visitedTime: visitedTime ?? this.visitedTime,
+        visitDate: visitDate ?? this.visitDate,
+        visitedDate: visitedDate ?? this.visitedDate,
       );
 }

@@ -52,7 +52,6 @@ class LoadableImage extends StatelessWidget {
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        print(error.runtimeType);
         return Align(
           alignment: Alignment.bottomCenter,
           child: Padding(

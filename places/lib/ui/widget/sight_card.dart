@@ -98,7 +98,9 @@ class _SightCardState extends State<SightCard> {
                       Loader.of<Sight>(context).reload();
                     }
                   },
-                  child: _buildSignatures(theme, sight),
+                  child: sight != null
+                      ? _buildSignatures(context, theme, sight)
+                      : null,
                 ),
               ],
             ),
@@ -126,7 +128,8 @@ class _SightCardState extends State<SightCard> {
         ),
       );
 
-  Widget _buildSignatures(MyThemeData theme, Sight? sight) {
+  Widget _buildSignatures(
+      BuildContext context, MyThemeData theme, Sight sight) {
     final textStyle = theme.textBold14White;
     final color = textStyle.color!;
     final mocks = Mocks.of(context, listen: true);
@@ -141,14 +144,31 @@ class _SightCardState extends State<SightCard> {
           if (widget.type == SightCardType.list)
             _buildSignatureButton(
               mocks.isFavorite(widget.sightId) ? Svg24.heartFull : Svg24.heart,
-              textStyle.color!,
+              color,
               () => Mocks.of(context).toggleFavorite(widget.sightId),
             ),
           if (widget.type == SightCardType.favorites) ...[
             _buildSignatureButton(
               Svg24.calendar,
-              color,
-              () => print('Schedule'),
+              sight.visitDate != null ? theme.accentColor : color,
+              () async {
+                final today = DateTime.now();
+                var visitDate = sight.visitDate;
+                visitDate = await showDatePicker(
+                  context: context,
+                  initialDate: visitDate ?? today,
+                  firstDate: visitDate != null && visitDate.isBefore(today)
+                      ? visitDate
+                      : today,
+                  lastDate: DateTime(today.year + 10, 12, 31),
+                );
+
+                if (visitDate != null) {
+                  final newSight = sight.copyWith(visitDate: visitDate);
+                  Mocks.of(context).replaceSight(sight.id, newSight);
+                  Loader.of<Sight>(context).reload();
+                }
+              },
             ),
             _buildSignatureButton(
               Svg24.close,

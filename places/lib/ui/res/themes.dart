@@ -53,7 +53,7 @@ class MyThemeData {
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
     textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
-    
+
     textMiddle14Accent = _textMiddle14.withColor(accentColor);
     textMiddle14White = _textMiddle14.withColor(mainColor100);
 
@@ -99,7 +99,7 @@ class MyThemeData {
   late final TextStyle textRegular14Main;
   late final TextStyle textRegular14Light;
   late final TextStyle textRegular14Light56;
-  
+
   late final TextStyle textMiddle14Accent;
   late final TextStyle textMiddle14White;
 
@@ -177,7 +177,18 @@ final myLightTheme = MyThemeData(
   app: ThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.light,
-    primarySwatch: Colors.pink, // Для проверки, что все цвета заменены
+    primarySwatch: MaterialColor(accentColor50.value, {
+      50: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.9)),
+      100: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.8)),
+      200: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.6)),
+      300: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.4)),
+      400: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.2)),
+      500: accentColor50,
+      600: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.1)),
+      700: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.2)),
+      800: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.3)),
+      900: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.4)),
+    }),
     accentColor: accentColor50,
     backgroundColor: mainColor100,
     scaffoldBackgroundColor: mainColor100,
@@ -259,7 +270,18 @@ final myDarkTheme = MyThemeData(
   app: ThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.dark,
-    primarySwatch: Colors.pink, // Для проверки, что все цвета заменены
+    primarySwatch: MaterialColor(accentColor70.value, {
+      50: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.9)),
+      100: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.8)),
+      200: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.6)),
+      300: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.4)),
+      400: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.2)),
+      500: accentColor70,
+      600: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.1)),
+      700: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.2)),
+      800: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.3)),
+      900: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.4)),
+    }),
     accentColor: accentColor70,
     backgroundColor: mainColor30,
     scaffoldBackgroundColor: mainColor30,
