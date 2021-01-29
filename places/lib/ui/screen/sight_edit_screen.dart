@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/category.dart';
-import '../../domain/mocks_data.dart';
 import '../../domain/sight.dart';
 import '../../utils/focus.dart';
 import '../../utils/maps.dart';
@@ -13,11 +12,11 @@ import '../res/svg.dart';
 import '../res/themes.dart';
 import '../widget/add_photo_card.dart';
 import '../widget/failed.dart';
+import '../widget/get_image.dart';
 import '../widget/loader.dart';
 import '../widget/mocks.dart';
 import '../widget/photo_card.dart';
 import '../widget/section.dart';
-import '../widget/select_image_source.dart';
 import '../widget/small_app_bar.dart';
 import '../widget/small_button.dart';
 import '../widget/small_loader.dart';
@@ -45,7 +44,6 @@ class _SightEditScreenState extends State<SightEditScreen> {
   Sight? _sight;
   int? _categoryId;
   final _photos = <String>[];
-  var _mockPhotosCounter = 0;
   String? _name;
   double? _lat;
   double? _lon;
@@ -265,61 +263,17 @@ class _SightEditScreenState extends State<SightEditScreen> {
             const SizedBox(width: commonSpacing),
             AddPhotoCard(
               onPressed: () async {
-                final imageSource = await showModalBottomSheet<ImageSource>(
+                final url = await showModalBottomSheet<String>(
                   context: context,
                   clipBehavior: Clip.antiAlias,
                   backgroundColor: Colors.transparent,
-                  builder: (context) => SelectImageSource(),
+                  builder: (context) => GetImage(),
                 );
 
-                if (imageSource == null) return;
-
-                switch (imageSource) {
-                  case ImageSource.photo:
-                    // Временно добавляем моковые фотографии.
-                    if (_mockPhotosCounter >= mockPhotos.length) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Добавили всё, что можно'),
-                        ),
-                      );
-                    } else {
-                      setState(() {
-                        _photos.add(mockPhotos[_mockPhotosCounter++]);
-                      });
-                    }
-                    break;
-
-                  case ImageSource.camera:
-                    await showDialog<void>(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text(stringCamera),
-                        actions: [
-                          SmallButton(
-                            label: stringOk.toUpperCase(),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    );
-                    break;
-
-                  case ImageSource.file:
-                    await showDialog<void>(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text(stringFile),
-                        actions: [
-                          SmallButton(
-                            label: stringOk.toUpperCase(),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    );
-                    break;
-                }
+                if (url == null) return;
+                setState(() {
+                  _photos.add(url);
+                });
               },
             ),
             for (final photo in _photos) ...[

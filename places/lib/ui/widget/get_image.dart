@@ -5,12 +5,11 @@ import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
+import 'mocks.dart';
 import 'standart_button.dart';
 
-enum ImageSource { camera, photo, file }
-
 /// Выбора источника фотографии места: камера, галерея, файл.
-class SelectImageSource extends StatelessWidget {
+class GetImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
@@ -34,49 +33,20 @@ class SelectImageSource extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               shrinkWrap: true,
               children: [
-                ListTile(
-                  leading: SvgPicture.asset(
-                    Svg24.camera,
-                    color: style.color,
-                  ),
-                  title: Text(
-                    stringCamera,
-                    style: style,
-                  ),
-                  onTap: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                const Divider(
-                  indent: commonSpacing,
-                  endIndent: commonSpacing,
-                  height: dividerHeight,
-                ),
-                ListTile(
-                  leading: SvgPicture.asset(
-                    Svg24.photo,
-                    color: style.color,
-                  ),
-                  title: Text(
-                    stringPhoto,
-                    style: style,
-                  ),
-                  onTap: () => Navigator.pop(context, ImageSource.photo),
-                ),
-                const Divider(
-                  indent: commonSpacing,
-                  endIndent: commonSpacing,
-                  height: dividerHeight,
-                ),
-                ListTile(
-                  leading: SvgPicture.asset(
-                    Svg24.file,
-                    color: style.color,
-                  ),
-                  title: Text(
-                    stringFile,
-                    style: style,
-                  ),
-                  onTap: () => Navigator.pop(context, ImageSource.file),
-                ),
+                _buildItem(context, style, Svg24.camera, stringCamera, () {
+                  // Временно добавляем моковые фотографии.
+                  Navigator.pop(context, Mocks.of(context).nextMockPhoto);
+                }),
+                _buildDivider(),
+                _buildItem(context, style, Svg24.photo, stringPhoto, () {
+                  // Временно добавляем моковые фотографии.
+                  Navigator.pop(context, Mocks.of(context).nextMockPhoto);
+                }),
+                _buildDivider(),
+                _buildItem(context, style, Svg24.file, stringFile, () {
+                  // Временно добавляем моковые фотографии.
+                  Navigator.pop(context, Mocks.of(context).nextMockPhoto);
+                }),
               ],
             ),
           ),
@@ -98,4 +68,24 @@ class SelectImageSource extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildDivider() => const Divider(
+        indent: commonSpacing,
+        endIndent: commonSpacing,
+        height: dividerHeight,
+      );
+
+  Widget _buildItem(BuildContext context, TextStyle style, String svg,
+          String title, void Function() onTap) =>
+      ListTile(
+        leading: SvgPicture.asset(
+          svg,
+          color: style.color,
+        ),
+        title: Text(
+          title,
+          style: style,
+        ),
+        onTap: onTap,
+      );
 }
