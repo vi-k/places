@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/category.dart';
@@ -7,6 +10,7 @@ import '../res/const.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/sight_details.dart';
+import 'cupertion_date_select.dart';
 import 'failed.dart';
 import 'loadable_image.dart';
 import 'loader.dart';
@@ -154,14 +158,25 @@ class _SightCardState extends State<SightCard> {
               () async {
                 final today = DateTime.now();
                 var visitDate = sight.visitDate;
-                visitDate = await showDatePicker(
-                  context: context,
-                  initialDate: visitDate ?? today,
-                  firstDate: visitDate != null && visitDate.isBefore(today)
-                      ? visitDate
-                      : today,
-                  lastDate: DateTime(today.year + 10, 12, 31),
-                );
+
+                visitDate = Platform.isIOS
+                    ? await showCupertinoDatePicker(
+                        context: context,
+                        initialDate: visitDate ?? today,
+                        firstDate:
+                            visitDate != null && visitDate.isBefore(today)
+                                ? visitDate
+                                : today,
+                      )
+                    : await showDatePicker(
+                        context: context,
+                        initialDate: visitDate ?? today,
+                        firstDate:
+                            visitDate != null && visitDate.isBefore(today)
+                                ? visitDate
+                                : today,
+                        lastDate: DateTime(today.year + 10, 12, 31),
+                      );
 
                 if (visitDate != null) {
                   final newSight = sight.copyWith(visitDate: visitDate);

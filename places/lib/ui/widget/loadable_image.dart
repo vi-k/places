@@ -51,19 +51,17 @@ class LoadableImage extends StatelessWidget {
           ],
         );
       },
-      errorBuilder: (context, error, stackTrace) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: commonPadding,
-            child: Text(
-              error.toString(),
-              textAlign: TextAlign.center,
-              style: theme.textRegular16Light56,
-            ),
+      errorBuilder: (context, error, stackTrace) => Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: commonPadding,
+          child: Text(
+            error.toString(),
+            textAlign: TextAlign.center,
+            style: theme.textRegular16Light56,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

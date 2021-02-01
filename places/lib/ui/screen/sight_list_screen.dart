@@ -27,6 +27,8 @@ class _SightListScreenState extends State<SightListScreen> {
       ..sort((a, b) => a.coord
           .distance(myMockCoord)
           .compareTo(b.coord.distance(myMockCoord)));
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       body: CustomScrollView(
@@ -37,9 +39,14 @@ class _SightListScreenState extends State<SightListScreen> {
               systemBarHeight: MediaQuery.of(context).padding.top,
               bigTitleStyle: theme.textBold32Main,
               smallTitleStyle: theme.textMiddle18Main2,
+              onlySmall: !isPortrait,
             ),
           ),
-          SliverList(
+          SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              childAspectRatio: 3 / 2,
+              crossAxisCount: isPortrait ? 1 : 2,
+            ),
             delegate: SliverChildBuilderDelegate(
               (context, index) => Padding(
                 padding: commonPaddingLBR,
@@ -54,89 +61,124 @@ class _SightListScreenState extends State<SightListScreen> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        isExtended: true,
-        onPressed: () => Navigator.push<int>(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SightEditScreen(),
-          ),
-        ),
-        icon: const Icon(Icons.add),
-        label: Text(stringNewPlace.toUpperCase()),
-      ),
+      floatingActionButton: isPortrait
+          ? FloatingActionButton.extended(
+              isExtended: true,
+              onPressed: () => Navigator.push<int>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SightEditScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.add),
+              label: Text(stringNewPlace.toUpperCase()),
+            )
+          : FloatingActionButton(
+              onPressed: () => Navigator.push<int>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SightEditScreen(),
+                ),
+              ),
+              child: const Icon(Icons.add),
+            ),
       bottomNavigationBar: const AppNavigationBar(index: 0),
     );
   }
 }
 
+/// Делегат для изображения заголовка, изменяющегося в размерах так, как нам
+/// надо.
 class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
   _SliverTitleDelegate({
     required this.systemBarHeight,
     required this.bigTitleStyle,
     required this.smallTitleStyle,
+    required this.onlySmall,
   })   : bigTitleHeight = bigTitleStyle.fontSize! * bigTitleStyle.height!,
         smallTitleHeight = smallTitleStyle.fontSize! * smallTitleStyle.height!;
 
+  /// Высота системного бара.
+  ///
+  /// Нужна в maxExtent и minExtent, где недоступен context. Чтобы не создавать
+  /// костыли, просто требуем значение от того, кто вызывает.
   final double systemBarHeight;
-  final TextStyle bigTitleStyle;
-  final TextStyle smallTitleStyle;
+
+  /// Высота максимального заголовка. Вычисляемое значение.
   final double bigTitleHeight;
+
+  /// Стиль текста при максимальном размере заголовка.
+  final TextStyle bigTitleStyle;
+
+  /// Высота минимального заголовка. Вычисляемое значение.
   final double smallTitleHeight;
 
+  /// Стиль текста при минимальном размере заголовка.
+  final TextStyle smallTitleStyle;
+
+  /// Не используется анимация перехода. Заголовок всегда минимальный.
+  final bool onlySmall;
+
+  /// Смещение текста заголовка при максимальном заголовке.
   static const bigTitleOffset = 40;
 
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     final theme = MyTheme.of(context);
-    final flexibleSpace = bigTitleOffset + bigTitleHeight;
+    final maxHeight = maxExtent;
+    final minHeight = minExtent;
+    final flexibleSpace = maxHeight - minHeight;
     final k = shrinkOffset >= flexibleSpace
         ? 0.0
         : (flexibleSpace - shrinkOffset) / flexibleSpace;
 
-    return Container(
+    return Material(
       color: theme.backgroundFirst,
-      padding: commonPadding,
-      child: Column(
-        children: [
-          SizedBox(
-            height: systemBarHeight + k * bigTitleOffset,
-          ),
-          Align(
-            alignment: Alignment(k == 1.0 ? -1 : 0, 0),
-            child: SizedBox(
-              height: smallTitleHeight +
-                  (2 * bigTitleHeight - smallTitleHeight) * k,
-              child: Text(
-                stringSightList,
-                style: TextStyle.lerp(smallTitleStyle, bigTitleStyle, k),
+      elevation: shrinkOffset > flexibleSpace ? 4 : 0,
+      child: Padding(
+        padding: commonPadding,
+        child: Column(
+          children: [
+            SizedBox(
+              height: systemBarHeight + k * bigTitleOffset,
+            ),
+            Align(
+              alignment: Alignment(-k, 0),
+              child: SizedBox(
+                height: smallTitleHeight +
+                    (2 * bigTitleHeight - smallTitleHeight) * k,
+                child: Text(
+                  stringSightList,
+                  style: TextStyle.lerp(smallTitleStyle, bigTitleStyle, k),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: commonSpacing),
-          SearchBar(
-            onTap: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SightSearchScreen(),
+            const SizedBox(height: commonSpacing),
+            SearchBar(
+              onTap: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SightSearchScreen(),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   @override
-  double get maxExtent =>
-      systemBarHeight +
-      bigTitleOffset +
-      commonSpacing +
-      2 * bigTitleHeight +
-      commonSpacing +
-      smallButtonHeight +
-      commonSpacing;
+  double get maxExtent => onlySmall
+      ? minExtent
+      : systemBarHeight +
+          bigTitleOffset +
+          commonSpacing +
+          2 * bigTitleHeight +
+          commonSpacing +
+          smallButtonHeight +
+          commonSpacing;
 
   @override
   double get minExtent =>

@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 /// Собственная тема приложения, т.к. средств обычной ThemeData в нашем случае
 /// недостаточно.
 ///
@@ -240,6 +242,12 @@ final myLightTheme = MyThemeData(
       // Стиль для TextField
       subtitle1: _textRegular16.withColor(mainColor40), // = textRegular16Main2
     ),
+    cupertinoOverrideTheme: CupertinoThemeData(
+      brightness: Brightness.light,
+      textTheme: CupertinoTextThemeData(
+        dateTimePickerTextStyle: _textRegular16.withColor(mainColor50),
+      ),
+    ),
   ),
   accentColor: accentColor50,
   accentColor16: accentColor50a16,
@@ -332,6 +340,12 @@ final myDarkTheme = MyThemeData(
     textTheme: TextTheme(
       // Стиль для TextField
       subtitle1: _textRegular16.withColor(mainColor100), // = textRegular16Main
+    ),
+    cupertinoOverrideTheme: CupertinoThemeData(
+      brightness: Brightness.dark,
+      textTheme: CupertinoTextThemeData(
+        dateTimePickerTextStyle: _textRegular16.withColor(mainColor100),
+      ),
     ),
   ),
   accentColor: accentColor70,

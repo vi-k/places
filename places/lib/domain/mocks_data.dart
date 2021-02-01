@@ -146,13 +146,13 @@ class MocksData extends ChangeNotifier {
   // Category _categoryById(int id) => _categories[_categoryIndex(id)];
 
   Future<List<Category>> get categories async {
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     if (_randomBool) return Future.error('Network failed');
     return _categories;
   }
 
   Future<Category> categoryById(int id) async {
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     if (_randomBool) return Future.error('Network failed');
     return _categories[_categoryIndex(id)];
   }
@@ -165,7 +165,7 @@ class MocksData extends ChangeNotifier {
 
   List<Sight> get sights => _sights;
   Future<Sight> sightById(int id) async {
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     if (_randomBool) return Future.error('Network failed');
     return _sights[_sightIndex(id)];
   }

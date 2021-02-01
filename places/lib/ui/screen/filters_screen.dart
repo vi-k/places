@@ -41,6 +41,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
+    final isSmallScreen = MediaQuery.of(context).size.height <= 800;
 
     return Scaffold(
       appBar: SmallAppBar(
@@ -58,7 +59,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Expanded(
             child: ListView(
               children: [
-                ..._buildCategories(),
+                ..._buildCategories(isSmallScreen),
                 const SizedBox(height: commonSpacing),
                 ..._buildDistance(theme),
                 const SizedBox(height: commonSpacing),
@@ -109,30 +110,40 @@ class _FiltersScreenState extends State<FiltersScreen> {
         ),
       ];
 
-  List<Widget> _buildCategories() => [
+  List<Widget> _buildCategories(bool isSmallScreen) => [
         Section(
           stringCategories,
           child: FutureBuilder<List<Category>>(
             future: Mocks.of(context, listen: true).categories,
             builder: (context, snapshot) => !snapshot.hasData
                 ? const Text('Loading')
-                : Wrap(
-                    alignment: WrapAlignment.spaceEvenly,
-                    children: [
-                      for (final category in snapshot.data!)
-                        SightCategoryFilter(
-                          category: category,
-                          active: filter.hasCategory(category.id),
-                          onPressed: () {
-                            setState(() {
-                              filter = filter.toggleCategory(category.id);
-                            });
-                          },
+                : isSmallScreen
+                    ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _buildCategoryItems(snapshot.data!),
                         ),
-                    ],
-                  ),
+                      )
+                    : Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        children: _buildCategoryItems(snapshot.data!),
+                      ),
           ),
         ),
+      ];
+
+  List<Widget> _buildCategoryItems(List<Category> data) => [
+        for (final category in data)
+          SightCategoryFilter(
+            category: category,
+            active: filter.hasCategory(category.id),
+            onPressed: () {
+              setState(() {
+                filter = filter.toggleCategory(category.id);
+              });
+            },
+          ),
       ];
 
   // Переводит расстояние в значение слайдера.
