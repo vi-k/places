@@ -1,11 +1,25 @@
-// @dart=2.9
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:places/utils/distance.dart';
 
 import 'app.dart';
+import 'data/interactor/place_interactor.dart';
+import 'data/model/place.dart';
+import 'data/model/place_type.dart';
+import 'data/repository/api_place_repository.dart';
+import 'data/repository/base/filter.dart';
+import 'data/repository/base/location_repository.dart';
+import 'data/repository/base/mock_location_repository.dart';
+import 'data/repository/base/place_repository.dart';
+import 'data/repository/real_location_repository.dart';
+import 'data/repository/mock_place_repository.dart';
+import 'data/repository/repository_exception.dart';
+import 'utils/coord.dart';
+import 'utils/sort.dart';
 
 final dio = Dio(BaseOptions(
-  // baseUrl: 'https://test-backend-flutter.surfstudio.ru',
+  baseUrl: 'https://test-backend-flutter.surfstudio.ru',
   connectTimeout: 5000,
   receiveTimeout: 5000,
   sendTimeout: 5000,
@@ -13,22 +27,121 @@ final dio = Dio(BaseOptions(
 ))
   ..interceptors.add(InterceptorsWrapper(
     onError: (error) {
-      print('Ошибка: ${error.message}');
+      var message =
+          'Ошибка при выполнении запроса ${error.request.method} ${error.request.uri}: '
+          '${error.message} (${error.type})';
+      final repositoryException = RepositoryException.fromDio(error);
+      if (repositoryException != null) {
+        message += ': ${repositoryException.message}';
+      }
+      print(message);
     },
     onRequest: (options) {
-      print('Запрос: ${options.uri}');
+      print('Выполняется запрос: ${options.method} ${options.uri}');
+      if (options.data != null) {
+        print('data: ${options.data}');
+      }
     },
     onResponse: (response) {
-      print('Получен ответ: ${response.statusMessage}');
+      print(
+          'Получен ответ: ${response.statusMessage} (${response.statusCode})');
+      // print(response.data);
     },
   ));
 
+// Репозитории, интеракторы, фильтр (пока храним здесь)
+final PlaceRepository placeRepository = ApiPlaceRepository(dio);
+final LocationRepository locationRepository = RealLocationRepository();
+// final PlaceRepository placeRepository = MockPlaceRepository();
+// final LocationRepository locationRepository = MockLocationRepository();
+final placeInteractor = PlaceInteractor(
+    placeRepository: placeRepository, locationRepository: locationRepository);
+Filter filter = Filter();
+
 Future<void> main() async {
-  final response = await dio.get<String>(
-    'https://jsonplaceholder.typicode.com/users',
-    queryParameters: <String, dynamic>{'id': 1},
-  );
-  print(response);
+  // await moveFromMockToRepository();
+  // await testPlaceRepository();
 
   runApp(App());
+}
+
+// Перенос мест из моковых в БД
+Future<void> moveFromMockToRepository() async {
+  if (placeRepository is! MockPlaceRepository) {
+    final mocksRepository = MockPlaceRepository();
+    final mocksList = await mocksRepository.list();
+    for (final place in mocksList) {
+      try {
+        await placeRepository.create(place);
+      } on Object {
+        await placeRepository.update(place);
+      }
+    }
+  }
+}
+
+Future<void> testPlaceRepository() async {
+  void printPlaces(List<Place> places) {
+    for (final place in places) {
+      print(place.toString(short: true));
+      // print(place.toString());
+    }
+  }
+
+  // Весь список
+  var list = await placeRepository.list();
+  printPlaces(list);
+
+  // Список постранично
+  list = await placeRepository.list(
+      count: 8,
+      pageBy: PlaceOrderBy.name,
+      pageLastValue: 'название',
+      orderBy: {PlaceOrderBy.name: Sort.asc, PlaceOrderBy.id: Sort.asc});
+  printPlaces(list);
+
+  // Создание места
+  final newPlaceId = await placeRepository.create(const Place(
+    coord: Coord(0, 0),
+    name: 'название',
+    type: PlaceType.other,
+    photos: ['фотография 1', 'фотография 2'],
+    description: 'описание',
+  ));
+  print('new place id: $newPlaceId');
+
+  list = await placeRepository.list();
+  printPlaces(list);
+
+  // Чтение места
+  var place = await placeRepository.read(newPlaceId);
+  print(place);
+
+  // Обновление места
+  place = place.copyWith(
+    name: 'название 2',
+    photos: [...place.photos, 'фотография 3'],
+    description: 'описание 2',
+  );
+
+  await placeRepository.update(place);
+
+  list = await placeRepository.list();
+  printPlaces(list);
+
+  // Удаление места
+  await placeRepository.delete(place.id);
+
+  list = await placeRepository.list();
+  printPlaces(list);
+
+  // Фильтр
+  list = await placeInteractor.getPlaces(
+    Filter(
+      radius: const Distance.km(100),
+      // typeFilter: {PlaceType.museum},
+      // nameFilter: 'кра',
+    ),
+  );
+  printPlaces(list);
 }

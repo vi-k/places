@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import '../utils/maps.dart';
+import 'package:places/utils/coord.dart';
 
 /// Интересное место.
 class Sight {

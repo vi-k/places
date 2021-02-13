@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'package:places/utils/coord.dart';
+
 import '../ui/res/svg.dart';
-import '../utils/maps.dart';
 import 'category.dart';
 import 'sight.dart';
 
 /// Моковые координаты.
 const myMockCoord = Coord(48.479672, 135.070692);
+// const myMockCoord = Coord(30.312733, 59.940073);
 
 /// Моковые данные.
 // ignore: prefer_mixin
@@ -41,7 +43,7 @@ class MocksData extends ChangeNotifier {
       Category(
         id: _categoriesNextId++,
         name: 'Особое место',
-        svg: Svg32.particularPlace,
+        svg: Svg32.other,
       ),
     ];
 

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../widget/app_navigation_bar.dart';
-import '../widget/card_list.dart';
-import '../widget/mocks.dart';
-import '../widget/sight_card.dart';
-import '../widget/small_app_bar.dart';
-import '../widget/tab_switch.dart';
+import 'package:places/data/model/place_extended.dart';
+import 'package:places/data/model/place.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/widget/app_navigation_bar.dart';
+import 'package:places/ui/widget/place_card_grid.dart';
+import 'package:places/ui/widget/failed.dart';
+import 'package:places/ui/widget/loader.dart';
+import 'package:places/ui/widget/small_app_bar.dart';
+import 'package:places/ui/widget/tab_switch.dart';
+import 'package:places/main.dart';
 
 /// Экран "Хочу посетить/Посетил".
 class VisitingScreen extends StatefulWidget {
@@ -17,14 +19,14 @@ class VisitingScreen extends StatefulWidget {
 
 class _VisitingScreenState extends State<VisitingScreen>
     with SingleTickerProviderStateMixin {
-  static const _visitingScreenTabs = [stringWantToVisit, stringVisited];
+  static const _tabs = [stringWishlistName, stringVisitedName];
   late TabController tabController;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(
-      length: _visitingScreenTabs.length,
+      length: _tabs.length,
       vsync: this,
     );
     tabController.addListener(() {
@@ -45,7 +47,7 @@ class _VisitingScreenState extends State<VisitingScreen>
           bottom: Padding(
             padding: commonPaddingLBR,
             child: TabSwitch(
-              tabs: _visitingScreenTabs,
+              tabs: _tabs,
               tabController: tabController,
             ),
           ),
@@ -54,15 +56,31 @@ class _VisitingScreenState extends State<VisitingScreen>
           controller: tabController,
           children: [
             Tab(
-              child: CardList(
-                cardType: SightCardType.favorites,
-                list: (context) => Mocks.of(context, listen: true).favorites,
+              child: Loader<List<Place>>(
+                load: placeInteractor.getWishlist,
+                error: (context, error) => Failed(
+                  error.toString(),
+                  onRepeat: () =>
+                      Loader.of<List<Place>>(context).reload(),
+                ),
+                builder: (context, _, places) => PlaceCardGrid(
+                  cardType: Favorite.wishlist,
+                  places: places,
+                ),
               ),
             ),
             Tab(
-              child: CardList(
-                cardType: SightCardType.visited,
-                list: (context) => Mocks.of(context, listen: true).visited,
+              child: Loader<List<Place>>(
+                load: placeInteractor.getVisited,
+                error: (context, error) => Failed(
+                  error.toString(),
+                  onRepeat: () =>
+                      Loader.of<List<Place>>(context).reload(),
+                ),
+                builder: (context, _, places) => PlaceCardGrid(
+                  cardType: Favorite.visited,
+                  places: places,
+                ),
               ),
             ),
           ],

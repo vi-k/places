@@ -5,7 +5,7 @@ import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
 import '../screen/settings_screen.dart';
-import '../screen/sight_list_screen.dart';
+import '../screen/place_list_screen.dart';
 import '../screen/visiting_screen.dart';
 
 /// BottomNavigator приложения.
@@ -34,7 +34,7 @@ class AppNavigationBar extends StatelessWidget {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
-                builder: (context) => SightListScreen(),
+                builder: (context) => PlaceListScreen(),
               ),
             );
             break;
@@ -70,7 +70,7 @@ class AppNavigationBar extends StatelessWidget {
             index == 0 ? Svg24.listFull : Svg24.list,
             color: _itemColor(theme, index == 0),
           ),
-          label: stringSightList,
+          label: stringPlaceList,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(

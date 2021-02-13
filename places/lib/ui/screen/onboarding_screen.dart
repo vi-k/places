@@ -8,7 +8,7 @@ import '../res/themes.dart';
 import '../widget/page_view_selector.dart';
 import '../widget/small_button.dart';
 import '../widget/standart_button.dart';
-import 'sight_list_screen.dart';
+import 'place_list_screen.dart';
 
 /// Экран туториала.
 class OnboardingScreen extends StatefulWidget {
@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pushReplacement<void, void>(
         context,
         MaterialPageRoute(
-          builder: (context) => SightListScreen(),
+          builder: (context) => PlaceListScreen(),
         ),
       );
     }

@@ -4,8 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../domain/category.dart';
 import '../../domain/sight.dart';
+import '../../utils/coord.dart';
 import '../../utils/focus.dart';
-import '../../utils/maps.dart';
 import '../res/const.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';

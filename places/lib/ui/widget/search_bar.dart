@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/repository/base/filter.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/filters_screen.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-import '../screen/filters_screen.dart';
 import 'svg_button.dart';
 
 /// Поле поиска.
-class SearchBar extends StatefulWidget {
+class SearchBar extends StatelessWidget {
   const SearchBar({
     Key? key,
     this.onTap,
+    required this.filter,
+    required this.onChanged,
   }) : super(key: key);
 
   /// Обратный вызов при нажатии на поле.
@@ -21,11 +24,12 @@ class SearchBar extends StatefulWidget {
   /// можно нажать.
   final void Function()? onTap;
 
-  @override
-  _SearchBarState createState() => _SearchBarState();
-}
+  /// Фильтр.
+  final Filter filter;
 
-class _SearchBarState extends State<SearchBar> {
+  /// Обратный вызов при изменении фильтра.
+  final void Function(Filter filter) onChanged;
+
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
@@ -40,7 +44,7 @@ class _SearchBarState extends State<SearchBar> {
             children: [
               TextFormField(
                 autofocus: true,
-                readOnly: widget.onTap != null,
+                readOnly: onTap != null,
                 decoration: InputDecoration(
                   prefixIconConstraints: const BoxConstraints.tightFor(
                     height: smallButtonHeight,
@@ -68,10 +72,10 @@ class _SearchBarState extends State<SearchBar> {
                               const BorderSide(color: Colors.transparent)),
                 ),
               ),
-              if (widget.onTap != null)
+              if (onTap != null)
                 Positioned.fill(
                   child: InkWell(
-                    onTap: widget.onTap,
+                    onTap: onTap,
                   ),
                 ),
               Positioned(
@@ -82,13 +86,14 @@ class _SearchBarState extends State<SearchBar> {
                   Svg24.filter,
                   color: theme.accentColor,
                   onPressed: () async {
-                    await Navigator.push<void>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FiltersScreen(),
-                        ));
+                    final newFilter = await Navigator.push<Filter>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FiltersScreen(filter: filter),
+                      ),
+                    );
 
-                    setState(() {});
+                    if (newFilter != null) onChanged(newFilter);
                   },
                 ),
               ),

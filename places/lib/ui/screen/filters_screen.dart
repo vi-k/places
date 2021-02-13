@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:places/data/model/place_type.dart';
 
-import '../../domain/category.dart';
-import '../../domain/filter.dart';
-import '../../domain/mocks_data.dart';
-import '../../utils/maps.dart';
-import '../../utils/range.dart';
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/themes.dart';
-import '../widget/mocks.dart';
-import '../widget/section.dart';
-import '../widget/sight_type_filter.dart';
-import '../widget/small_app_bar.dart';
-import '../widget/standart_button.dart';
+import 'package:places/data/repository/base/filter.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/section.dart';
+import 'package:places/ui/widget/sight_type_filter.dart';
+import 'package:places/ui/widget/small_app_bar.dart';
+import 'package:places/ui/widget/standart_button.dart';
+import 'package:places/utils/distance.dart';
+import 'package:places/main.dart';
+
+import 'utils/distance_utils.dart';
 
 /// Экран настроек фильтра.
 class FiltersScreen extends StatefulWidget {
+  const FiltersScreen({
+    Key? key,
+    required this.filter,
+  }) : super(key: key);
+
+  final Filter filter;
+
   @override
   _FiltersScreenState createState() => _FiltersScreenState();
 }
 
 class _FiltersScreenState extends State<FiltersScreen> {
-  static const _maxDistance = Distance(30000);
+  static const _maxDistance = Distance.km(100);
+  static final _maxValue = distanceToValue(_maxDistance).toDouble() + 1;
   late Filter _filter;
   int? _cardCount;
 
@@ -35,7 +43,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    filter = Filter();
+    filter = widget.filter.copyWith();
   }
 
   @override
@@ -71,7 +79,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             child: StandartButton(
               label: stringApply +
                   (_cardCount == null ? ' ...' : ' ($_cardCount)'),
-              onPressed: () => print('Apply filter'),
+              onPressed: () => Navigator.pop(context, filter),
             ),
           ),
         ],
@@ -90,131 +98,74 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 style: theme.textRegular16Main,
               ),
               Text(
-                _distanceToString(filter.distance),
+                filter.radius.toString(),
                 style: theme.textRegular16Light,
               ),
             ],
           ),
         ),
-        RangeSlider(
-          values: _distanceToValues(filter.distance),
-          onChanged: (values) {
-            if (values.start.round() >= values.end.round()) return;
+        Slider(
+          min: 1,
+          max: _maxValue,
+          value: filter.radius.isInfinite
+              ? _maxValue
+              : distanceToValue(filter.radius).toDouble(),
+          onChanged: (value) {
             setState(() {
-              filter = filter.copyWith(distance: _valuesToDistance(values));
+              filter = filter.copyWith(
+                  radius: value.roundToDouble() == _maxValue
+                      ? Distance.infinity
+                      : valueToDistance(value.round()));
             });
-            //print('[${values.start}..${values.end}] - ${filter.distance}');
           },
-          min: 0,
-          max: _distanceToValue(_maxDistance).toDouble(),
         ),
       ];
 
   List<Widget> _buildCategories(bool isSmallScreen) => [
         Section(
           stringCategories,
-          child: FutureBuilder<List<Category>>(
-            future: Mocks.of(context, listen: true).categories,
-            builder: (context, snapshot) => !snapshot.hasData
-                ? const Text('Loading')
-                : isSmallScreen
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _buildCategoryItems(snapshot.data!),
-                        ),
-                      )
-                    : Wrap(
-                        alignment: WrapAlignment.spaceEvenly,
-                        children: _buildCategoryItems(snapshot.data!),
-                      ),
-          ),
+          child: isSmallScreen
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _buildCategoriesItems(),
+                  ),
+                )
+              : Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  children: _buildCategoriesItems(),
+                ),
         ),
       ];
 
-  List<Widget> _buildCategoryItems(List<Category> data) => [
-        for (final category in data)
+  List<Widget> _buildCategoriesItems() => [
+        for (final placeType in PlaceType.all)
           SightCategoryFilter(
-            category: category,
-            active: filter.hasCategory(category.id),
+            placeType: placeType,
+            active: filter.hasPlaceType(placeType),
             onPressed: () {
               setState(() {
-                filter = filter.toggleCategory(category.id);
+                print(filter);
+                filter = filter.togglePlaceType(placeType);
+                print(filter);
               });
             },
           ),
       ];
 
-  // Переводит расстояние в значение слайдера.
-  int _distanceToValue(Distance distance) {
-    //  0..10: от 0 до 1 км каждые 100 м;
-    // 10..14: от 1 км до 3 км каждые 500 м;
-    // 14..nn: далее по 1 км.
-    if (distance.value <= 1000) {
-      return (distance.value / 100).round();
-    } else if (distance.value <= 3000) {
-      return ((distance.value - 1000) / 500).round() + 10;
-    } else {
-      return ((distance.value - 3000) / 1000).round() + 14;
-    }
-  }
-
-  // Переводит значение слайдера в расстояние.
-  Distance _valueToDistance(int value) {
-    double distance;
-
-    if (value <= 10) {
-      distance = value * 100;
-    } else if (value <= 14) {
-      distance = 1000 + (value - 10) * 500;
-    } else {
-      distance = 3000 + (value - 14) * 1000;
-    }
-
-    return Distance(distance);
-  }
-
-  // Переводит диапазон расстояний в диапазон значений слайдера.
-  RangeValues _distanceToValues(Range<Distance> distance) => RangeValues(
-        _distanceToValue(distance.start).toDouble(),
-        _distanceToValue(distance.end).toDouble(),
-      );
-
-  // Переводит диапазон значений слайдера в диапазон расстояний.
-  Range<Distance> _valuesToDistance(RangeValues values) => Range<Distance>(
-        _valueToDistance(values.start.round()),
-        _valueToDistance(values.end.round()),
-      );
-
-  // Переводит диапазон расстояний в строку.
-  String _distanceToString(Range<Distance> distance) {
-    String prefix;
-    final endUnits = distance.end.optimalUnits;
-    final endValue = distance.end.toString(units: endUnits);
-
-    if (distance.start.value.round() == 0) {
-      prefix = '';
-    } else {
-      final withUnits = distance.start.optimalUnits != endUnits;
-      prefix = '$stringRangeFrom '
-          '${distance.start.toString(withUnits: withUnits)} ';
-    }
-
-    return '$prefix$stringRangeTo $endValue';
-  }
-
   Future<void> _recalcCardCount() async {
     // Пока реально это не ассинхронная функция.
-    final count = Mocks.of(context).sights.where((e) {
-      if (!filter.hasCategory(e.categoryId)) return false;
+    // placeInteractor.getPlaces();
+    // final count = Mocks.of(context).sights.where((e) {
+    //   if (!filter.hasCategory(e.categoryId)) return false;
 
-      final d = e.coord.distance(myMockCoord);
-      return d >= filter.distance.start && d <= filter.distance.end;
-    }).length;
+    //   final d = e.coord.distance(myMockCoord);
+    //   return d >= filter.distance.start && d <= filter.distance.end;
+    // }).length;
 
-    setState(() {
-      _cardCount = count;
-    });
+    // setState(() {
+    //   _cardCount = count;
+    // });
   }
 }
