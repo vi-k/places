@@ -6,11 +6,10 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/section.dart';
-import 'package:places/ui/widget/sight_type_filter.dart';
+import 'package:places/ui/widget/place_type_filter.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/distance.dart';
-import 'package:places/main.dart';
 
 import 'utils/distance_utils.dart';
 
@@ -140,8 +139,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
       ];
 
   List<Widget> _buildCategoriesItems() => [
-        for (final placeType in PlaceType.all)
-          SightCategoryFilter(
+        for (final placeType in PlaceType.values)
+          PlaceTypeFilter(
             placeType: placeType,
             active: filter.hasPlaceType(placeType),
             onPressed: () {

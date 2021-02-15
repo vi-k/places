@@ -2,10 +2,9 @@ import 'dart:convert';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
-
-import 'package:places/utils/coord.dart';
-import 'package:places/data/model/place.dart';
+import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
+import 'package:places/utils/coord.dart';
 import 'package:places/utils/sort.dart';
 
 import 'base/filter.dart';
@@ -18,26 +17,27 @@ class ApiPlaceRepository extends PlaceRepository {
 
   final Dio dio;
 
-  Place _stringToPlace(String value) =>
-      _mapToPlace(jsonDecode(value) as Map<String, dynamic>);
+  PlaceBase _fromString(String value) =>
+      _fromMap(jsonDecode(value) as Map<String, dynamic>);
 
-  Place _mapToPlace(Map<String, dynamic> value) => Place(
+  PlaceBase _fromMap(Map<String, dynamic> value, [Coord? calDistanceFrom]) => PlaceBase(
         id: value['id'] as int,
         coord: Coord(value['lat'] as double, value['lng'] as double),
         name: value['name'] as String,
         photos: (value['urls'] as List<dynamic>).whereType<String>().toList(),
-        type: PlaceType.byId(value['placeType'] as String)!,
+        type: placeTypeByName(value['placeType'] as String)!,
         description: value['description'] as String,
+        calDistanceFrom: calDistanceFrom,
       );
 
-  String _placeToString(Place value, {bool withId = true}) {
+  String _toString(PlaceBase value, {bool withId = true}) {
     final obj = <String, dynamic>{
       if (withId && value.id != 0) 'id': value.id,
       'lat': value.coord.lat,
       'lng': value.coord.lon,
       'name': value.name,
       'urls': value.photos,
-      'placeType': value.type.id,
+      'placeType': value.type.name,
       'description': value.description,
     };
     return jsonEncode(obj);
@@ -45,11 +45,10 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Создаёт новое место.
   @override
-  Future<int> create(Place place) async {
+  Future<int> create(PlaceBase place) async {
     try {
-      final response =
-          await dio.post<String>('/place', data: _placeToString(place));
-      final newPlace = _stringToPlace(response.data);
+      final response = await dio.post<String>('/place', data: _toString(place));
+      final newPlace = _fromString(response.data);
       return newPlace.id;
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 409) {
@@ -64,10 +63,10 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает информацию о месте.
   @override
-  Future<Place> read(int id) async {
+  Future<PlaceBase> read(int id) async {
     try {
       final response = await dio.get<String>('/place/$id');
-      return _stringToPlace(response.data);
+      return _fromString(response.data);
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
         throw RepositoryNotFoundException();
@@ -81,10 +80,10 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Обновляет информацию о месте.
   @override
-  Future<void> update(Place place) async {
+  Future<void> update(PlaceBase place) async {
     try {
       await dio.put<String>('/place/${place.id}',
-          data: _placeToString(place, withId: false));
+          data: _toString(place, withId: false));
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
         throw RepositoryNotFoundException();
@@ -114,7 +113,7 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест.
   @override
-  Future<List<Place>> list(
+  Future<List<PlaceBase>> list(
       {int? count,
       int? offset,
       PlaceOrderBy? pageBy,
@@ -157,7 +156,7 @@ class ApiPlaceRepository extends PlaceRepository {
       final response = await dio.getUri<String>(uri);
       return (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          .map(_mapToPlace)
+          .map(_fromMap)
           .toList();
     } on DioError catch (e) {
       final error = RepositoryException.fromDio(e);
@@ -168,7 +167,7 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест, соответствующих фильтру.
   @override
-  Future<List<Place>> filteredList(
+  Future<List<PlaceBase>> filteredList(
       {Coord? coord, required Filter filter}) async {
     try {
       /// Если нужно получить объекты без ограничения расстояния, но, допустим,
@@ -191,20 +190,18 @@ class ApiPlaceRepository extends PlaceRepository {
               'lng': coord.lon,
               'radius': filter.radius.value,
             },
-            'typeFilter': filter.placeTypes.map((e) => e.id).toList(),
+            'typeFilter': filter.placeTypes.map((e) => e.name).toList(),
             'nameFilter': filter.nameFilter,
           }));
 
-      final list = (jsonDecode(response.data) as List<dynamic>)
+      final from = coord;
+      return (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          .map(_mapToPlace)
+          .map(from == null ? _fromMap : (e) => _fromMap(e, from))
           // Ручная фильтрация по типу.
           .where((e) => filter.placeTypes.contains(e.type))
-          .toList();
-      if (coord != null) {
-        list.sort((a, b) => a.distance(coord).compareTo(b.distance(coord)));
-      }
-      return list;
+          .toList()
+            ..sort((a, b) => a.distance.compareTo(b.distance));
     } on DioError catch (e) {
       final error = RepositoryException.fromDio(e);
       if (error == null) rethrow;

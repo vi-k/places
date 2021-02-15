@@ -1,40 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/model/place.dart';
+import 'package:places/ui/model/place_type_ui.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/loadable_image.dart';
+import 'package:places/ui/widget/small_button.dart';
+import 'package:places/ui/widget/standart_button.dart';
 
-import '../../domain/category.dart';
-import '../../domain/sight.dart';
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-import '../widget/failed.dart';
-import '../widget/loadable_image.dart';
-import '../widget/loader.dart';
-import '../widget/mocks.dart';
-import '../widget/small_button.dart';
-import '../widget/small_loader.dart';
-import '../widget/standart_button.dart';
-import '../widget/svg_button.dart';
-import 'sight_edit_screen.dart';
+import 'place_edit_screen.dart';
 
 /// Экран детализации места.
-class SightDetails extends StatefulWidget {
-  const SightDetails({
+class PlaceDetails extends StatefulWidget {
+  const PlaceDetails({
     Key? key,
-    required this.sightId,
+    required this.place,
   }) : super(key: key);
 
   /// Идентификатор места.
-  final int sightId;
+  final Place place;
 
   @override
-  _SightDetailsState createState() => _SightDetailsState();
+  _PlaceDetailsState createState() => _PlaceDetailsState();
 }
 
-class _SightDetailsState extends State<SightDetails> {
+class _PlaceDetailsState extends State<PlaceDetails> {
   // Отслеживаем изменения, чтобы уведомить вызывающую сторону о необходимости
   // обновиться.
+  late Place place;
   var _modified = false;
+
+  @override
+  void initState() {
+    super.initState();
+    place = widget.place;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,41 +45,33 @@ class _SightDetailsState extends State<SightDetails> {
     // Перехватываем `pop`, чтобы передать значение.
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, _modified);
+        Navigator.pop(context, _modified ? place : null);
         return false;
       },
       child: Stack(
         children: [
-          Loader<Sight>(
-            load: () => Mocks.of(context).sightById(widget.sightId),
-            error: (context, error) => Failed(
-              error.toString(),
-              onRepeat: () => Loader.of<Sight>(context).reload(),
-            ),
-            builder: (context, state, sight) => CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  // leading: _buildBack(theme),
-                  leading: const SizedBox(),
-                  backgroundColor: theme.backgroundFirst,
-                  expandedHeight: detailsImageSize,
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    background: _Gallery(sight),
-                  ),
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                leading: const SizedBox(), // Убираем кнопку back
+                backgroundColor: theme.backgroundFirst,
+                expandedHeight: detailsImageSize,
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: _Gallery(place),
                 ),
-                SliverPadding(
-                  padding: commonPaddingLR,
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      ..._buildText(theme, sight),
-                      ..._buildButtons(),
-                      ..._buildEditButton(context),
-                    ]),
-                  ),
+              ),
+              SliverPadding(
+                padding: commonPaddingLR,
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    ..._buildText(theme),
+                    ..._buildButtons(),
+                    ..._buildEditButton(context),
+                  ]),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Container(
             height:
@@ -135,7 +129,7 @@ class _SightDetailsState extends State<SightDetails> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(smallButtonHeight),
             ),
-            onPressed: () => Navigator.pop(context, _modified),
+            onPressed: () => Navigator.pop(context, _modified ? place : null),
             child: SvgPicture.asset(
               Svg24.close,
               color: theme.mainTextColor2,
@@ -144,37 +138,18 @@ class _SightDetailsState extends State<SightDetails> {
         ),
       );
 
-  List<Widget> _buildText(MyThemeData theme, Sight? sight) => [
+  List<Widget> _buildText(MyThemeData theme) => [
         const SizedBox(height: commonSpacing3_2),
         Text(
-          sight?.name ?? '',
+          place.name,
           style: theme.textBold24Main,
         ),
         const SizedBox(height: dividerHeight),
         Row(
           children: [
-            Loader<Category>(
-              tag: sight?.categoryId,
-              load: sight == null
-                  ? null
-                  : () => Mocks.of(context).categoryById(sight.categoryId),
-              loader: (_) => Center(
-                child: SmallLoader(color: theme.lightTextColor),
-              ),
-              error: (context, error) => SvgButton(
-                Svg24.refresh,
-                color: theme.lightTextColor,
-                onPressed: () => Loader.of<Category>(context).reload(),
-              ),
-              builder: (context, done, category) => category == null
-                  ? const SizedBox(
-                      height: smallButtonHeight,
-                      width: smallButtonHeight,
-                    )
-                  : Text(
-                      category.name.toLowerCase(),
-                      style: theme.textBold14Light,
-                    ),
+            Text(
+              PlaceTypeUi(place.type).lowerCaseName,
+              style: theme.textBold14Light,
             ),
             const SizedBox(width: commonSpacing),
             Text(
@@ -185,7 +160,7 @@ class _SightDetailsState extends State<SightDetails> {
         ),
         const SizedBox(height: commonSpacing3_2),
         Text(
-          sight?.details ?? '',
+          place.description,
           style: theme.textRegular14Light,
         ),
         const SizedBox(height: commonSpacing3_2),
@@ -225,16 +200,18 @@ class _SightDetailsState extends State<SightDetails> {
         StandartButton(
           label: stringEdit,
           onPressed: () async {
-            final sightId = await Navigator.push<int>(
+            final newPlace = await Navigator.push<Place>(
               context,
               MaterialPageRoute(
-                builder: (context) => SightEditScreen(sightId: widget.sightId),
+                builder: (context) => PlaceEditScreen(place: place),
               ),
             );
 
-            if (sightId != null) {
-              _modified = true;
-              Loader.of<Sight>(context).reload();
+            if (newPlace != null) {
+              setState(() {
+                _modified = true;
+                place = newPlace;
+              });
             }
           },
         ),
@@ -244,11 +221,11 @@ class _SightDetailsState extends State<SightDetails> {
 
 class _Gallery extends StatefulWidget {
   const _Gallery(
-    this.sight, {
+    this.place, {
     Key? key,
   }) : super(key: key);
 
-  final Sight? sight;
+  final Place place;
 
   @override
   _GalleryState createState() => _GalleryState();
@@ -277,53 +254,49 @@ class _GalleryState extends State<_Gallery> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    final sight = widget.sight;
+    final place = widget.place;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SizedBox(
       height: detailsImageSize,
-      child: sight == null
-          ? null
-          : sight.photos.isEmpty
-              ? Center(
-                  child: Text(
-                    stringNoPhotos,
-                    style: theme.textRegular16Light56,
-                  ),
-                )
-              : Stack(
+      child: place.photos.isEmpty
+          ? Center(
+              child: Text(
+                stringNoPhotos,
+                style: theme.textRegular16Light56,
+              ),
+            )
+          : Stack(
+              children: [
+                PageView(
+                  controller: _controller,
                   children: [
-                    PageView(
-                      controller: _controller,
-                      children: [
-                        for (final url in sight.photos)
-                          SizedBox(
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: LoadableImage(
-                              url: url,
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (sight.photos.length > 1)
-                      Positioned(
-                        bottom: 0,
-                        left: _currentPage * screenWidth / sight.photos.length -
-                            commonSpacing1_2,
-                        child: Container(
-                          height: commonSpacing1_2,
-                          width:
-                              screenWidth / sight.photos.length + commonSpacing,
-                          decoration: BoxDecoration(
-                            color: theme.mainTextColor2,
-                            borderRadius:
-                                BorderRadius.circular(commonSpacing1_2),
-                          ),
+                    for (final url in place.photos)
+                      SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: LoadableImage(
+                          url: url,
                         ),
                       ),
                   ],
                 ),
+                if (place.photos.length > 1)
+                  Positioned(
+                    bottom: 0,
+                    left: _currentPage * screenWidth / place.photos.length -
+                        commonSpacing1_2,
+                    child: Container(
+                      height: commonSpacing1_2,
+                      width: screenWidth / place.photos.length + commonSpacing,
+                      decoration: BoxDecoration(
+                        color: theme.mainTextColor2,
+                        borderRadius: BorderRadius.circular(commonSpacing1_2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
     );
   }
 }

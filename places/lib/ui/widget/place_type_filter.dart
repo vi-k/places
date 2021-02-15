@@ -6,9 +6,9 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 
-/// Виджет категории места.
-class SightCategoryFilter extends StatelessWidget {
-  SightCategoryFilter({
+/// Виджет типа места.
+class PlaceTypeFilter extends StatelessWidget {
+  PlaceTypeFilter({
     Key? key,
     required PlaceType placeType,
     required this.active,
@@ -19,9 +19,9 @@ class SightCategoryFilter extends StatelessWidget {
   /// Тип места.
   final PlaceTypeUi placeTypeUi;
 
-  /// Активна категория?
+  /// Активен тип?
   ///
-  /// Флажок справа, что именно эта категория сейчас установлена для места.
+  /// Флажок справа, что именно этот тип сейчас установлен.
   final bool active;
 
   /// Обратный вызов при нажатии.

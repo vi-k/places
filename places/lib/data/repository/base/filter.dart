@@ -11,8 +11,9 @@ class Filter {
     this.radius = const Distance(double.infinity),
     Set<PlaceType>? placeTypes,
     this.nameFilter = '',
-  }) : placeTypes =
-            placeTypes == null ? PlaceType.all : Set.unmodifiable(placeTypes);
+  }) : placeTypes = placeTypes == null
+            ? PlaceType.values.toSet()
+            : Set.unmodifiable(placeTypes);
 
   /// Радиус поиска.
   final Distance radius;

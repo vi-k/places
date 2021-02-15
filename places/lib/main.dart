@@ -5,15 +5,15 @@ import 'package:places/utils/distance.dart';
 
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
-import 'data/model/place.dart';
+import 'data/model/place_base.dart';
 import 'data/model/place_type.dart';
 import 'data/repository/api_place_repository.dart';
 import 'data/repository/base/filter.dart';
 import 'data/repository/base/location_repository.dart';
 import 'data/repository/base/mock_location_repository.dart';
 import 'data/repository/base/place_repository.dart';
-import 'data/repository/real_location_repository.dart';
 import 'data/repository/mock_place_repository.dart';
+import 'data/repository/real_location_repository.dart';
 import 'data/repository/repository_exception.dart';
 import 'utils/coord.dart';
 import 'utils/sort.dart';
@@ -81,7 +81,7 @@ Future<void> moveFromMockToRepository() async {
 }
 
 Future<void> testPlaceRepository() async {
-  void printPlaces(List<Place> places) {
+  void printPlaces(List<PlaceBase> places) {
     for (final place in places) {
       print(place.toString(short: true));
       // print(place.toString());
@@ -101,8 +101,8 @@ Future<void> testPlaceRepository() async {
   printPlaces(list);
 
   // Создание места
-  final newPlaceId = await placeRepository.create(const Place(
-    coord: Coord(0, 0),
+  final newPlaceId = await placeRepository.create(PlaceBase(
+    coord: const Coord(0, 0),
     name: 'название',
     type: PlaceType.other,
     photos: ['фотография 1', 'фотография 2'],

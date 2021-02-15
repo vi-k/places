@@ -4,8 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../res/strings.dart';
 import '../res/svg.dart';
 import '../res/themes.dart';
-import '../screen/settings_screen.dart';
 import '../screen/place_list_screen.dart';
+import '../screen/settings_screen.dart';
 import '../screen/visiting_screen.dart';
 
 /// BottomNavigator приложения.

@@ -1,4 +1,4 @@
-import 'package:places/data/model/place.dart';
+import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/base/place_repository.dart';
 import 'package:places/data/repository/repository_exception.dart';
@@ -11,7 +11,7 @@ import 'base/filter.dart';
 class MockPlaceRepository extends PlaceRepository {
   MockPlaceRepository() {
     _places = [
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Краеведческий музей',
         coord: const Coord(48.473385, 135.050809),
@@ -21,7 +21,7 @@ class MockPlaceRepository extends PlaceRepository {
         description: 'Хабаровский краевой музей имени Н.И. Гродекова',
         type: PlaceType.museum,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Пани Фазани',
         coord: const Coord(48.473156, 135.058130),
@@ -31,7 +31,7 @@ class MockPlaceRepository extends PlaceRepository {
         description: 'Чешская и европейская кухня. Фермерская пивоварня',
         type: PlaceType.restaurant,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Интурист',
         coord: const Coord(48.474615, 135.051497),
@@ -42,7 +42,7 @@ class MockPlaceRepository extends PlaceRepository {
             'Гостиница «Интурист» расположена в историческом центре Хабаровска, в парке, в двух шагах от набережной реки Амур. Рядом с гостиницей находится деловая часть города: краеведческий, художественный и военный музеи, театры, концертные залы филармонии и дома офицеров Российской Армии, а также магазины, рестораны и банки.',
         type: PlaceType.hotel,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Дуэт',
         coord: const Coord(48.472000, 135.057208),
@@ -52,7 +52,7 @@ class MockPlaceRepository extends PlaceRepository {
         description: 'Кафе-кондитерская.',
         type: PlaceType.cafe,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Памятник Я.В. Дьяченко',
         coord: const Coord(48.473917, 135.051147),
@@ -63,7 +63,7 @@ class MockPlaceRepository extends PlaceRepository {
             'Дьяченко был командиром 13-го Сибирского батальона, солдаты которого образовала сторожевой пост, на Амуре, на месте которого теперь стоит город Хабаровск.',
         type: PlaceType.other,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Парк Динамо',
         coord: const Coord(48.482406, 135.078146),
@@ -74,7 +74,7 @@ class MockPlaceRepository extends PlaceRepository {
             'Городской парк культуры и отдыха "Динамо" - большой красивый парк в центре Хабаровска. Площадь парка - 31 гектар.',
         type: PlaceType.park,
       ),
-      Place(
+      PlaceBase(
         id: _nextId++,
         name: 'Музей Амурского моста',
         coord: const Coord(48.540781, 135.013038),
@@ -89,13 +89,13 @@ class MockPlaceRepository extends PlaceRepository {
   }
 
   var _nextId = 31;
-  late final List<Place> _places;
+  late final List<PlaceBase> _places;
 
   int _index(int id) => _places.indexWhere((e) => e.id == id);
 
   /// Создаёт новое временное место.
   @override
-  Future<int> create(Place place) async {
+  Future<int> create(PlaceBase place) async {
     final id = place.id != 0 ? place.id : _nextId++;
 
     final index = _index(id);
@@ -107,7 +107,7 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Загружает информацию о месте.
   @override
-  Future<Place> read(int id) async {
+  Future<PlaceBase> read(int id) async {
     final index = _index(id);
     if (index == -1) throw RepositoryNotFoundException();
 
@@ -116,7 +116,7 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Обновляет информацию о месте.
   @override
-  Future<void> update(Place place) async {
+  Future<void> update(PlaceBase place) async {
     final index = _index(place.id);
     if (index == -1) throw RepositoryNotFoundException();
 
@@ -134,7 +134,7 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Имитирует загрузку списка мест.
   @override
-  Future<List<Place>> list(
+  Future<List<PlaceBase>> list(
       {int? count,
       int? offset,
       PlaceOrderBy? pageBy,
@@ -159,7 +159,7 @@ class MockPlaceRepository extends PlaceRepository {
       });
     }
 
-    Iterable<Place> result = list;
+    Iterable<PlaceBase> result = list;
 
     // Последовательно загружаем (fetch) страниц через [pageBy].
     if (pageBy != null) {
@@ -201,22 +201,17 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Имитирует загрузку списка мест, соответствующих фильтру.
   @override
-  Future<List<Place>> filteredList(
+  Future<List<PlaceBase>> filteredList(
       {Coord? coord, required Filter filter}) async {
-    var tmp = _places
-        .where((e) => filter.placeTypes.contains(e.type))
-        .where((e) =>
-            e.name.toLowerCase().contains(filter.nameFilter.toLowerCase()));
+    var tmp = _places.where((e) => filter.placeTypes.contains(e.type)).where(
+        (e) => e.name.toLowerCase().contains(filter.nameFilter.toLowerCase()));
 
     if (coord != null) {
-      tmp = tmp.where((e) => e.distance(coord) <= filter.radius);
+      tmp = tmp
+          .map((e) => e.copyWith(calDistanceFrom: coord))
+          .where((e) => e.distance <= filter.radius);
     }
 
-    final list = tmp.toList();
-    if (coord != null) {
-      list.sort((a, b) => a.distance(coord).compareTo(b.distance(coord)));
-    }
-
-    return list;
+    return tmp.toList()..sort((a, b) => a.distance.compareTo(b.distance));
   }
 }

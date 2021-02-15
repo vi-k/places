@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-
 import 'package:places/data/model/place.dart';
-import 'package:places/data/model/place_extended.dart';
 import 'package:places/data/repository/base/filter.dart';
 import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
-import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/loader.dart';
-import 'package:places/ui/widget/place_card.dart';
+import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/search_bar.dart';
 import 'package:places/ui/widget/sliver_floating_header.dart';
 
+import 'place_edit_screen.dart';
 import 'search_screen.dart';
-import 'sight_edit_screen.dart';
 
 /// Экран списка мест.
 class PlaceListScreen extends StatefulWidget {
@@ -38,14 +35,14 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ? 2
             : 3;
 
-    return Scaffold(
-      body: Loader<List<Place>>(
-        load: () => placeInteractor.getPlaces(filter),
-        error: (context, error) => Failed(
-          error.toString(),
-          onRepeat: () => Loader.of<List<Place>>(context).reload(),
-        ),
-        builder: (context, _, places) => CustomScrollView(
+    return Loader<List<Place>>(
+      load: () => placeInteractor.getPlaces(filter),
+      error: (context, error) => Failed(
+        error.toString(),
+        onRepeat: () => Loader.of<List<Place>>(context).reload(),
+      ),
+      builder: (context, _, places) => Scaffold(
+        body: CustomScrollView(
           slivers: [
             _buildHeader(context, theme, columnsCount),
             PlaceCardGrid(
@@ -55,30 +52,20 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ),
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: columnsCount == 2
+            ? FloatingActionButton(
+                onPressed: () => _newPlace(context),
+                child: const Icon(Icons.add),
+              )
+            : FloatingActionButton.extended(
+                isExtended: true,
+                onPressed: () => _newPlace(context),
+                icon: const Icon(Icons.add),
+                label: Text(stringNewPlace.toUpperCase()),
+              ),
+        bottomNavigationBar: const AppNavigationBar(index: 0),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: columnsCount == 2
-          ? FloatingActionButton(
-              onPressed: () => Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SightEditScreen(),
-                ),
-              ),
-              child: const Icon(Icons.add),
-            )
-          : FloatingActionButton.extended(
-              isExtended: true,
-              onPressed: () => Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SightEditScreen(),
-                ),
-              ),
-              icon: const Icon(Icons.add),
-              label: Text(stringNewPlace.toUpperCase()),
-            ),
-      bottomNavigationBar: const AppNavigationBar(index: 0),
     );
   }
 
@@ -109,4 +96,13 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         ),
         bottomHeight: smallButtonHeight,
       );
+
+  Future<void> _newPlace(BuildContext context) async {
+    await Navigator.push<Place>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PlaceEditScreen(),
+        ));
+    Loader.of<List<Place>>(context).reload();
+  }
 }

@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/data/interactor/model/place_extension.dart';
+import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/model/place_extended.dart';
 import 'package:places/main.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/place_details.dart';
 
-import 'cupertion_date_select.dart';
+import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
 import 'loader.dart';
 import 'small_button.dart';
@@ -44,25 +44,15 @@ class PlaceCard extends StatefulWidget {
 class _PlaceCardState extends State<PlaceCard> {
   late Place place;
 
-  PlaceExtended get placeExtended => place as PlaceExtended;
-
   @override
   void initState() {
     super.initState();
 
     place = widget.place;
-    if (place is! PlaceExtended) {
-      _getPlaceExtended();
-    }
-  }
-
-  Future<void> _getPlaceExtended() async {
-    place = await placeInteractor.getPlaceExtended(place);
-    setState(() {});
   }
 
   Future<void> _updatePlace(
-    Future<PlaceExtended> Function(Place place) action, {
+    Future<Place> Function(PlaceBase place) action, {
     bool delete = false,
   }) async {
     final newPlace = await action(place);
@@ -169,7 +159,7 @@ class _PlaceCardState extends State<PlaceCard> {
                 final maxHeight = MediaQuery.of(context).size.height -
                     MediaQuery.of(context).padding.top -
                     appBarPadding.top;
-                final modified = await showModalBottomSheet<bool>(
+                final newPlace = await showModalBottomSheet<Place>(
                   context: context,
                   clipBehavior: Clip.antiAlias,
                   shape: const RoundedRectangleBorder(
@@ -182,14 +172,14 @@ class _PlaceCardState extends State<PlaceCard> {
                     constraints: BoxConstraints(
                       maxHeight: maxHeight,
                     ),
-                    // TODO
-                    child: Text(widget.place.toString()),
-                    // child: SightDetails(sightId: widget.placeId),
+                    child: PlaceDetails(place: place),
                   ),
                 );
 
-                if (modified != null && modified) {
-                  Loader.of<Place>(context).reload();
+                if (newPlace != null) {
+                  setState(() {
+                    place = newPlace;
+                  });
                 }
               },
               child: _buildSignatures(theme),
@@ -221,80 +211,91 @@ class _PlaceCardState extends State<PlaceCard> {
     final color = textStyle.color!;
 
     final signatures = <Widget>[];
-    if (place is PlaceExtended) {
-      if (widget.cardType == Favorite.no) {
-        signatures.add(
+    if (widget.cardType == Favorite.no) {
+      signatures
+        ..add(
           _buildSignatureButton(
-            placeExtended.favorite == Favorite.wishlist
+            place.userInfo.favorite == Favorite.wishlist
                 ? Svg24.heartFull
                 : Svg24.heart,
             color,
             () => _updatePlace(placeInteractor.toggleWishlist),
           ),
-        );
-      }
-
-      if (widget.cardType == Favorite.wishlist) {
-        signatures
-          ..add(
-            _buildSignatureButton(
-              Svg24.calendar,
-              placeExtended.planToVisit != null ? theme.accentColor : color,
-              () async {
-                final today = DateTime.now();
-                var date = placeExtended.planToVisit;
-
-                date = Platform.isIOS
-                    ? await showCupertinoDatePicker(
-                        context: context,
-                        initialDate: date ?? today,
-                        firstDate:
-                            date != null && date.isBefore(today) ? date : today,
-                      )
-                    : await showDatePicker(
-                        context: context,
-                        initialDate: date ?? today,
-                        firstDate:
-                            date != null && date.isBefore(today) ? date : today,
-                        lastDate: DateTime(today.year + 10, 12, 31),
-                      );
-
-                if (date != null) {
-                  final ext = PlaceExtension.from(placeExtended)
-                      .copyWith(planToVisit: date);
-                  await _updatePlace(
-                      (place) => placeInteractor.updateExtension(place, ext));
-                }
+        )
+        ..add(
+          _buildSignatureButton(
+            Svg24.close,
+            color,
+            () => _updatePlace(
+              (_) async {
+                await placeInteractor.removePlace(place.id);
+                return place;
               },
+              delete: true,
             ),
-          )
-          ..add(
-            _buildSignatureButton(
-              Svg24.close,
-              color,
-              () => _updatePlace(placeInteractor.removeFromWishlist,
-                  delete: true),
-            ),
-          );
-      }
+          ),
+        );
+    }
 
-      if (widget.cardType == Favorite.visited) {
-        signatures
-          ..add(
-            _buildSignatureButton(
-              Svg24.share,
-              color,
-              () => print('Share'),
-            ),
-          )
-          ..add(
-            _buildSignatureButton(
-              Svg24.close,
-              color,
-              () => _updatePlace(placeInteractor.addToWishlist, delete: true),
-            ),
-          );
-      }
+    if (widget.cardType == Favorite.wishlist) {
+      signatures
+        ..add(
+          _buildSignatureButton(
+            Svg24.calendar,
+            place.userInfo.planToVisit != null ? theme.accentColor : color,
+            () async {
+              final today = DateTime.now();
+              var date = place.userInfo.planToVisit;
+
+              date = Platform.isIOS
+                  ? await showCupertinoDatePicker(
+                      context: context,
+                      initialDate: date ?? today,
+                      firstDate:
+                          date != null && date.isBefore(today) ? date : today,
+                    )
+                  : await showDatePicker(
+                      context: context,
+                      initialDate: date ?? today,
+                      firstDate:
+                          date != null && date.isBefore(today) ? date : today,
+                      lastDate: DateTime(today.year + 10, 12, 31),
+                    );
+
+              if (date != null) {
+                final userInfo = place.userInfo.copyWith(planToVisit: date);
+                await _updatePlace(
+                    (place) => placeInteractor.updateUserInfo(place, userInfo));
+              }
+            },
+          ),
+        )
+        ..add(
+          _buildSignatureButton(
+            Svg24.close,
+            color,
+            () =>
+                _updatePlace(placeInteractor.removeFromWishlist, delete: true),
+          ),
+        );
+    }
+
+    if (widget.cardType == Favorite.visited) {
+      signatures
+        ..add(
+          _buildSignatureButton(
+            Svg24.share,
+            color,
+            () => print('Share'),
+          ),
+        )
+        ..add(
+          _buildSignatureButton(
+            Svg24.close,
+            color,
+            () => _updatePlace(placeInteractor.addToWishlist, delete: true),
+          ),
+        );
     }
 
     return Container(
@@ -345,8 +346,7 @@ class _PlaceCardState extends State<PlaceCard> {
                     style: theme.textMiddle16Main,
                     children: [
                       TextSpan(
-                        text: '${place.distance(locationRepository.location)}\n'
-                            '${place.description}',
+                        text: '${place.distance}\n${place.description}',
                         style: theme.textRegular14Light,
                       ),
                     ],
