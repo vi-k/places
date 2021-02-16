@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/utils/let_and_also.dart';
 
 /// Стандартная универсальная кнопка.
 ///
@@ -37,30 +38,24 @@ class StandartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
     final textStyle = style ?? theme.textMiddle14White;
+    final buttonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.all(color),
+    );
+    final text = Text(label.toUpperCase(), style: textStyle);
 
     return ConstrainedBox(
       constraints: const BoxConstraints.tightFor(height: standartButtonHeight),
-      child: svg == null
-          ? RaisedButton(
-              color: color,
-              onPressed: onPressed,
-              child: Text(
-                label.toUpperCase(),
-                style: textStyle,
-              ),
-            )
-          : RaisedButton.icon(
-              color: color,
-              onPressed: onPressed,
-              icon: SvgPicture.asset(
-                svg!,
-                color: textStyle.color,
-              ),
-              label: Text(
-                label.toUpperCase(),
-                style: textStyle,
-              ),
-            ),
+      child: svg?.let((it) => ElevatedButton.icon(
+                style: buttonStyle,
+                onPressed: onPressed,
+                icon: SvgPicture.asset(it, color: textStyle.color),
+                label: text,
+              )) ??
+          ElevatedButton(
+            style: buttonStyle,
+            onPressed: onPressed,
+            child: text,
+          ),
     );
   }
 }

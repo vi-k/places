@@ -1,4 +1,5 @@
-import '../ui/res/strings.dart';
+import 'package:places/ui/res/strings.dart';
+
 import 'num_ext.dart';
 
 /// Единицы измерения для расстояния.

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:places/data/repository/base/filter.dart';
-import 'package:places/ui/widget/standart_button.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/themes.dart';
-import '../widget/search_bar.dart';
-import '../widget/section.dart';
-import '../widget/small_app_bar.dart';
+import 'package:places/data/repository/base/filter.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/search_bar.dart';
+import 'package:places/ui/widget/section.dart';
+import 'package:places/ui/widget/small_app_bar.dart';
+import 'package:places/ui/widget/standart_button.dart';
 
 /// Экран поиска.
 ///

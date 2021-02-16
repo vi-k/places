@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-import '../widget/page_view_selector.dart';
-import '../widget/small_button.dart';
-import '../widget/standart_button.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/page_view_selector.dart';
+import 'package:places/ui/widget/small_button.dart';
+import 'package:places/ui/widget/standart_button.dart';
+
 import 'place_list_screen.dart';
 
 /// Экран туториала.

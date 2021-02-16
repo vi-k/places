@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
+import 'package:places/ui/res/const.dart';
 
 /// Прогресс-индикатор загрузки для [Loadable] для небольших виджетов.
 class SmallLoader extends StatelessWidget {
@@ -17,8 +17,7 @@ class SmallLoader extends StatelessWidget {
         width: commonSpacing,
         height: commonSpacing,
         child: CircularProgressIndicator(
-          valueColor:
-              color == null ? null : AlwaysStoppedAnimation<Color>(color!),
+          valueColor: AlwaysStoppedAnimation<Color?>(color),
           strokeWidth: 2,
         ),
       );

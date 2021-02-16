@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/themes.dart';
-import '../widget/app_navigation_bar.dart';
-import '../widget/settings.dart';
-import '../widget/small_app_bar.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/app_navigation_bar.dart';
+import 'package:places/ui/widget/settings.dart';
+import 'package:places/ui/widget/small_app_bar.dart';
+
 import 'onboarding_screen.dart';
 
 /// Экран настроек.

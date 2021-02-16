@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/svg.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/svg.dart';
+
 import 'loadable_image.dart';
 import 'svg_button.dart';
 

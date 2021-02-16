@@ -10,6 +10,7 @@ import 'package:places/ui/widget/place_type_filter.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/distance.dart';
+import 'package:places/utils/let_and_also.dart';
 
 import 'utils/distance_utils.dart';
 
@@ -76,8 +77,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Padding(
             padding: commonPadding,
             child: StandartButton(
-              label: stringApply +
-                  (_cardCount == null ? ' ...' : ' ($_cardCount)'),
+              label:
+                  stringApply + (_cardCount?.let((it) => ' ($it)') ?? ' ...'),
               onPressed: () => Navigator.pop(context, filter),
             ),
           ),

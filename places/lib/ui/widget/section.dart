@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Раздел.
 ///
 /// Состоит из названия раздела и виджета-ребёнка.
-/// 
+///
 /// Отступы задаются через [top], [left] и [right], расстояние от названия
 /// раздела до содержимого через [spacing]. [applyPaddingToChild] нужен, чтобы
 /// применить эти же отступы к содержимому раздела.
@@ -32,7 +32,7 @@ class Section extends StatelessWidget {
   final Widget child;
 
   /// Отступы.
-  /// 
+  ///
   /// Вычисляемые поля, устанавливаемые по переданным [top], [left], [right],
   /// [spacing] и [applyPaddingToChild].
   final EdgeInsets namePadding;

@@ -1,5 +1,6 @@
 import 'package:places/data/model/place_type.dart';
 import 'package:places/utils/distance.dart';
+import 'package:places/utils/let_and_also.dart';
 
 /// Фильтр.
 ///
@@ -11,9 +12,8 @@ class Filter {
     this.radius = const Distance(double.infinity),
     Set<PlaceType>? placeTypes,
     this.nameFilter = '',
-  }) : placeTypes = placeTypes == null
-            ? PlaceType.values.toSet()
-            : Set.unmodifiable(placeTypes);
+  }) : placeTypes = placeTypes?.let((it) => Set.unmodifiable(placeTypes)) ??
+            PlaceType.values.toSet();
 
   /// Радиус поиска.
   final Distance radius;

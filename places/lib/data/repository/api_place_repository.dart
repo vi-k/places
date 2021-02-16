@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/utils/coord.dart';
+import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
 
 import 'base/filter.dart';
@@ -20,7 +21,8 @@ class ApiPlaceRepository extends PlaceRepository {
   PlaceBase _fromString(String value) =>
       _fromMap(jsonDecode(value) as Map<String, dynamic>);
 
-  PlaceBase _fromMap(Map<String, dynamic> value, [Coord? calDistanceFrom]) => PlaceBase(
+  PlaceBase _fromMap(Map<String, dynamic> value, [Coord? calDistanceFrom]) =>
+      PlaceBase(
         id: value['id'] as int,
         coord: Coord(value['lat'] as double, value['lng'] as double),
         name: value['name'] as String,
@@ -147,9 +149,9 @@ class ApiPlaceRepository extends PlaceRepository {
           if (offset != null) 'offset': offset.toString(),
           if (pageBy != null) 'pageBy': pageBy.name,
           if (pageByDirect != null) pageByDirect: pageLastValue.toString(),
-          'sortBy': orderBy == null
-              ? ['id,asc']
-              : orderBy.entries.map((e) => '${e.key.name},${e.value.name}')
+          'sortBy':
+              orderBy?.entries.map((e) => '${e.key.name},${e.value.name}') ??
+                  ['id,asc'],
         },
       );
 
@@ -194,10 +196,10 @@ class ApiPlaceRepository extends PlaceRepository {
             'nameFilter': filter.nameFilter,
           }));
 
-      final from = coord;
       return (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          .map(from == null ? _fromMap : (e) => _fromMap(e, from))
+          // Расчёт расстояния, если задана точка отсчёта
+          .map(coord?.let((it) => (e) => _fromMap(e, it)) ?? _fromMap)
           // Ручная фильтрация по типу.
           .where((e) => filter.placeTypes.contains(e.type))
           .toList()

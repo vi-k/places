@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-import '../screen/place_list_screen.dart';
-import '../screen/settings_screen.dart';
-import '../screen/visiting_screen.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/place_list_screen.dart';
+import 'package:places/ui/screen/settings_screen.dart';
+import 'package:places/ui/screen/visiting_screen.dart';
 
 /// BottomNavigator приложения.
 class AppNavigationBar extends StatelessWidget {

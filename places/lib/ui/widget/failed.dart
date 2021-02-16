@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+
 import 'small_button.dart';
 
 /// Виджет ошибки.
@@ -20,7 +21,7 @@ class Failed extends StatelessWidget {
 
   /// Обратный вызов, если есть желание и возможность повторить операцию,
   /// приведшую к ошибке.
-  /// 
+  ///
   /// Если не `null`, будет добавлена кнопка для повторения.
   final void Function()? onRepeat;
 

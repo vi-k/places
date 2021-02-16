@@ -142,8 +142,8 @@ class _PlaceCardState extends State<PlaceCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildCardTop(place),
-                _buildCardBottom(theme, place),
+                _buildCardTop(),
+                _buildCardBottom(theme),
               ],
             ),
             // Поверх карточки невидимая кнопка
@@ -188,15 +188,14 @@ class _PlaceCardState extends State<PlaceCard> {
         ),
       );
 
-  Widget _buildCardTop(Place? place) => Expanded(
+  Widget _buildCardTop() => Expanded(
         child: Stack(
           children: [
-            if (place != null)
-              Positioned.fill(
-                child: LoadableImage(
-                  url: place.photos.isEmpty ? '' : place.photos[0],
-                ),
+            Positioned.fill(
+              child: LoadableImage(
+                url: place.photos.isEmpty ? '' : place.photos[0],
               ),
+            ),
             Positioned.fill(
               child: Container(
                 color: highlightColorDark2,
@@ -242,7 +241,7 @@ class _PlaceCardState extends State<PlaceCard> {
         ..add(
           _buildSignatureButton(
             Svg24.calendar,
-            place.userInfo.planToVisit != null ? theme.accentColor : color,
+            place.userInfo.planToVisit == null ? color : theme.accentColor,
             () async {
               final today = DateTime.now();
               var date = place.userInfo.planToVisit;
@@ -303,7 +302,7 @@ class _PlaceCardState extends State<PlaceCard> {
       padding: cardSignaturesPadding,
       child: Row(
         children: [
-          _buildSignaturePlaceType(textStyle, place),
+          _buildSignaturePlaceType(textStyle),
           const Spacer(),
           ...signatures,
         ],
@@ -311,8 +310,7 @@ class _PlaceCardState extends State<PlaceCard> {
     );
   }
 
-  Widget _buildSignaturePlaceType(TextStyle textStyle, Place place) =>
-      SmallButton(
+  Widget _buildSignaturePlaceType(TextStyle textStyle) => SmallButton(
         highlightColor: highlightColorDark2,
         splashColor: splashColorDark2,
         label: PlaceTypeUi(place.type).lowerCaseName,
@@ -333,26 +331,23 @@ class _PlaceCardState extends State<PlaceCard> {
         onPressed: onPressed,
       );
 
-  Widget _buildCardBottom(MyThemeData theme, Place? place) => Expanded(
+  Widget _buildCardBottom(MyThemeData theme) => Expanded(
         child: Container(
-          padding: commonPadding,
-          child: place == null
-              ? null
-              : RichText(
-                  overflow: TextOverflow.fade,
-                  maxLines: null,
-                  text: TextSpan(
-                    text: '${place.name}\n',
-                    style: theme.textMiddle16Main,
-                    children: [
-                      TextSpan(
-                        text: '${place.distance}\n${place.description}',
-                        style: theme.textRegular14Light,
-                      ),
-                    ],
+            padding: commonPadding,
+            child: RichText(
+              overflow: TextOverflow.fade,
+              maxLines: null,
+              text: TextSpan(
+                text: '${place.name}\n',
+                style: theme.textMiddle16Main,
+                children: [
+                  TextSpan(
+                    text: '${place.distance}\n${place.description}',
+                    style: theme.textRegular14Light,
                   ),
-                ),
-        ),
+                ],
+              ),
+            )),
       );
 
   Widget _buildBackground(

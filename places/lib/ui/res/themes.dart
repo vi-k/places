@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'package:places/utils/let_and_also.dart';
+
+import 'const.dart';
 
 /// Собственная тема приложения, т.к. средств обычной ThemeData в нашем случае
 /// недостаточно.
 ///
 /// Свой вариант у Flutter team:
 /// https://github.com/flutter/gallery/tree/master/lib/themes
-
-import 'package:flutter/material.dart';
-
-import 'const.dart';
 
 // Стили.
 const _textRegular = TextStyle(fontWeight: FontWeight.normal);
@@ -127,11 +128,28 @@ class MyThemeData {
   final InputDecorationTheme specialInputDecorationTheme;
 }
 
-const _baseButtonTheme = ButtonThemeData(
-  height: 48,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(
-      Radius.circular(12),
+const _baseButtonTheme = ButtonThemeData();
+
+final _baseTextButtonTheme = TextButtonThemeData(
+  style: ButtonStyle(
+    padding: MaterialStateProperty.all(commonPaddingLR * 3 / 2),
+    shape: MaterialStateProperty.all(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(1000), // Всегда максимально круглая
+      ),
+    ),
+    minimumSize: MaterialStateProperty.all(Size.zero),
+  ),
+);
+
+final _baseElevatedButtonTheme = ElevatedButtonThemeData(
+  style: ButtonStyle(
+    shape: MaterialStateProperty.all(
+      const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(12),
+        ),
+      ),
     ),
   ),
 );
@@ -161,12 +179,13 @@ const _baseSliderTheme = SliderThemeData(
 
 InputBorder _border(Color? color, {bool focused = false}) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(textFieldRadius),
-      borderSide: color == null
-          ? const BorderSide(color: Colors.transparent, width: 0)
-          : BorderSide(
-              color: color,
-              width:
-                  focused ? textFieldFocusedBorderWidth : textFieldBorderWidth),
+      borderSide: color?.let((it) => BorderSide(
+                color: it,
+                width: focused
+                    ? textFieldFocusedBorderWidth
+                    : textFieldBorderWidth,
+              )) ??
+          const BorderSide(color: Colors.transparent, width: 0),
     );
 
 // Высота TextField = 40 (10 + 10 + 20 (размер шрифта))
@@ -195,11 +214,11 @@ final myLightTheme = MyThemeData(
     backgroundColor: mainColor100,
     scaffoldBackgroundColor: mainColor100,
     canvasColor: mainColor90,
-    highlightColor: highlightColorDark, //Colors.orange,
+    highlightColor: highlightColorDark,
     splashColor: splashColorDark,
-    buttonTheme: _baseButtonTheme.copyWith(
-      buttonColor: accentColor50,
-    ),
+    buttonTheme: _baseButtonTheme,
+    textButtonTheme: _baseTextButtonTheme,
+    elevatedButtonTheme: _baseElevatedButtonTheme,
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       foregroundColor: mainColor100,
     ),
@@ -296,9 +315,9 @@ final myDarkTheme = MyThemeData(
     canvasColor: mainColor20,
     highlightColor: highlightColorLight,
     splashColor: splashColorLight,
-    buttonTheme: _baseButtonTheme.copyWith(
-      buttonColor: accentColor70,
-    ),
+    buttonTheme: _baseButtonTheme,
+    textButtonTheme: _baseTextButtonTheme,
+    elevatedButtonTheme: _baseElevatedButtonTheme,
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       foregroundColor: mainColor100,
     ),

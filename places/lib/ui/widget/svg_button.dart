@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Кнопка-иконка для svg.
 class SvgButton extends StatelessWidget {
@@ -32,7 +32,7 @@ class SvgButton extends StatelessWidget {
   final Color? color;
 
   /// Цвета для Ripple-эффекта.
-  /// 
+  ///
   /// По умолчанию `Theme.highlightColor` и `Theme.splashColor`.
   final Color? highlightColor;
   final Color? splashColor;

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../domain/settings_data.dart';
+import 'package:places/domain/settings_data.dart';
 
 /// Виджет для предоставления настроек приложения вниз по дереву.
 ///
@@ -48,7 +48,7 @@ class _SettingsState extends State<Settings> {
   var _needUpdate = false;
 
   /// Сохраняем ссылку на данные.
-  /// 
+  ///
   /// Виджет не сможет менять их, когда ему захочется. Это нужно, чтобы не было
   /// memory leaks.
   late SettingsData data;

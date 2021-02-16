@@ -1,5 +1,6 @@
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/distance.dart';
+import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/string_ext.dart';
 
 import 'place_type.dart';
@@ -70,7 +71,7 @@ class PlaceBase {
       id: id ?? this.id,
       coord: coord ?? this.coord,
       name: name ?? this.name,
-      photos: photos != null ? List.unmodifiable(photos) : this.photos,
+      photos: photos?.let((it) => List.unmodifiable(it)) ?? this.photos,
       type: type ?? this.type,
       description: description ?? this.description,
       distance: distance ??
