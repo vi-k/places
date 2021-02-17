@@ -159,8 +159,10 @@ class _SearchBarState extends State<SearchBar> {
                               ),
                             );
 
-                            newFilter?.also((it) =>
-                                widget.onFilterChanged?.call(newFilter));
+                            newFilter?.also((it) {
+                              filter = newFilter;
+                              widget.onFilterChanged?.call(newFilter);
+                            });
                           },
                         )) ??
                     SvgButton(

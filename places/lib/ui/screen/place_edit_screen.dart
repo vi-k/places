@@ -85,7 +85,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     if (_placeType == null) {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text(stringNoCategory)));
+        ..showSnackBar(const SnackBar(content: Text(stringNoPlaceType)));
       _getPlaceType();
       return false;
     }
@@ -124,6 +124,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       description: _descriptionController.text,
       type: _placeType!.type,
       userInfo: PlaceUserInfo.zero,
+      calDistanceFrom: locationRepository.location,
     );
 
     if (id == null) {
@@ -277,7 +278,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
   // Тип места.
   Widget _buildPlaceType(MyThemeData theme) => Section(
-        stringCategory,
+        stringPlaceType,
         spacing: 0,
         applyPaddingToChild: false,
         child: ListTile(

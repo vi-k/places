@@ -38,32 +38,32 @@ class Failed extends StatelessWidget {
     final theme = MyTheme.of(context);
 
     return Center(
-      child: Padding(
-        padding: commonPadding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(svg, color: theme.lightTextColor56),
-            const SizedBox(height: commonSpacing3_2),
-            Text(
-              title,
-              style: theme.textMiddle18Light56,
-              textAlign: TextAlign.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            svg,
+            color: theme.lightTextColor56,
+          ),
+          const SizedBox(height: commonSpacing3_2),
+          Text(
+            title,
+            style: theme.textMiddle18Light56,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: commonSpacing1_2),
+          Text(
+            message,
+            style: theme.textRegular14Light56,
+            textAlign: TextAlign.center,
+          ),
+          if (onRepeat != null)
+            SmallButton(
+              label: stringRepeat,
+              style: theme.textMiddle16Accent,
+              onPressed: onRepeat,
             ),
-            const SizedBox(height: commonSpacing1_2),
-            Text(
-              message,
-              style: theme.textRegular14Light56,
-              textAlign: TextAlign.center,
-            ),
-            if (onRepeat != null)
-              SmallButton(
-                label: stringRepeat,
-                style: theme.textMiddle16Accent,
-                onPressed: onRepeat,
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

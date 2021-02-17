@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -45,6 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pop(context);
     } else {
       // Если это первый экран, то запускаем основной экран
+      settingsInteractor.changeSettings(showTutorial: false);
       Navigator.pushReplacement<void, void>(
         context,
         MaterialPageRoute(
@@ -56,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context, listen: true);
+    final theme = MyTheme.of(context);
     final translate = _currentPage >= _lastPage - 0.5
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;
@@ -123,37 +125,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     required String caption,
     required String description,
   }) =>
-      Center(
-        child: Padding(
-          padding: commonPadding * 3,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset(svg, color: theme.mainTextColor2),
-              const SizedBox(
-                height: 3 * commonSpacing,
-              ),
-              Text(
-                caption,
-                textAlign: TextAlign.center,
-                style: theme.textBold24Main2,
-              ),
-              const SizedBox(
-                height: commonSpacing1_2,
-              ),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: theme.textRegular14Light,
-              ),
-            ],
-          ),
+      Padding(
+        padding: commonPaddingLR * 3,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              svg,
+              color: theme.mainTextColor2,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  caption,
+                  textAlign: TextAlign.center,
+                  style: theme.textBold24Main2,
+                ),
+                const SizedBox(height: commonSpacing),
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: theme.textRegular14Light,
+                ),
+              ],
+            ),
+          ],
         ),
       );
 
   Widget _buildPageSelector() => Center(
         child: Padding(
-          padding: commonPadding,
+          padding: commonPaddingLTR,
           child: PageViewSelector(
             count: 3,
             controller: _controller,

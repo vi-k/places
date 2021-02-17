@@ -33,11 +33,11 @@ class PlaceTypeFilter extends StatelessWidget {
 
     return Container(
       margin: commonPadding,
-      width: filtersCategorySize,
+      width: filtersPlaceTypeSize,
       child: Column(
         children: [
           SizedBox(
-            height: filtersCategorySize,
+            height: filtersPlaceTypeSize,
             child: Stack(
               children: [
                 Material(

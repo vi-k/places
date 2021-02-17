@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:places/domain/settings_data.dart';
-
+import 'package:places/data/model/settings.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
@@ -33,10 +32,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               stringIsDark,
               style: theme.textRegular14Main,
             ),
-            value: Loader.of<SettingsData>(context).data!.isDark,
+            value: Loader.of<Settings>(context).data!.isDark,
             onChanged: (value) {
               settingsInteractor.changeSettings(isDark: value);
-              Loader.of<SettingsData>(context).reload();
+              Loader.of<Settings>(context).reload();
             },
           ),
           const _ListDivider(),

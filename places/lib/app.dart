@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:places/ui/screen/onboarding_screen.dart';
+import 'package:places/ui/screen/place_list_screen.dart';
 
-import 'domain/settings_data.dart';
+import 'data/model/settings.dart';
 import 'main.dart';
 import 'ui/res/themes.dart';
 import 'ui/screen/splash_screen.dart';
@@ -10,8 +13,7 @@ import 'ui/widget/loader.dart';
 
 /// Основной виджет-приложение.
 ///
-/// Передаёт по дереву настройки (SettingsData), данные (MocksData)
-/// и тему (MyThemeData).
+/// Передаёт по дереву настройки (Setting) и тему (MyThemeData).
 class App extends StatefulWidget {
   @override
   _AppState createState() => _AppState();
@@ -21,7 +23,7 @@ class _AppState extends State<App> {
   // Временно реализую загрузку данных через свой Loader в надежде потом перейти
   // на что-нибудь посерьёзней.
   @override
-  Widget build(BuildContext context) => Loader<SettingsData>(
+  Widget build(BuildContext context) => Loader<Settings>(
         load: settingsInteractor.loadSettings,
         error: (context, error) => MyTheme(
           myThemeData: myDarkTheme,
@@ -33,7 +35,7 @@ class _AppState extends State<App> {
                 body: Failed(
                   message: 'Не удалось инициализировать приложение. '
                       'Обратитесь к разработчику\n\n$error',
-                  onRepeat: () => Loader.of<SettingsData>(context).reload(),
+                  onRepeat: () => Loader.of<Settings>(context).reload(),
                 ),
               ),
             ),
@@ -46,10 +48,8 @@ class _AppState extends State<App> {
             builder: (context) => MaterialApp(
               title: 'Places',
               theme: MyTheme.of(context).app,
-              // Зачем-то вставлял, но уже забыл - зачем.
-              // А между этими строками и intl какой-то конфликт.
-              // Без них, вроде, работает. Но пока оставлю, чтобы потом
-              // не восстанавливать, если вдруг всё же надо.
+              // Между этими строками и intl какой-то конфликт.
+              // Без них работает. Но пропадает русификация в DatePicker.
               // localizationsDelegates: const [
               //   GlobalMaterialLocalizations.delegate,
               //   GlobalWidgetsLocalizations.delegate,
@@ -58,10 +58,11 @@ class _AppState extends State<App> {
               // supportedLocales: const [
               //   Locale('ru'),
               // ],
-              home: SplashScreen(
-                key: ValueKey(settings != null),
-                navigate: settings != null,
-              ),
+              home: settings == null
+                  ? const SplashScreen()
+                  : settings.showTutorial
+                      ? OnboardingScreen()
+                      : PlaceListScreen(),
             ),
           ),
         ),

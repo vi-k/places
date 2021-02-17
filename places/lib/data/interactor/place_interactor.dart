@@ -17,18 +17,7 @@ class PlaceInteractor {
   final PlaceRepository placeRepository;
   final LocationRepository locationRepository;
 
-  final Map<int, PlaceUserInfo> _mockUserInfo = {
-    31: PlaceUserInfo(
-        favorite: Favorite.visited, planToVisit: DateTime(2016, 1, 1)),
-    32: const PlaceUserInfo(favorite: Favorite.visited),
-    33: PlaceUserInfo(
-        favorite: Favorite.visited, planToVisit: DateTime(2005, 3, 3)),
-    34: const PlaceUserInfo(favorite: Favorite.visited),
-    35: const PlaceUserInfo(favorite: Favorite.wishlist),
-    36: PlaceUserInfo(
-        favorite: Favorite.wishlist, planToVisit: DateTime(2020, 6, 17)),
-    37: const PlaceUserInfo(favorite: Favorite.wishlist),
-  };
+  final Map<int, PlaceUserInfo> _mockUserInfo = {};
 
   final Map<String, SearchHistory> _mockSearchInfo = {};
 

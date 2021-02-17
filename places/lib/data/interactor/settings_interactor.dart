@@ -1,28 +1,28 @@
-import 'package:places/domain/settings_data.dart';
+import 'package:places/data/model/settings.dart';
 
 /// Интерактор для доступа к настройкам.
 class SettingsInteractor {
   SettingsInteractor();
 
-  SettingsData _mockSettingsData = const SettingsData(
+  Settings _mockSettings = const Settings(
     isDark: true,
-    showTutorial: false,
+    showTutorial: true,
   );
 
   /// Загружает список мест, соответствующих фильтру.
   // ignore: avoid_positional_boolean_parameters
-  Future<SettingsData> loadSettings() async {
+  Future<Settings> loadSettings() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     // throw Exception('тестовый сбой');
-    return _mockSettingsData;
+    return _mockSettings;
   }
 
-  Future<SettingsData> changeSettings({
+  Future<Settings> changeSettings({
     bool? isDark,
     bool? showTutorial,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
-    return _mockSettingsData = _mockSettingsData.copyWith(
+    return _mockSettings = _mockSettings.copyWith(
       isDark: isDark,
       showTutorial: showTutorial,
     );

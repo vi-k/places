@@ -16,7 +16,7 @@ class PlaceTypeSelectScreen extends StatelessWidget {
 
   /// Идентификатор типа.
   ///
-  /// Если передан `null`, то категория не установлена.
+  /// Если передан `null`, то тип места не установлен.
   final PlaceType? placeType;
 
   @override
@@ -25,7 +25,7 @@ class PlaceTypeSelectScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: const SmallAppBar(
-        title: stringCategory,
+        title: stringPlaceType,
       ),
       body: ListView.builder(
         itemCount: PlaceType.values.length,

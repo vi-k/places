@@ -1,6 +1,6 @@
 /// Настройки.
-class SettingsData {
-  const SettingsData({
+class Settings {
+  const Settings({
     required this.isDark,
     required this.showTutorial,
   });
@@ -9,13 +9,13 @@ class SettingsData {
   final bool showTutorial;
 
   @override
-  String toString() => 'SettingsData(isDark: $isDark)';
+  String toString() => 'Settings(isDark: $isDark)';
 
-  SettingsData copyWith({
+  Settings copyWith({
     bool? isDark,
     bool? showTutorial,
   }) =>
-      SettingsData(
+      Settings(
         isDark: isDark ?? this.isDark,
         showTutorial: showTutorial ?? this.showTutorial,
       );

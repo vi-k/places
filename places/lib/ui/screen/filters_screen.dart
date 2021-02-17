@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:places/data/model/place_type.dart';
 
 import 'package:places/data/repository/base/filter.dart';
+import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
@@ -67,7 +68,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Expanded(
             child: ListView(
               children: [
-                ..._buildCategories(isSmallScreen),
+                ..._buildPlaceTypes(isSmallScreen),
                 const SizedBox(height: commonSpacing),
                 ..._buildDistance(theme),
                 const SizedBox(height: commonSpacing),
@@ -121,25 +122,25 @@ class _FiltersScreenState extends State<FiltersScreen> {
         ),
       ];
 
-  List<Widget> _buildCategories(bool isSmallScreen) => [
+  List<Widget> _buildPlaceTypes(bool isSmallScreen) => [
         Section(
-          stringCategories,
+          stringPlaceTypes,
           child: isSmallScreen
               ? SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildCategoriesItems(),
+                    children: _buildPlaceTypesItems(),
                   ),
                 )
               : Wrap(
                   alignment: WrapAlignment.spaceEvenly,
-                  children: _buildCategoriesItems(),
+                  children: _buildPlaceTypesItems(),
                 ),
         ),
       ];
 
-  List<Widget> _buildCategoriesItems() => [
+  List<Widget> _buildPlaceTypesItems() => [
         for (final placeType in PlaceType.values)
           PlaceTypeFilter(
             placeType: placeType,
@@ -153,17 +154,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
       ];
 
   Future<void> _recalcCardCount() async {
-    // Пока реально это не ассинхронная функция.
-    // placeInteractor.getPlaces();
-    // final count = Mocks.of(context).sights.where((e) {
-    //   if (!filter.hasCategory(e.categoryId)) return false;
+    final places = await placeInteractor.getPlaces(_filter);
+    final count = places.length;
 
-    //   final d = e.coord.distance(myMockCoord);
-    //   return d >= filter.distance.start && d <= filter.distance.end;
-    // }).length;
-
-    // setState(() {
-    //   _cardCount = count;
-    // });
+    setState(() {
+      _cardCount = count;
+    });
   }
 }

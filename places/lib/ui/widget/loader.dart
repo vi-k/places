@@ -55,10 +55,6 @@ class _LoaderState<T> extends State<Loader<T>> {
   // Флаг о необходимости оповестить зависимости об изменениях.
   var _updateShouldNotify = false;
 
-  // Сохраняем дерево, созданное через builder, чтобы не пересоздавать каждый
-  // раз заново. Пересоздаём только при изменении состояния.
-  Widget? _child;
-
   // Оборачиваем результат работы builder'а в контейнер с глобальным ключом,
   // чтобы виджеты не пересоздавались.
   final _key = GlobalKey();
@@ -92,7 +88,6 @@ class _LoaderState<T> extends State<Loader<T>> {
     final load = widget.load;
 
     if (load != null) {
-      _child = null;
       _state = LoadingState.loading;
 
       try {
@@ -101,7 +96,6 @@ class _LoaderState<T> extends State<Loader<T>> {
           _error = null;
           _data = value;
           _state = LoadingState.done;
-          _child = null;
           update();
         }
       } on Object catch (e) {
@@ -109,7 +103,6 @@ class _LoaderState<T> extends State<Loader<T>> {
           _error = e;
           _data = null;
           _state = LoadingState.failed;
-          _child = null;
           update();
         }
       }
