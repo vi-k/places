@@ -7,6 +7,7 @@ import 'package:places/utils/distance.dart';
 
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
+import 'data/interactor/settings_interactor.dart';
 import 'data/model/place_base.dart';
 import 'data/model/place_type.dart';
 import 'data/repository/api_place_repository.dart';
@@ -58,6 +59,7 @@ final LocationRepository locationRepository = RealLocationRepository();
 // final LocationRepository locationRepository = MockLocationRepository();
 final placeInteractor = PlaceInteractor(
     placeRepository: placeRepository, locationRepository: locationRepository);
+final settingsInteractor = SettingsInteractor();
 Filter filter = Filter();
 
 Future<void> main() async {

@@ -6,6 +6,13 @@ import 'onboarding_screen.dart';
 ///
 /// Ждёт завершения инициализации. Показывается минимум 2 сек.
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({
+    Key? key,
+    this.navigate = true,
+  }) : super(key: key);
+
+  final bool navigate;
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -19,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    _navigateToNext();
+    if (widget.navigate) _navigateToNext();
   }
 
   // ignore: avoid_void_async

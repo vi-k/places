@@ -17,6 +17,7 @@ class Loader<T> extends StatefulWidget {
     this.loader,
     required this.error,
     required this.builder,
+    this.cleanBuilder = false,
   }) : super(key: key);
 
   /// Тег для проверки, изменились ли данные.
@@ -38,6 +39,10 @@ class Loader<T> extends StatefulWidget {
   /// Виджет данных. [state] не может быть `LoadingState.failed`.
   final Widget Function(BuildContext context, LoadingState state, T? data)
       builder;
+
+  /// Чистый билдер - не использовать никаких обёрток над тем, что возвращает
+  /// пользователь.
+  final bool cleanBuilder;
 
   static _LoaderState<T> of<T>(BuildContext context, {bool listen = false}) =>
       _LoadScope.of<T>(context, listen: listen).state;
@@ -135,32 +140,33 @@ class _LoaderState<T> extends State<Loader<T>> {
   @override
   Widget build(BuildContext context) => _LoadScope(
         state: this,
-        // child: _child ?? (_child = Builder(builder: _buildChild)),
-        child: _child = Builder(builder: _buildChild),
+        child: Builder(builder: _buildChild),
       );
 
   Widget _buildChild(BuildContext context) => _state == LoadingState.failed
       // Ошибка
       ? widget.error(context, _error!)
-      : Stack(
-          children: [
-            AbsorbPointer(
-              absorbing: _state != LoadingState.done,
-              child: Opacity(
-                opacity: _state == LoadingState.done ? 1.0 : 0.3,
-                child: _buildChildContainer(context),
-              ),
-            ),
-            // Загрузка
-            if (_state == LoadingState.loading)
-              Positioned.fill(
-                child: widget.loader?.call(context) ??
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-              ),
-          ],
-        );
+      : widget.cleanBuilder
+          ? widget.builder(context, _state, _data)
+          : Stack(
+              children: [
+                AbsorbPointer(
+                  absorbing: _state != LoadingState.done,
+                  child: Opacity(
+                    opacity: _state == LoadingState.done ? 1.0 : 0.3,
+                    child: _buildChildContainer(context),
+                  ),
+                ),
+                // Загрузка
+                if (_state == LoadingState.loading)
+                  Positioned.fill(
+                    child: widget.loader?.call(context) ??
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                  ),
+              ],
+            );
 
   Widget _buildChildContainer(BuildContext context) => Container(
         key: _key,

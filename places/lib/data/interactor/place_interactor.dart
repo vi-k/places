@@ -63,7 +63,7 @@ class PlaceInteractor {
   }
 
   /// Возвращает историю поиска.
-  Future<List<SearchHistory>> getSearchHistory() async {
+  Future<List<SearchHistory>> getSearchHostory() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     return _mockSearchInfo.entries
         .map((e) => e.value.copyWith(text: e.key))

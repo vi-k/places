@@ -82,7 +82,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildHistory(MyThemeData theme) => Loader<List<SearchHistory>>(
-        load: placeInteractor.getSearchHistory,
+        load: placeInteractor.getSearchHostory,
         error: (context, error) => Failed(
           message: error.toString(),
           onRepeat: () => Loader.of<List<Place>?>(context).reload(),
