@@ -21,6 +21,8 @@ class LoadableImage extends StatelessWidget {
 
     return Image.network(
       url,
+      // colorBlendMode: ,
+      filterQuality: FilterQuality.high,
       fit: BoxFit.cover,
       frameBuilder: (context, child, frame, _) => frame == null
           ? Container(

@@ -10,14 +10,22 @@ import 'small_button.dart';
 
 /// Виджет ошибки.
 class Failed extends StatelessWidget {
-  const Failed(
-    this.error, {
+  const Failed({
     Key? key,
+    this.svg = Svg64.delete,
+    this.title = stringError,
+    required this.message,
     this.onRepeat,
   }) : super(key: key);
 
-  /// Текст ошибки.
-  final String error;
+  /// Иконка.
+  final String svg;
+
+  /// Заголовок.
+  final String title;
+
+  /// Сообщение.
+  final String message;
 
   /// Обратный вызов, если есть желание и возможность повторить операцию,
   /// приведшую к ошибке.
@@ -35,11 +43,11 @@ class Failed extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(Svg64.delete, color: theme.lightTextColor56),
+            SvgPicture.asset(svg, color: theme.lightTextColor56),
             const SizedBox(height: commonSpacing3_2),
-            Text(stringError, style: theme.textMiddle18Light56),
+            Text(title, style: theme.textMiddle18Light56),
             const SizedBox(height: commonSpacing1_2),
-            Text(error, style: theme.textRegular14Light56),
+            Text(message, style: theme.textRegular14Light56),
             if (onRepeat != null)
               SmallButton(
                 label: stringRepeat,

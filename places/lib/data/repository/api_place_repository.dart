@@ -192,18 +192,53 @@ class ApiPlaceRepository extends PlaceRepository {
               'lng': coord.lon,
               'radius': filter.radius.value,
             },
-            'typeFilter': filter.placeTypes.map((e) => e.name).toList(),
-            'nameFilter': filter.nameFilter,
+            if (filter.placeTypes != null)
+              'typeFilter': filter.placeTypes!.map((e) => e.name).toList(),
           }));
 
-      return (jsonDecode(response.data) as List<dynamic>)
+      var tmp = (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          // Расчёт расстояния, если задана точка отсчёта
+          // Расчёт расстояния, если задана точка отсчёта.
+          .map(coord?.let((it) => (e) => _fromMap(e, it)) ?? _fromMap);
+
+      // Ручная фильтрация по типу.
+      filter.placeTypes
+          ?.also((it) => tmp = tmp.where((e) => it.contains(e.type)));
+
+      final result = tmp.toList();
+
+      // Сортировка по расстоянию.
+      if (coord != null) {
+        result.sort((a, b) => a.distance.compareTo(b.distance));
+      }
+
+      return result;
+    } on DioError catch (e) {
+      final error = RepositoryException.fromDio(e);
+      if (error == null) rethrow;
+      throw error;
+    }
+  }
+
+  /// Ищет места по названию.
+  @override
+  Future<List<PlaceBase>> search({Coord? coord, required String text}) async {
+    try {
+      final response = await dio.post<String>('/filtered_places',
+          data: jsonEncode(<String, dynamic>{'nameFilter': text}));
+
+      final result = (jsonDecode(response.data) as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          // Расчёт расстояния, если задана точка отсчёта.
           .map(coord?.let((it) => (e) => _fromMap(e, it)) ?? _fromMap)
-          // Ручная фильтрация по типу.
-          .where((e) => filter.placeTypes.contains(e.type))
-          .toList()
-            ..sort((a, b) => a.distance.compareTo(b.distance));
+          .toList();
+
+      // Сортировка по расстоянию.
+      if (coord != null) {
+        result.sort((a, b) => a.distance.compareTo(b.distance));
+      }
+
+      return result;
     } on DioError catch (e) {
       final error = RepositoryException.fromDio(e);
       if (error == null) rethrow;

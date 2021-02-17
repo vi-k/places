@@ -1,6 +1,8 @@
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:places/utils/distance.dart';
 
 import 'app.dart';
@@ -61,6 +63,9 @@ Filter filter = Filter();
 Future<void> main() async {
   // await moveFromMockToRepository();
   // await testPlaceRepository();
+
+  await initializeDateFormatting('ru_RU', null);
+  Intl.defaultLocale = 'ru_RU';
 
   runApp(App());
 }

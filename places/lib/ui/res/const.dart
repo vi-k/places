@@ -34,6 +34,7 @@ const bottomSheetThumbBackground = Colors.transparent;
 /// Публичные константы.
 const commonSpacing = 16.0;
 const commonSpacing1_2 = commonSpacing / 2; // 8
+const commonSpacing1_4 = commonSpacing / 4; // 4
 const commonSpacing3_4 = commonSpacing * 3 / 4; // 12
 const commonSpacing3_2 = commonSpacing * 3 / 2; // 24
 const dividerHeight = 2.0;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:places/data/model/place.dart';
+import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
@@ -8,15 +9,14 @@ import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/tab_switch.dart';
-import 'package:places/main.dart';
 
-/// Экран "Хочу посетить/Посетил".
-class VisitingScreen extends StatefulWidget {
+/// Экран "Избранное".
+class FavoriteScreen extends StatefulWidget {
   @override
-  _VisitingScreenState createState() => _VisitingScreenState();
+  _FavoriteScreenState createState() => _FavoriteScreenState();
 }
 
-class _VisitingScreenState extends State<VisitingScreen>
+class _FavoriteScreenState extends State<FavoriteScreen>
     with SingleTickerProviderStateMixin {
   static const _tabs = [stringWishlistName, stringVisitedName];
   late TabController tabController;
@@ -58,7 +58,7 @@ class _VisitingScreenState extends State<VisitingScreen>
               child: Loader<List<Place>>(
                 load: placeInteractor.getWishlist,
                 error: (context, error) => Failed(
-                  error.toString(),
+                  message: error.toString(),
                   onRepeat: () =>
                       Loader.of<List<Place>>(context).reload(),
                 ),
@@ -72,7 +72,7 @@ class _VisitingScreenState extends State<VisitingScreen>
               child: Loader<List<Place>>(
                 load: placeInteractor.getVisited,
                 error: (context, error) => Failed(
-                  error.toString(),
+                  message: error.toString(),
                   onRepeat: () =>
                       Loader.of<List<Place>>(context).reload(),
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/repository/base/filter.dart';
 import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -38,7 +37,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
     return Loader<List<Place>>(
       load: () => placeInteractor.getPlaces(filter),
       error: (context, error) => Failed(
-        error.toString(),
+        message: error.toString(),
         onRepeat: () => Loader.of<List<Place>>(context).reload(),
       ),
       builder: (context, _, places) => Scaffold(
@@ -75,22 +74,16 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         title: stringPlaceList,
         bottom: SearchBar(
           onTap: () async {
-            final newFilter = await Navigator.push<Filter>(
+            await Navigator.push<String>(
               context,
               MaterialPageRoute(
-                builder: (context) => SearchScreen(filter: filter),
+                builder: (context) => const SearchScreen(),
               ),
             );
-            if (newFilter != null) {
-              filter = newFilter;
-              print('Filter changed: $filter');
-              Loader.of<List<Place>>(context).reload();
-            }
           },
           filter: filter,
-          onChanged: (newFilter) {
+          onFilterChanged: (newFilter) {
             filter = newFilter;
-            print('Filter changed: $filter');
             Loader.of<List<Place>>(context).reload();
           },
         ),

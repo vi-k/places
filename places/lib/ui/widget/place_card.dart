@@ -153,28 +153,8 @@ class _PlaceCardState extends State<PlaceCard> {
               splashColor: theme.app.splashColor,
               onLongPress: widget.onLongPress,
               onPressed: () async {
-                // Внутри showModalBottomSheet
-                // MediaQuery.of(context).padding.top возвращает 0.
-                // Поэтому рассчитываем здесь.
-                final maxHeight = MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    appBarPadding.top;
-                final newPlace = await showModalBottomSheet<Place>(
-                  context: context,
-                  clipBehavior: Clip.antiAlias,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                  ),
-                  isScrollControlled: true,
-                  builder: (context) => ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: maxHeight,
-                    ),
-                    child: PlaceDetails(place: place),
-                  ),
-                );
+                final newPlace =
+                    await PlaceDetails.showAsModalBottomSheet(context, place);
 
                 if (newPlace != null) {
                   setState(() {

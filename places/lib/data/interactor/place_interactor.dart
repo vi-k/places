@@ -1,6 +1,7 @@
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_user_info.dart';
+import 'package:places/data/model/search_history.dart';
 import 'package:places/data/repository/base/filter.dart';
 import 'package:places/data/repository/base/location_repository.dart';
 import 'package:places/data/repository/base/place_repository.dart';
@@ -29,26 +30,57 @@ class PlaceInteractor {
     37: const PlaceUserInfo(favorite: Favorite.wishlist),
   };
 
+  final Map<String, SearchHistory> _mockSearchInfo = {};
+
+  String _lastSearchQuery = '';
+
   /// Загружает список мест, соответствующих фильтру.
   Future<List<Place>> getPlaces(Filter filter) async {
     // Получаем список из репозитория
     final places = await placeRepository.filteredList(
         coord: locationRepository.location, filter: filter);
 
-    // Сразу конвертируем PlaceBase в Place
-    var index = -1;
-    await Future.forEach<PlaceBase>(places, (place) async {
-      try {
-        index++; // Ассинхронная операция начинается с первой ассинхронной
-        // функции, поэтому спокойно используем счётчик. Главное - помнить, где
-        // его обновлять.
-        places[index] = await _loadUserInfo(place);
-      } on RepositoryException {
-        // пока игнорируем ошибки
-      }
-    });
+    return _loadUserInfoForList(places);
+  }
 
-    return places.whereType<Place>().toList();
+  /// Загружает список мест, содержащих в названии заданный текст.
+  Future<List<Place>> searchPlaces(String text) async {
+    // Получаем список из репозитория
+    final query = text.toLowerCase();
+    final places = await placeRepository.search(
+        coord: locationRepository.location, text: query);
+
+    if (places.isNotEmpty) {
+      if (query.contains(_lastSearchQuery)) {
+        _mockSearchInfo.remove(_lastSearchQuery);
+      }
+      _lastSearchQuery = query;
+      _mockSearchInfo[query] =
+          SearchHistory(timestamp: DateTime.now(), count: places.length);
+    }
+
+    return _loadUserInfoForList(places);
+  }
+
+  /// Возвращает историю поиска.
+  Future<List<SearchHistory>> getSearchHistory() async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    return _mockSearchInfo.entries
+        .map((e) => e.value.copyWith(text: e.key))
+        .toList()
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  }
+
+  /// Очищает историю поиска.
+  Future<void> clearSearchHistory() async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    _mockSearchInfo.clear();
+  }
+
+  /// Удаляет из истории поиска.
+  Future<void> removeFromSearchHistory(String text) async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    _mockSearchInfo.remove(text);
   }
 
   /// Загружает информацию о месте.
@@ -104,6 +136,29 @@ class PlaceInteractor {
   /// Загружает пользовательскую информацию о месте.
   Future<Place> _loadUserInfo(PlaceBase place) async => Place.from(place,
       userInfo: _mockUserInfo[place.id] ?? PlaceUserInfo.zero);
+
+  /// Загружает пользовательскую информацию для списка.
+  ///
+  /// Список при этом модифицируется.
+  Future<List<Place>> _loadUserInfoForList(List<PlaceBase> places) async {
+    // Ассинхронно конвертируем PlaceBase в Place
+    var index = -1;
+    await Future.forEach<PlaceBase>(places, (place) async {
+      try {
+        index++; // Ассинхронная операция начинается с первой ассинхронной
+        // функции, поэтому спокойно используем счётчик. Главное - обновлять
+        // его до первой ассинхронной операции.
+
+        // Подменяем элементы списка новыми данными.
+        places[index] = await _loadUserInfo(place);
+      } on RepositoryException {
+        // Игнорируем ошибки
+      }
+    });
+
+    // Конвертируем List<PlaseBase> в List<Place>.
+    return places.whereType<Place>().toList();
+  }
 
   /// Возвращает место по id.
   Future<PlaceBase> _getPlace(int id) => placeRepository.read(id);

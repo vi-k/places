@@ -24,6 +24,34 @@ class PlaceDetails extends StatefulWidget {
 
   @override
   _PlaceDetailsState createState() => _PlaceDetailsState();
+
+  static Future<Place?> showAsModalBottomSheet(
+      BuildContext context, Place place) async {
+    // Внутри showModalBottomSheet
+    // MediaQuery.of(context).padding.top возвращает 0.
+    // Поэтому рассчитываем здесь.
+    final maxHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        appBarPadding.top;
+    final newPlace = await showModalBottomSheet<Place>(
+      context: context,
+      clipBehavior: Clip.antiAlias,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+      isScrollControlled: true,
+      builder: (context) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: maxHeight,
+        ),
+        child: PlaceDetails(place: place),
+      ),
+    );
+
+    return newPlace;
+  }
 }
 
 class _PlaceDetailsState extends State<PlaceDetails> {

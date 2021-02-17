@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'domain/settings_data.dart';
 import 'ui/res/themes.dart';
@@ -29,14 +28,18 @@ class _AppState extends State<App> {
               builder: (context) => MaterialApp(
                 title: 'Places',
                 theme: MyTheme.of(context).app,
-                localizationsDelegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('ru'),
-                ],
+                // Зачем-то вставлял, но уже забыл - зачем.
+                // А между этими строками и intl какой-то конфликт.
+                // Без них, вроде, работает. Но пока оставлю, чтобы потом
+                // не восстанавливать, если вдруг всё же надо.
+                // localizationsDelegates: const [
+                //   GlobalMaterialLocalizations.delegate,
+                //   GlobalWidgetsLocalizations.delegate,
+                //   GlobalCupertinoLocalizations.delegate,
+                // ],
+                // supportedLocales: const [
+                //   Locale('ru'),
+                // ],
                 home: SplashScreen(),
               ),
             ),

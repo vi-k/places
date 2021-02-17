@@ -23,6 +23,7 @@ abstract class PlaceRepository {
       Map<PlaceOrderBy, Sort>? orderBy});
 
   Future<List<PlaceBase>> filteredList({Coord? coord, required Filter filter});
+  Future<List<PlaceBase>> search({Coord? coord, required String text});
 }
 
 enum PlaceOrderBy { id, name }

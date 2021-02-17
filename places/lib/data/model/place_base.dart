@@ -5,7 +5,7 @@ import 'package:places/utils/string_ext.dart';
 
 import 'place_type.dart';
 
-/// Описание места.
+/// Описание места (информация, не зависящая от пользователя).
 class PlaceBase {
   PlaceBase({
     this.id = 0,
@@ -33,24 +33,28 @@ class PlaceBase {
   /// Координаты.
   final Coord coord;
 
-  /// Расстояние до заданного объекта (если задан).
-  final Distance distance;
-
   /// Фотографии.
   final List<String> photos;
 
   /// Описание.
   final String description;
 
+  /// Расстояние до заданного объекта (если задан).
+  ///
+  /// Поле, не относящееся к данным - исключительно для хранения рассчитанных
+  /// данных. Можно было бы рассчитывать каждый раз заново. Что лучше -
+  /// рассчитывать или сохранять - вопрос спорный.
+  final Distance distance;
+
   @override
   String toString({bool short = false, bool withType = true}) {
     if (withType) {
       return 'PlaceBase(${toString(short: short, withType: false)})';
     } else {
-      final result = '#$id $name, ${type.name}, $coord';
+      final result = '#$id $name, ${type.name}, $distance';
       return short
           ? result
-          : '$result, ${description.cut(20)}, '
+          : '$result, $coord, ${description.cut(20)}, '
               'photos: ${photos.length}';
     }
   }

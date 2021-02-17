@@ -3,6 +3,7 @@ import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/base/place_repository.dart';
 import 'package:places/data/repository/repository_exception.dart';
 import 'package:places/utils/coord.dart';
+import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
 
 import 'base/filter.dart';
@@ -203,15 +204,53 @@ class MockPlaceRepository extends PlaceRepository {
   @override
   Future<List<PlaceBase>> filteredList(
       {Coord? coord, required Filter filter}) async {
-    var tmp = _places.where((e) => filter.placeTypes.contains(e.type)).where(
-        (e) => e.name.toLowerCase().contains(filter.nameFilter.toLowerCase()));
+    Iterable<PlaceBase> tmp = _places;
 
+    filter.placeTypes?.let((it) {
+      tmp = tmp.where((e) => it.contains(e.type));
+    });
+
+    // tmp = tmp.where(
+    //     (e) => e.name.toLowerCase().contains(filter.nameFilter.toLowerCase()));
+
+    // Расчёт расстояния, если задана точка отсчёта, и фильтрация по расстоянию.
     if (coord != null) {
       tmp = tmp
           .map((e) => e.copyWith(calDistanceFrom: coord))
           .where((e) => e.distance <= filter.radius);
     }
 
-    return tmp.toList()..sort((a, b) => a.distance.compareTo(b.distance));
+    final result = tmp.toList();
+
+    // Сортировка по расстоянию.
+    if (coord != null) {
+      result.sort((a, b) => a.distance.compareTo(b.distance));
+    }
+
+    return result;
+  }
+
+  /// Имитирует поиск по названию.
+  @override
+  Future<List<PlaceBase>> search({Coord? coord, required String text}) async {
+    Iterable<PlaceBase> tmp = _places;
+
+    final lowerCaseText = text.toLowerCase();
+    tmp = tmp.where((e) => e.name.toLowerCase().contains(lowerCaseText));
+
+    // Расчёт расстояния, если задана точка отсчёта.
+    if (coord != null) {
+      tmp = tmp
+          .map((e) => e.copyWith(calDistanceFrom: coord));
+    }
+
+    final result = tmp.toList();
+
+    // Сортировка по расстоянию.
+    if (coord != null) {
+      result.sort((a, b) => a.distance.compareTo(b.distance));
+    }
+
+    return result;
   }
 }

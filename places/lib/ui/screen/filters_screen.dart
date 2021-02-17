@@ -43,7 +43,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    filter = widget.filter.copyWith();
+    filter = widget.filter;
   }
 
   @override
@@ -146,9 +146,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
             active: filter.hasPlaceType(placeType),
             onPressed: () {
               setState(() {
-                print(filter);
                 filter = filter.togglePlaceType(placeType);
-                print(filter);
               });
             },
           ),

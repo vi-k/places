@@ -6,7 +6,7 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_list_screen.dart';
 import 'package:places/ui/screen/settings_screen.dart';
-import 'package:places/ui/screen/visiting_screen.dart';
+import 'package:places/ui/screen/favorite_screen.dart';
 
 /// BottomNavigator приложения.
 class AppNavigationBar extends StatelessWidget {
@@ -48,7 +48,7 @@ class AppNavigationBar extends StatelessWidget {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
-                builder: (context) => VisitingScreen(),
+                builder: (context) => FavoriteScreen(),
               ),
             );
             break;

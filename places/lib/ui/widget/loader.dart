@@ -142,28 +142,25 @@ class _LoaderState<T> extends State<Loader<T>> {
   Widget _buildChild(BuildContext context) => _state == LoadingState.failed
       // Ошибка
       ? widget.error(context, _error!)
-      // Данные загружены
-      : _state == LoadingState.done
-          ? _buildChildContainer(context)
-          // Ожидание загрузки данных
-          : Stack(
-              children: [
-                AbsorbPointer(
-                  child: Opacity(
-                    opacity: 0.3,
-                    child: _buildChildContainer(context),
-                  ),
-                ),
-                // Загрузка
-                if (_state == LoadingState.loading)
-                  Positioned.fill(
-                    child: widget.loader?.call(context) ??
-                        const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                  ),
-              ],
-            );
+      : Stack(
+          children: [
+            AbsorbPointer(
+              absorbing: _state != LoadingState.done,
+              child: Opacity(
+                opacity: _state == LoadingState.done ? 1.0 : 0.3,
+                child: _buildChildContainer(context),
+              ),
+            ),
+            // Загрузка
+            if (_state == LoadingState.loading)
+              Positioned.fill(
+                child: widget.loader?.call(context) ??
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+              ),
+          ],
+        );
 
   Widget _buildChildContainer(BuildContext context) => Container(
         key: _key,
