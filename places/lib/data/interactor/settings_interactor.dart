@@ -10,13 +10,13 @@ class SettingsInteractor {
   );
 
   /// Загружает список мест, соответствующих фильтру.
-  // ignore: avoid_positional_boolean_parameters
   Future<Settings> loadSettings() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     // throw Exception('тестовый сбой');
     return _mockSettings;
   }
 
+  /// Изменяет и сохраняет настройки.
   Future<Settings> changeSettings({
     bool? isDark,
     bool? showTutorial,

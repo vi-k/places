@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:places/data/repository/api_place_mapper.dart';
 import 'package:places/utils/distance.dart';
 
 import 'app.dart';
@@ -53,7 +54,8 @@ final dio = Dio(BaseOptions(
   ));
 
 // Репозитории, интеракторы, фильтр (пока храним здесь)
-final PlaceRepository placeRepository = ApiPlaceRepository(dio);
+final PlaceRepository placeRepository =
+    ApiPlaceRepository(dio, ApiPlaceMapper());
 final LocationRepository locationRepository = RealLocationRepository();
 // final PlaceRepository placeRepository = MockPlaceRepository();
 // final LocationRepository locationRepository = MockLocationRepository();
@@ -76,11 +78,11 @@ Future<void> main() async {
 Future<void> moveFromMockToRepository() async {
   if (placeRepository is! MockPlaceRepository) {
     final mocksRepository = MockPlaceRepository();
-    final mocksList = await mocksRepository.list();
+    final mocksList = await mocksRepository.loadList();
     for (final place in mocksList) {
       try {
         await placeRepository.create(place);
-      } on Object {
+      } on RepositoryAlreadyExistsException {
         await placeRepository.update(place);
       }
     }
@@ -96,11 +98,11 @@ Future<void> testPlaceRepository() async {
   }
 
   // Весь список
-  var list = await placeRepository.list();
+  var list = await placeRepository.loadList();
   printPlaces(list);
 
   // Список постранично
-  list = await placeRepository.list(
+  list = await placeRepository.loadList(
       count: 8,
       pageBy: PlaceOrderBy.name,
       pageLastValue: 'название',
@@ -117,7 +119,7 @@ Future<void> testPlaceRepository() async {
   ));
   print('new place id: $newPlaceId');
 
-  list = await placeRepository.list();
+  list = await placeRepository.loadList();
   printPlaces(list);
 
   // Чтение места
@@ -133,13 +135,13 @@ Future<void> testPlaceRepository() async {
 
   await placeRepository.update(place);
 
-  list = await placeRepository.list();
+  list = await placeRepository.loadList();
   printPlaces(list);
 
   // Удаление места
   await placeRepository.delete(place.id);
 
-  list = await placeRepository.list();
+  list = await placeRepository.loadList();
   printPlaces(list);
 
   // Фильтр

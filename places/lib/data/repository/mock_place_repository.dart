@@ -135,7 +135,7 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Имитирует загрузку списка мест.
   @override
-  Future<List<PlaceBase>> list(
+  Future<List<PlaceBase>> loadList(
       {int? count,
       int? offset,
       PlaceOrderBy? pageBy,
@@ -202,7 +202,7 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Имитирует загрузку списка мест, соответствующих фильтру.
   @override
-  Future<List<PlaceBase>> filteredList(
+  Future<List<PlaceBase>> loadFilteredList(
       {Coord? coord, required Filter filter}) async {
     Iterable<PlaceBase> tmp = _places;
 

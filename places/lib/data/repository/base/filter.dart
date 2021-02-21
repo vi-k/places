@@ -24,9 +24,12 @@ class Filter {
   Filter togglePlaceType(PlaceType placeType) {
     final newPlaceTypes = placeTypes?.toSet() ?? PlaceType.values.toSet();
 
-    newPlaceTypes.contains(placeType)
-        ? newPlaceTypes.remove(placeType)
-        : newPlaceTypes.add(placeType);
+    if (newPlaceTypes.contains(placeType)) {
+      newPlaceTypes.remove(placeType);
+    } else {
+      newPlaceTypes.add(placeType);
+    }
+
     return newPlaceTypes.length == PlaceType.values.length
         ? copyWith(placeTypesReset: true)
         : copyWith(placeTypes: newPlaceTypes);

@@ -8,49 +8,25 @@ import 'package:places/utils/coord.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
 
+import 'api_place_mapper.dart';
 import 'base/filter.dart';
 import 'base/place_repository.dart';
 import 'repository_exception.dart';
 
 /// Репозиторий мест через api.
 class ApiPlaceRepository extends PlaceRepository {
-  ApiPlaceRepository(this.dio);
+  ApiPlaceRepository(this.dio, this.mapper);
 
   final Dio dio;
-
-  PlaceBase _fromString(String value) =>
-      _fromMap(jsonDecode(value) as Map<String, dynamic>);
-
-  PlaceBase _fromMap(Map<String, dynamic> value, [Coord? calDistanceFrom]) =>
-      PlaceBase(
-        id: value['id'] as int,
-        coord: Coord(value['lat'] as double, value['lng'] as double),
-        name: value['name'] as String,
-        photos: (value['urls'] as List<dynamic>).whereType<String>().toList(),
-        type: placeTypeByName(value['placeType'] as String)!,
-        description: value['description'] as String,
-        calDistanceFrom: calDistanceFrom,
-      );
-
-  String _toString(PlaceBase value, {bool withId = true}) {
-    final obj = <String, dynamic>{
-      if (withId && value.id != 0) 'id': value.id,
-      'lat': value.coord.lat,
-      'lng': value.coord.lon,
-      'name': value.name,
-      'urls': value.photos,
-      'placeType': value.type.name,
-      'description': value.description,
-    };
-    return jsonEncode(obj);
-  }
+  final ApiPlaceMapper mapper;
 
   /// Создаёт новое место.
   @override
   Future<int> create(PlaceBase place) async {
     try {
-      final response = await dio.post<String>('/place', data: _toString(place));
-      final newPlace = _fromString(response.data);
+      final response =
+          await dio.post<String>('/place', data: mapper.stringify(place));
+      final newPlace = mapper.parse(response.data);
       return newPlace.id;
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 409) {
@@ -68,7 +44,7 @@ class ApiPlaceRepository extends PlaceRepository {
   Future<PlaceBase> read(int id) async {
     try {
       final response = await dio.get<String>('/place/$id');
-      return _fromString(response.data);
+      return mapper.parse(response.data);
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
         throw RepositoryNotFoundException();
@@ -85,7 +61,7 @@ class ApiPlaceRepository extends PlaceRepository {
   Future<void> update(PlaceBase place) async {
     try {
       await dio.put<String>('/place/${place.id}',
-          data: _toString(place, withId: false));
+          data: mapper.stringify(place, withId: false));
     } on DioError catch (e) {
       if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
         throw RepositoryNotFoundException();
@@ -115,7 +91,7 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест.
   @override
-  Future<List<PlaceBase>> list(
+  Future<List<PlaceBase>> loadList(
       {int? count,
       int? offset,
       PlaceOrderBy? pageBy,
@@ -158,7 +134,7 @@ class ApiPlaceRepository extends PlaceRepository {
       final response = await dio.getUri<String>(uri);
       return (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
-          .map(_fromMap)
+          .map(mapper.map)
           .toList();
     } on DioError catch (e) {
       final error = RepositoryException.fromDio(e);
@@ -169,21 +145,21 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест, соответствующих фильтру.
   @override
-  Future<List<PlaceBase>> filteredList(
+  Future<List<PlaceBase>> loadFilteredList(
       {Coord? coord, required Filter filter}) async {
     try {
-      /// Если нужно получить объекты без ограничения расстояния, но, допустим,
-      /// по имени и типу, то придётся применять костыли. Есть ограничения
-      /// на радиус в нашем api (~ < 9'000'000). При больших числах он перестаёт
-      /// возвращать значения или возвращает только часть (причём дальние
-      /// объекты, а ближние пропускает). Видимо, используются формулы,
-      /// не рассчитанные на большие значения. Рассчитывается расстояние в этом
-      /// случае также неверно. Так что фильтр по расстоянию можно использовать
-      /// (как и предполагается по заданию) только в пределах одного города.
-      /// Но ведь хочется посмотреть, что там у других! А если радиус не
-      /// устанавливать, то работает только фильтр по названию, а по типам
-      /// не работает. Поэтому делаем возможность не устанавливать радиус
-      /// (радиус = ∞), а по типам фильтруем вручную.
+      // Если нужно получить объекты без ограничения расстояния, но, допустим,
+      // по имени и типу, то придётся применять костыли. Есть ограничения
+      // на радиус в нашем api (~ < 9'000'000). При больших числах он перестаёт
+      // возвращать значения или возвращает только часть (причём дальние
+      // объекты, а ближние пропускает). Видимо, используются формулы,
+      // не рассчитанные на большие значения. Рассчитывается расстояние в этом
+      // случае также неверно. Так что фильтр по расстоянию можно использовать
+      // (как и предполагается по заданию) только в пределах одного города.
+      // Но ведь хочется посмотреть, что там у других! А если радиус не
+      // устанавливать, то работает только фильтр по названию, а по типам
+      // не работает. Поэтому делаем возможность не устанавливать радиус
+      // (радиус = ∞), а по типам фильтруем вручную.
 
       final response = await dio.post<String>('/filtered_places',
           data: jsonEncode(<String, dynamic>{
@@ -199,7 +175,7 @@ class ApiPlaceRepository extends PlaceRepository {
       var tmp = (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           // Расчёт расстояния, если задана точка отсчёта.
-          .map(coord?.let((it) => (e) => _fromMap(e, it)) ?? _fromMap);
+          .map(coord?.let((it) => (e) => mapper.map(e, it)) ?? mapper.map);
 
       // Ручная фильтрация по типу.
       filter.placeTypes
@@ -230,7 +206,7 @@ class ApiPlaceRepository extends PlaceRepository {
       final result = (jsonDecode(response.data) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           // Расчёт расстояния, если задана точка отсчёта.
-          .map(coord?.let((it) => (e) => _fromMap(e, it)) ?? _fromMap)
+          .map(coord?.let((it) => (e) => mapper.map(e, it)) ?? mapper.map)
           .toList();
 
       // Сортировка по расстоянию.

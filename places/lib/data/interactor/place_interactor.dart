@@ -26,7 +26,7 @@ class PlaceInteractor {
   /// Загружает список мест, соответствующих фильтру.
   Future<List<Place>> getPlaces(Filter filter) async {
     // Получаем список из репозитория
-    final places = await placeRepository.filteredList(
+    final places = await placeRepository.loadFilteredList(
         coord: locationRepository.location, filter: filter);
 
     return _loadUserInfoForList(places);
