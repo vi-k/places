@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+
 import 'standart_button.dart';
 
 /// Вызывает виджет выбора даты для iOS по аналогии с showDatePicker

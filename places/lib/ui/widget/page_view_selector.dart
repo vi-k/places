@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Селектор для PageView в виде линии и точек, плавно перетекающих друг
 /// в друга при изменении страницы.

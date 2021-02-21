@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Виджет загружаемой из сети картинки с индикатором прогресса внизу виджета.
 class LoadableImage extends StatelessWidget {
@@ -21,6 +21,8 @@ class LoadableImage extends StatelessWidget {
 
     return Image.network(
       url,
+      // colorBlendMode: ,
+      filterQuality: FilterQuality.high,
       fit: BoxFit.cover,
       frameBuilder: (context, child, frame, _) => frame == null
           ? Container(

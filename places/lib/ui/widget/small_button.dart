@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Малая кнопка.
 ///
@@ -31,13 +31,13 @@ class SmallButton extends StatelessWidget {
   final Color? color;
 
   /// Цвета для Ripple-эффекта.
-  /// 
+  ///
   /// По умолчанию `Theme.highlightColor` и `Theme.splashColor`.
   final Color? highlightColor;
   final Color? splashColor;
 
   /// Стиль текста.
-  /// 
+  ///
   /// По умолчанию `MyTheme.textRegular14Main` или
   /// `MyTheme.textRegular14Light56`, если [onPressed] не задан.
   final TextStyle? style;
@@ -64,15 +64,9 @@ class SmallButton extends StatelessWidget {
       width: width,
       height: height,
       child: svg == null && icon == null
-          ? FlatButton(
-              color: color,
-              highlightColor: highlightColor ?? theme.app.highlightColor,
-              splashColor: splashColor ?? theme.app.splashColor,
-              height: smallButtonHeight,
-              minWidth: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(smallButtonRadius),
+          ? TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(color),
               ),
               onPressed: onPressed,
               child: Text(
@@ -80,15 +74,9 @@ class SmallButton extends StatelessWidget {
                 style: textStyle,
               ),
             )
-          : FlatButton.icon(
-              color: color,
-              highlightColor: highlightColor ?? theme.app.highlightColor,
-              splashColor: splashColor ?? theme.app.splashColor,
-              height: smallButtonHeight,
-              minWidth: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(smallButtonRadius),
+          : TextButton.icon(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(color),
               ),
               onPressed: onPressed,
               icon: icon ??

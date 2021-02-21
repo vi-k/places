@@ -70,6 +70,7 @@ linter:
     prefer_asserts_with_message: false
     always_put_required_named_parameters_first: false
     avoid_print: false
+    prefer_relative_imports: false
 
     # Enabled
     #avoid_annotating_with_dynamic: true
@@ -199,7 +200,6 @@ linter:
     directives_ordering: true
     package_api_docs: true
     implementation_imports: true
-    prefer_relative_imports: true
     prefer_interpolation_to_compose_strings: true
     unnecessary_brace_in_string_interps: true
     avoid_function_literals_in_foreach_calls: true

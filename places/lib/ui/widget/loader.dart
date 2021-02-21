@@ -17,6 +17,7 @@ class Loader<T> extends StatefulWidget {
     this.loader,
     required this.error,
     required this.builder,
+    this.cleanBuilder = false,
   }) : super(key: key);
 
   /// Тег для проверки, изменились ли данные.
@@ -39,6 +40,10 @@ class Loader<T> extends StatefulWidget {
   final Widget Function(BuildContext context, LoadingState state, T? data)
       builder;
 
+  /// Чистый билдер - не использовать никаких обёрток над тем, что возвращает
+  /// пользователь.
+  final bool cleanBuilder;
+
   static _LoaderState<T> of<T>(BuildContext context, {bool listen = false}) =>
       _LoadScope.of<T>(context, listen: listen).state;
 
@@ -49,10 +54,6 @@ class Loader<T> extends StatefulWidget {
 class _LoaderState<T> extends State<Loader<T>> {
   // Флаг о необходимости оповестить зависимости об изменениях.
   var _updateShouldNotify = false;
-
-  // Сохраняем дерево, созданное через builder, чтобы не пересоздавать каждый
-  // раз заново. Пересоздаём только при изменении состояния.
-  Widget? _child;
 
   // Оборачиваем результат работы builder'а в контейнер с глобальным ключом,
   // чтобы виджеты не пересоздавались.
@@ -87,7 +88,6 @@ class _LoaderState<T> extends State<Loader<T>> {
     final load = widget.load;
 
     if (load != null) {
-      _child = null;
       _state = LoadingState.loading;
 
       try {
@@ -96,7 +96,6 @@ class _LoaderState<T> extends State<Loader<T>> {
           _error = null;
           _data = value;
           _state = LoadingState.done;
-          _child = null;
           update();
         }
       } on Object catch (e) {
@@ -104,7 +103,6 @@ class _LoaderState<T> extends State<Loader<T>> {
           _error = e;
           _data = null;
           _state = LoadingState.failed;
-          _child = null;
           update();
         }
       }
@@ -135,22 +133,20 @@ class _LoaderState<T> extends State<Loader<T>> {
   @override
   Widget build(BuildContext context) => _LoadScope(
         state: this,
-        // child: _child ?? (_child = Builder(builder: _buildChild)),
-        child: _child = Builder(builder: _buildChild),
+        child: Builder(builder: _buildChild),
       );
 
   Widget _buildChild(BuildContext context) => _state == LoadingState.failed
       // Ошибка
       ? widget.error(context, _error!)
-      // Данные загружены
-      : _state == LoadingState.done
-          ? _buildChildContainer(context)
-          // Ожидание загрузки данных
+      : widget.cleanBuilder
+          ? widget.builder(context, _state, _data)
           : Stack(
               children: [
                 AbsorbPointer(
+                  absorbing: _state != LoadingState.done,
                   child: Opacity(
-                    opacity: 0.3,
+                    opacity: _state == LoadingState.done ? 1.0 : 0.3,
                     child: _buildChildContainer(context),
                   ),
                 ),

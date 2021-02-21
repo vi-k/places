@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:places/data/model/settings.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/widget/app_navigation_bar.dart';
+import 'package:places/ui/widget/loader.dart';
+import 'package:places/ui/widget/small_app_bar.dart';
+import 'package:places/main.dart';
 
-import '../res/const.dart';
-import '../res/strings.dart';
-import '../res/themes.dart';
-import '../widget/app_navigation_bar.dart';
-import '../widget/settings.dart';
-import '../widget/small_app_bar.dart';
 import 'onboarding_screen.dart';
 
 /// Экран настроек.
@@ -30,9 +32,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               stringIsDark,
               style: theme.textRegular14Main,
             ),
-            value: Settings.of(context, listen: true).isDark,
+            value: Loader.of<Settings>(context).data!.isDark,
             onChanged: (value) {
-              Settings.of(context).isDark = value;
+              settingsInteractor.changeSettings(isDark: value);
+              Loader.of<Settings>(context).reload();
             },
           ),
           const _ListDivider(),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../res/strings.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-import '../screen/settings_screen.dart';
-import '../screen/sight_list_screen.dart';
-import '../screen/visiting_screen.dart';
+import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/place_list_screen.dart';
+import 'package:places/ui/screen/settings_screen.dart';
+import 'package:places/ui/screen/favorite_screen.dart';
 
 /// BottomNavigator приложения.
 class AppNavigationBar extends StatelessWidget {
@@ -34,7 +34,7 @@ class AppNavigationBar extends StatelessWidget {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
-                builder: (context) => SightListScreen(),
+                builder: (context) => PlaceListScreen(),
               ),
             );
             break;
@@ -48,7 +48,7 @@ class AppNavigationBar extends StatelessWidget {
             Navigator.pushReplacement<void, void>(
               context,
               MaterialPageRoute(
-                builder: (context) => VisitingScreen(),
+                builder: (context) => FavoriteScreen(),
               ),
             );
             break;
@@ -70,7 +70,7 @@ class AppNavigationBar extends StatelessWidget {
             index == 0 ? Svg24.listFull : Svg24.list,
             color: _itemColor(theme, index == 0),
           ),
-          label: stringSightList,
+          label: stringPlaceList,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(

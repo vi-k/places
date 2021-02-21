@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/model/place_type.dart';
+import 'package:places/ui/model/place_type_ui.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/svg.dart';
+import 'package:places/ui/res/themes.dart';
 
-import '../../domain/category.dart';
-import '../res/const.dart';
-import '../res/svg.dart';
-import '../res/themes.dart';
-
-/// Виджет категории места.
-class SightCategoryFilter extends StatelessWidget {
-  const SightCategoryFilter({
+/// Виджет типа места.
+class PlaceTypeFilter extends StatelessWidget {
+  PlaceTypeFilter({
     Key? key,
-    required this.category,
+    required PlaceType placeType,
     required this.active,
     required this.onPressed,
-  }) : super(key: key);
+  })   : placeTypeUi = PlaceTypeUi(placeType),
+        super(key: key);
 
-  /// Категория.
-  final Category category;
+  /// Тип места.
+  final PlaceTypeUi placeTypeUi;
 
-  /// Активна категория?
-  /// 
-  /// Флажок справа, что именно эта категория сейчас установлена для места.
+  /// Активен тип?
+  ///
+  /// Флажок справа, что именно этот тип сейчас установлен.
   final bool active;
 
   /// Обратный вызов при нажатии.
@@ -32,11 +33,11 @@ class SightCategoryFilter extends StatelessWidget {
 
     return Container(
       margin: commonPadding,
-      width: filtersCategorySize,
+      width: filtersPlaceTypeSize,
       child: Column(
         children: [
           SizedBox(
-            height: filtersCategorySize,
+            height: filtersPlaceTypeSize,
             child: Stack(
               children: [
                 Material(
@@ -46,12 +47,10 @@ class SightCategoryFilter extends StatelessWidget {
                   child: InkWell(
                     onTap: onPressed,
                     child: Center(
-                      child: category.svg == null
-                          ? null
-                          : SvgPicture.asset(
-                              category.svg!,
-                              color: theme.accentColor,
-                            ),
+                      child: SvgPicture.asset(
+                        placeTypeUi.svg,
+                        color: theme.accentColor,
+                      ),
                     ),
                   ),
                 ),
@@ -78,7 +77,7 @@ class SightCategoryFilter extends StatelessWidget {
           ),
           const SizedBox(height: commonSpacing1_2),
           Text(
-            category.name,
+            placeTypeUi.name,
             textAlign: TextAlign.center,
             style: theme.textRegular12Main,
           ),

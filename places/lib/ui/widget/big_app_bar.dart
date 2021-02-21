@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../res/const.dart';
-import '../res/themes.dart';
+import 'package:places/ui/res/const.dart';
+import 'package:places/ui/res/themes.dart';
 
 /// Большой AppBar (для страницы списка интересных мест).
 class BigAppBar extends StatelessWidget implements PreferredSizeWidget {

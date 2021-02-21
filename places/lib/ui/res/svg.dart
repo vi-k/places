@@ -37,7 +37,7 @@ class Svg32 {
   static const hotel = 'res/svg32/hotel.svg';
   static const museum = 'res/svg32/museum.svg';
   static const park = 'res/svg32/park.svg';
-  static const particularPlace = 'res/svg32/particular_place.svg';
+  static const other = 'res/svg32/other.svg';
   static const restaurant = 'res/svg32/restaurant.svg';
 }
 
