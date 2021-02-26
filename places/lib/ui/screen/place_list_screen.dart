@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/main.dart';
@@ -5,11 +7,11 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
-import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/search_bar.dart';
 import 'package:places/ui/widget/sliver_floating_header.dart';
+import 'package:places/utils/let_and_also.dart';
 
 import 'place_edit_screen.dart';
 import 'search_screen.dart';
@@ -21,8 +23,29 @@ class PlaceListScreen extends StatefulWidget {
 }
 
 class _PlaceListScreenState extends State<PlaceListScreen> {
-  // Пока фильтр храним в main.dart
-  // Filter filter = Filter();
+  final placesController = StreamController<List<Place>?>();
+  List<Place>? lastPlaces;
+
+  Future<void> reloadPlaces() async {
+    placesController.add(null);
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
+    final places = await placeInteractor.getPlaces(filter);
+    placesController.add(places);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    reloadPlaces();
+  }
+
+  @override
+  void dispose() {
+    placesController.close();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,37 +57,47 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ? 2
             : 3;
 
-    return Loader<List<Place>>(
-      load: () => placeInteractor.getPlaces(filter),
-      error: (context, error) => Failed(
-        message: error.toString(),
-        onRepeat: () => Loader.of<List<Place>>(context).reload(),
-      ),
-      builder: (context, _, places) => Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            _buildHeader(context, theme, columnsCount),
-            PlaceCardGrid(
-              cardType: Favorite.no,
-              places: places,
-              asSliver: true,
-            ),
-          ],
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          _buildHeader(context, theme, columnsCount),
+        ],
+        body: RefreshIndicator(
+          onRefresh: reloadPlaces,
+          child: StreamBuilder<List<Place>?>(
+            stream: placesController.stream,
+            builder: (context, snapshot) {
+              lastPlaces ??= snapshot.data;
+              return lastPlaces == null
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : CustomScrollView(
+                      slivers: [
+                        PlaceCardGrid(
+                          cardType: Favorite.no,
+                          places: lastPlaces,
+                          asSliver: true,
+                        ),
+                      ],
+                    );
+            },
+          ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: columnsCount == 2
-            ? FloatingActionButton(
-                onPressed: () => _newPlace(context),
-                child: const Icon(Icons.add),
-              )
-            : FloatingActionButton.extended(
-                isExtended: true,
-                onPressed: () => _newPlace(context),
-                icon: const Icon(Icons.add),
-                label: Text(stringNewPlace.toUpperCase()),
-              ),
-        bottomNavigationBar: const AppNavigationBar(index: 0),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: columnsCount == 2
+          ? FloatingActionButton(
+              onPressed: () => _newPlace(context),
+              child: const Icon(Icons.add),
+            )
+          : FloatingActionButton.extended(
+              isExtended: true,
+              onPressed: () => _newPlace(context),
+              icon: const Icon(Icons.add),
+              label: Text(stringNewPlace.toUpperCase()),
+            ),
+      bottomNavigationBar: const AppNavigationBar(index: 0),
     );
   }
 
@@ -91,11 +124,11 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
       );
 
   Future<void> _newPlace(BuildContext context) async {
-    await Navigator.push<Place>(
+    final place = await Navigator.push<Place>(
         context,
         MaterialPageRoute(
           builder: (context) => const PlaceEditScreen(),
         ));
-    Loader.of<List<Place>>(context).reload();
+    if (place != null) Loader.of<List<Place>>(context).reload();
   }
 }
