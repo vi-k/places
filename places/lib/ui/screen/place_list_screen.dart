@@ -35,9 +35,14 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
 
     return Loader<List<Place>>(
       load: () => placeInteractor.getPlaces(filter),
-      error: (context, error) => Failed(
-        message: error.toString(),
-        onRepeat: () => Loader.of<List<Place>>(context).reload(),
+      error: (context, error) => Scaffold(
+        body: Padding(
+          padding: commonPadding,
+          child: Failed(
+            message: error.toString(),
+            onRepeat: () => Loader.of<List<Place>>(context).reload(),
+          ),
+        ),
       ),
       builder: (context, _, places) => Scaffold(
         body: NestedScrollView(
