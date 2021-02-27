@@ -50,7 +50,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
-    final isSmallScreen = MediaQuery.of(context).size.height <= 800;
 
     return Scaffold(
       appBar: SmallAppBar(
@@ -68,7 +67,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Expanded(
             child: ListView(
               children: [
-                ..._buildPlaceTypes(isSmallScreen),
+                ..._buildPlaceTypes(),
                 const SizedBox(height: commonSpacing),
                 ..._buildDistance(theme),
                 const SizedBox(height: commonSpacing),
@@ -122,21 +121,13 @@ class _FiltersScreenState extends State<FiltersScreen> {
         ),
       ];
 
-  List<Widget> _buildPlaceTypes(bool isSmallScreen) => [
+  List<Widget> _buildPlaceTypes() => [
         Section(
           stringPlaceTypes,
-          child: isSmallScreen
-              ? SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildPlaceTypesItems(),
-                  ),
-                )
-              : Wrap(
-                  alignment: WrapAlignment.spaceEvenly,
-                  children: _buildPlaceTypesItems(),
-                ),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: _buildPlaceTypesItems(),
+          ),
         ),
       ];
 
