@@ -93,6 +93,10 @@ class _SearchBarState extends State<SearchBar> {
         selection: TextSelection.collapsed(offset: widget.initialText.length),
       );
     }
+
+    if (oldWidget.filter != widget.filter) {
+      filter = widget.filter;
+    }
   }
 
   @override
@@ -152,6 +156,7 @@ class _SearchBarState extends State<SearchBar> {
                           Svg24.filter,
                           color: theme.accentColor,
                           onPressed: () async {
+                            widget.filter;
                             final newFilter = await Navigator.push<Filter>(
                               context,
                               MaterialPageRoute(

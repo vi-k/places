@@ -1,9 +1,13 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+
 import 'package:places/data/model/place_type.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
 
 /// Фильтр по расстоянию до места и типу места.
-class Filter {
+@immutable
+class Filter extends Equatable {
   Filter({
     this.radius = const Distance(double.infinity),
     Set<PlaceType>? placeTypes,
@@ -48,5 +52,13 @@ class Filter {
   }
 
   @override
-  String toString() => 'Filter(radius: $radius, placeTypes: $placeTypes)';
+  String toString() {
+    final placeTypesStr = placeTypes == null
+        ? 'all'
+        : '[${placeTypes!.map((e) => e.name).join(', ')}]';
+    return 'Filter(radius: $radius, placeTypes: $placeTypesStr)';
+  }
+
+  @override
+  List<Object?> get props => [radius, placeTypes];
 }

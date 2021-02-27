@@ -33,55 +33,51 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ? 2
             : 3;
 
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxScrolled) => [
-          _buildHeader(context, theme, columnsCount),
-        ],
-        body: Loader<List<Place>>(
-          load: () => placeInteractor.getPlaces(filter),
-          error: (context, error) => Failed(
-            message: error.toString(),
-            onRepeat: () => Loader.of<List<Place>>(context).reload(),
-          ),
-          builder: (context, _, places) => places == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : RefreshIndicator(
-                  onRefresh: () async =>
-                      Loader.of<List<Place>>(context).reload(),
-                  child: CustomScrollView(
-                    slivers: [
-                      PlaceCardGrid(
-                        cardType: Favorite.no,
-                        places: places,
-                        asSliver: true,
-                      ),
-                    ],
-                  ),
-                ),
-        ),
+    return Loader<List<Place>>(
+      load: () => placeInteractor.getPlaces(filter),
+      error: (context, error) => Failed(
+        message: error.toString(),
+        onRepeat: () => Loader.of<List<Place>>(context).reload(),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: columnsCount == 2
-          ? FloatingActionButton(
-              onPressed: () => _newPlace(context),
-              child: const Icon(Icons.add),
-            )
-          : FloatingActionButton.extended(
-              isExtended: true,
-              onPressed: () => _newPlace(context),
-              icon: const Icon(Icons.add),
-              label: Text(stringNewPlace.toUpperCase()),
+      builder: (context, _, places) => Scaffold(
+        body: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxScrolled) => [
+            _buildHeader(context, theme, columnsCount),
+          ],
+          body: RefreshIndicator(
+            onRefresh: () async => Loader.of<List<Place>>(context).reload(),
+            child: CustomScrollView(
+              slivers: [
+                PlaceCardGrid(
+                  cardType: Favorite.no,
+                  places: places,
+                  asSliver: true,
+                ),
+              ],
             ),
-      bottomNavigationBar: const AppNavigationBar(index: 0),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: columnsCount == 2
+            ? FloatingActionButton(
+                onPressed: () => _newPlace(context),
+                child: const Icon(Icons.add),
+              )
+            : FloatingActionButton.extended(
+                isExtended: true,
+                onPressed: () => _newPlace(context),
+                icon: const Icon(Icons.add),
+                label: Text(stringNewPlace.toUpperCase()),
+              ),
+        bottomNavigationBar: const AppNavigationBar(index: 0),
+      ),
     );
   }
 
   Widget _buildHeader(
           BuildContext context, MyThemeData theme, int columnsCount) =>
       SliverFloatingHeader(
+        key: ValueKey(filter),
         title: stringPlaceList,
         bottom: SearchBar(
           onTap: () async {
