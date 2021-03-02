@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/place_user_info.dart';
-import 'package:places/main.dart';
+import 'package:places/data/repository/base/location_repository.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -19,6 +20,7 @@ import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/focus.dart';
+import 'package:provider/provider.dart';
 
 import 'place_type_select_screen.dart';
 
@@ -111,6 +113,8 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
   // Сохраняет изменения.
   Future<Place> _save() async {
+    final placeInteractor = context.read<PlaceInteractor>();
+
     var id = _place?.id;
 
     final newPlace = Place(
@@ -124,7 +128,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       description: _descriptionController.text,
       type: _placeType!.type,
       userInfo: PlaceUserInfo.zero,
-      calDistanceFrom: locationRepository.location,
+      calDistanceFrom: context.read<LocationRepository>().location,
     );
 
     if (id == null) {

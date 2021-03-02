@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
@@ -12,6 +13,7 @@ import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/search_bar.dart';
 import 'package:places/ui/widget/sliver_floating_header.dart';
+import 'package:provider/provider.dart';
 
 import 'place_edit_screen.dart';
 import 'search_screen.dart';
@@ -25,6 +27,7 @@ class PlaceListScreen extends StatefulWidget {
 class _PlaceListScreenState extends State<PlaceListScreen> {
   @override
   Widget build(BuildContext context) {
+    final placeInteractor = context.read<PlaceInteractor>();
     final theme = MyTheme.of(context);
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
     final columnsCount = aspectRatio <= 4 / 5

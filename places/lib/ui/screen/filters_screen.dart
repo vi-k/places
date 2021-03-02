@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
-
 import 'package:places/data/repository/base/filter.dart';
-import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
@@ -12,6 +11,7 @@ import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
+import 'package:provider/provider.dart';
 
 import 'utils/distance_utils.dart';
 
@@ -145,6 +145,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
       ];
 
   Future<void> _recalcCardCount() async {
+    final placeInteractor = context.read<PlaceInteractor>();
     final places = await placeInteractor.getPlaces(_filter);
     final count = places.length;
 

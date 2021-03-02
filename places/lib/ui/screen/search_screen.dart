@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/search_history.dart';
-import 'package:places/main.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -16,6 +15,7 @@ import 'package:places/ui/widget/section.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/svg_button.dart';
+import 'package:provider/provider.dart';
 
 /// Экран поиска.
 class SearchScreen extends StatefulWidget {
@@ -42,6 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final placeInteractor = context.read<PlaceInteractor>();
     final theme = MyTheme.of(context);
 
     return Loader<List<Place>?>(
@@ -69,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
         body: places == null
-            ? _buildHistory(theme)
+            ? _buildHistory(placeInteractor, theme)
             : places.isEmpty
                 ? const Failed(
                     svg: Svg64.search,
@@ -81,8 +82,9 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildHistory(MyThemeData theme) => Loader<List<SearchHistory>>(
-        load: placeInteractor.getSearchHostory,
+  Widget _buildHistory(PlaceInteractor placeInteractor, MyThemeData theme) =>
+      Loader<List<SearchHistory>>(
+        load: placeInteractor.getSearchHistory,
         error: (context, error) => Failed(
           message: error.toString(),
           onRepeat: () => Loader.of<List<Place>?>(context).reload(),
