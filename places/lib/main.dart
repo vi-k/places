@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:places/data/repository/api_place_mapper.dart';
+import 'package:places/data/repository/dio_exception.dart';
 import 'package:places/utils/distance.dart';
 
 import 'app.dart';
@@ -34,7 +35,7 @@ final dio = Dio(BaseOptions(
       var message =
           'Ошибка при выполнении запроса ${error.request.method} ${error.request.uri}: '
           '${error.message} (${error.type})';
-      final repositoryException = RepositoryException.fromDio(error);
+      final repositoryException = createExceptionFromDio(error);
       if (repositoryException != null) {
         message += ': ${repositoryException.message}';
       }
@@ -54,10 +55,10 @@ final dio = Dio(BaseOptions(
   ));
 
 // Репозитории, интеракторы, фильтр (пока храним здесь)
-final PlaceRepository placeRepository =
-    ApiPlaceRepository(dio, ApiPlaceMapper());
+// final PlaceRepository placeRepository =
+    // ApiPlaceRepository(dio, ApiPlaceMapper());
 final LocationRepository locationRepository = RealLocationRepository();
-// final PlaceRepository placeRepository = MockPlaceRepository();
+final PlaceRepository placeRepository = MockPlaceRepository();
 // final LocationRepository locationRepository = MockLocationRepository();
 final placeInteractor = PlaceInteractor(
     placeRepository: placeRepository, locationRepository: locationRepository);

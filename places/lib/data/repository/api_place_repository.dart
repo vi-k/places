@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/data/repository/network_exception.dart';
+import 'package:places/data/repository/dio_exception.dart';
+import 'package:places/data/repository/repository_network_exception.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
@@ -29,19 +30,13 @@ class ApiPlaceRepository extends PlaceRepository {
           await dio.post<String>('/place', data: mapper.stringify(place));
       final newPlace = mapper.parse(response.data);
       return newPlace.id;
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 409) {
-      //   throw RepositoryAlreadyExistsException();
-      // }
+    } on DioError catch (error) {
+      if (error.type == DioErrorType.RESPONSE &&
+          error.response.statusCode == 409) {
+        throw RepositoryAlreadyExistsException();
+      }
 
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -51,19 +46,13 @@ class ApiPlaceRepository extends PlaceRepository {
     try {
       final response = await dio.get<String>('/place/$id');
       return mapper.parse(response.data);
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-      //   throw RepositoryNotFoundException();
-      // }
+    } on DioError catch (error) {
+      if (error.type == DioErrorType.RESPONSE &&
+          error.response.statusCode == 404) {
+        throw RepositoryNotFoundException();
+      }
 
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -73,19 +62,13 @@ class ApiPlaceRepository extends PlaceRepository {
     try {
       await dio.put<String>('/place/${place.id}',
           data: mapper.stringify(place, withId: false));
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-      //   throw RepositoryNotFoundException();
-      // }
+    } on DioError catch (error) {
+      if (error.type == DioErrorType.RESPONSE &&
+          error.response.statusCode == 404) {
+        throw RepositoryNotFoundException();
+      }
 
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -94,19 +77,13 @@ class ApiPlaceRepository extends PlaceRepository {
   Future<void> delete(int id) async {
     try {
       await dio.delete<String>('/place/$id');
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-      //   throw RepositoryNotFoundException();
-      // }
+    } on DioError catch (error) {
+      if (error.type == DioErrorType.RESPONSE &&
+          error.response.statusCode == 404) {
+        throw RepositoryNotFoundException();
+      }
 
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -157,15 +134,8 @@ class ApiPlaceRepository extends PlaceRepository {
           .whereType<Map<String, dynamic>>()
           .map(mapper.map)
           .toList();
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+    } on DioError catch (error) {
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -189,7 +159,8 @@ class ApiPlaceRepository extends PlaceRepository {
       // не работает. Поэтому делаем возможность не устанавливать радиус
       // (радиус = ∞), а по типам фильтруем вручную.
 
-      final response = await dio.post<String>((++counter).isEven ? '/filtered_places' : '/fake_list',
+      final response = await dio.post<String>(
+          (++counter).isEven ? '/filtered_places' : '/fake_list',
           data: jsonEncode(<String, dynamic>{
             if (coord != null && filter.radius.isFinite) ...<String, dynamic>{
               'lat': coord.lat,
@@ -217,15 +188,8 @@ class ApiPlaceRepository extends PlaceRepository {
       }
 
       return result;
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+    } on DioError catch (error) {
+      throw createExceptionFromDio(error);
     }
   }
 
@@ -248,15 +212,8 @@ class ApiPlaceRepository extends PlaceRepository {
       }
 
       return result;
-    } on DioError catch (e) {
-      throw NetworkException(
-        url: e.request.uri.path,
-        statusCode: e.response.statusCode,
-        message: e.message,
-      );
-      // final error = RepositoryException.fromDio(e);
-      // if (error == null) rethrow;
-      // throw error;
+    } on DioError catch (error) {
+      throw createExceptionFromDio(error);
     }
   }
 }
