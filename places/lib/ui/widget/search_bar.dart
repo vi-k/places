@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rxdart/rxdart.dart';
-
 import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -156,7 +155,6 @@ class _SearchBarState extends State<SearchBar> {
                           Svg24.filter,
                           color: theme.accentColor,
                           onPressed: () async {
-                            widget.filter;
                             final newFilter = await Navigator.push<Filter>(
                               context,
                               MaterialPageRoute(

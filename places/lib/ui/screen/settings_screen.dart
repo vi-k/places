@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:places/data/interactor/settings_interactor.dart';
 import 'package:places/data/model/settings.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -6,7 +7,7 @@ import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
-import 'package:places/main.dart';
+import 'package:provider/provider.dart';
 
 import 'onboarding_screen.dart';
 
@@ -34,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             value: Loader.of<Settings>(context).data!.isDark,
             onChanged: (value) {
-              settingsInteractor.changeSettings(isDark: value);
+              context.read<SettingsInteractor>().changeSettings(isDark: value);
               Loader.of<Settings>(context).reload();
             },
           ),

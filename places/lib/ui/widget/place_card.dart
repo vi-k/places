@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/main.dart';
@@ -12,6 +13,7 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
+import 'package:provider/provider.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
@@ -83,6 +85,7 @@ class _PlaceCardState extends State<PlaceCard> {
                   key: ValueKey(place.id),
                   direction: DismissDirection.horizontal,
                   onDismissed: (direction) {
+                    final placeInteractor = context.read<PlaceInteractor>();
                     if (widget.cardType == Favorite.wishlist) {
                       _updatePlace(
                           direction == DismissDirection.startToEnd
@@ -188,6 +191,7 @@ class _PlaceCardState extends State<PlaceCard> {
   Widget _buildSignatures(MyThemeData theme) {
     final textStyle = theme.textBold14White;
     final color = textStyle.color!;
+    final placeInteractor = context.read<PlaceInteractor>();
 
     final signatures = <Widget>[];
     if (widget.cardType == Favorite.no) {

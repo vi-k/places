@@ -5,15 +5,16 @@ import 'package:intl/intl.dart';
 
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
-import 'data/interactor/settings_interactor.dart';
 import 'data/model/place_base.dart';
 import 'data/model/place_type.dart';
+import 'data/repository/api_place_mapper.dart';
+import 'data/repository/api_place_repository.dart';
 import 'data/repository/base/filter.dart';
 import 'data/repository/base/location_repository.dart';
+import 'data/repository/base/mock_location_repository.dart';
 import 'data/repository/base/place_repository.dart';
 import 'data/repository/dio_exception.dart';
 import 'data/repository/mock_place_repository.dart';
-import 'data/repository/real_location_repository.dart';
 import 'data/repository/repository_exception.dart';
 import 'utils/coord.dart';
 import 'utils/distance.dart';
@@ -45,14 +46,6 @@ final dio = Dio(BaseOptions(
   ));
 
 // Репозитории, интеракторы, фильтр (пока храним здесь)
-// final PlaceRepository placeRepository =
-    // ApiPlaceRepository(dio, ApiPlaceMapper());
-final LocationRepository locationRepository = RealLocationRepository();
-final PlaceRepository placeRepository = MockPlaceRepository();
-// final LocationRepository locationRepository = MockLocationRepository();
-final placeInteractor = PlaceInteractor(
-    placeRepository: placeRepository, locationRepository: locationRepository);
-final settingsInteractor = SettingsInteractor();
 Filter filter = Filter();
 
 Future<void> main() async {
@@ -67,15 +60,14 @@ Future<void> main() async {
 
 // Перенос мест из моковых в БД
 Future<void> moveFromMockToRepository() async {
-  if (placeRepository is! MockPlaceRepository) {
-    final mocksRepository = MockPlaceRepository();
-    final mocksList = await mocksRepository.loadList();
-    for (final place in mocksList) {
-      try {
-        await placeRepository.create(place);
-      } on RepositoryAlreadyExistsException {
-        await placeRepository.update(place);
-      }
+  final placeRepository = ApiPlaceRepository(dio, ApiPlaceMapper());
+  final mocksRepository = MockPlaceRepository();
+  final mocksList = await mocksRepository.loadList();
+  for (final place in mocksList) {
+    try {
+      await placeRepository.create(place);
+    } on RepositoryAlreadyExistsException {
+      await placeRepository.update(place);
     }
   }
 }
@@ -87,6 +79,13 @@ Future<void> testPlaceRepository() async {
       // print(place.toString());
     }
   }
+
+  // final PlaceRepository placeRepository =
+  //     ApiPlaceRepository(dio, ApiPlaceMapper());
+  final PlaceRepository placeRepository = MockPlaceRepository();
+  final LocationRepository locationRepository = MockLocationRepository();
+  final placeInteractor = PlaceInteractor(
+      placeRepository: placeRepository, locationRepository: locationRepository);
 
   // Весь список
   var list = await placeRepository.loadList();
