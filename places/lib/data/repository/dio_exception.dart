@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
 
 import 'repository_exception.dart';
@@ -15,7 +14,7 @@ String _messageFromJson(Map<String, dynamic> json) =>
 RepositoryException createExceptionFromDio(DioError error) {
   var message = error.message;
 
-  if (error.type == DioErrorType.RESPONSE) {
+  if (error.type == DioErrorType.response) {
     final dynamic data = error.response?.data;
     if (data != null && data is String) {
       if (data.isEmpty) message = 'no description';
@@ -29,9 +28,9 @@ RepositoryException createExceptionFromDio(DioError error) {
   }
 
   return RepositoryNetworkException(
-    method: error.request.method,
-    url: error.request.uri.path,
-    statusCode: error.response.statusCode,
+    method: error.request?.method ?? 'UNKNOWN METHOD',
+    url: error.request?.uri.path ?? 'empty_path',
+    statusCode: error.response?.statusCode ?? 0,
     message: message,
   );
 }

@@ -1,26 +1,22 @@
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:places/data/repository/api_place_mapper.dart';
-import 'package:places/data/repository/dio_exception.dart';
-import 'package:places/utils/distance.dart';
 
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
 import 'data/interactor/settings_interactor.dart';
 import 'data/model/place_base.dart';
 import 'data/model/place_type.dart';
-import 'data/repository/api_place_repository.dart';
 import 'data/repository/base/filter.dart';
 import 'data/repository/base/location_repository.dart';
-import 'data/repository/base/mock_location_repository.dart';
 import 'data/repository/base/place_repository.dart';
+import 'data/repository/dio_exception.dart';
 import 'data/repository/mock_place_repository.dart';
 import 'data/repository/real_location_repository.dart';
 import 'data/repository/repository_exception.dart';
 import 'utils/coord.dart';
+import 'utils/distance.dart';
 import 'utils/sort.dart';
 
 final dio = Dio(BaseOptions(
@@ -32,14 +28,8 @@ final dio = Dio(BaseOptions(
 ))
   ..interceptors.add(InterceptorsWrapper(
     onError: (error) {
-      var message =
-          'Ошибка при выполнении запроса ${error.request.method} ${error.request.uri}: '
-          '${error.message} (${error.type})';
       final repositoryException = createExceptionFromDio(error);
-      if (repositoryException != null) {
-        message += ': ${repositoryException.message}';
-      }
-      print(message);
+      print(repositoryException);
     },
     onRequest: (options) {
       print('Выполняется запрос: ${options.method} ${options.uri}');

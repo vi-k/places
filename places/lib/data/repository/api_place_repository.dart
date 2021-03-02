@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:dio/dio.dart';
+
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/dio_exception.dart';
-import 'package:places/data/repository/repository_network_exception.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
@@ -28,11 +27,11 @@ class ApiPlaceRepository extends PlaceRepository {
     try {
       final response =
           await dio.post<String>('/place', data: mapper.stringify(place));
-      final newPlace = mapper.parse(response.data);
+      final newPlace = mapper.parse(response.data!);
       return newPlace.id;
     } on DioError catch (error) {
-      if (error.type == DioErrorType.RESPONSE &&
-          error.response.statusCode == 409) {
+      if (error.type == DioErrorType.response &&
+          error.response!.statusCode == 409) {
         throw RepositoryAlreadyExistsException();
       }
 
@@ -45,10 +44,10 @@ class ApiPlaceRepository extends PlaceRepository {
   Future<PlaceBase> read(int id) async {
     try {
       final response = await dio.get<String>('/place/$id');
-      return mapper.parse(response.data);
+      return mapper.parse(response.data!);
     } on DioError catch (error) {
-      if (error.type == DioErrorType.RESPONSE &&
-          error.response.statusCode == 404) {
+      if (error.type == DioErrorType.response &&
+          error.response!.statusCode == 404) {
         throw RepositoryNotFoundException();
       }
 
@@ -63,8 +62,8 @@ class ApiPlaceRepository extends PlaceRepository {
       await dio.put<String>('/place/${place.id}',
           data: mapper.stringify(place, withId: false));
     } on DioError catch (error) {
-      if (error.type == DioErrorType.RESPONSE &&
-          error.response.statusCode == 404) {
+      if (error.type == DioErrorType.response &&
+          error.response!.statusCode == 404) {
         throw RepositoryNotFoundException();
       }
 
@@ -78,8 +77,8 @@ class ApiPlaceRepository extends PlaceRepository {
     try {
       await dio.delete<String>('/place/$id');
     } on DioError catch (error) {
-      if (error.type == DioErrorType.RESPONSE &&
-          error.response.statusCode == 404) {
+      if (error.type == DioErrorType.response &&
+          error.response!.statusCode == 404) {
         throw RepositoryNotFoundException();
       }
 
@@ -130,7 +129,7 @@ class ApiPlaceRepository extends PlaceRepository {
       );
 
       final response = await dio.getUri<String>(uri);
-      return (jsonDecode(response.data) as List<dynamic>)
+      return (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map(mapper.map)
           .toList();
@@ -171,7 +170,7 @@ class ApiPlaceRepository extends PlaceRepository {
               'typeFilter': filter.placeTypes!.map((e) => e.name).toList(),
           }));
 
-      var tmp = (jsonDecode(response.data) as List<dynamic>)
+      var tmp = (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           // Расчёт расстояния, если задана точка отсчёта.
           .map(coord?.let((it) => (e) => mapper.map(e, it)) ?? mapper.map);
@@ -200,7 +199,7 @@ class ApiPlaceRepository extends PlaceRepository {
       final response = await dio.post<String>('/filtered_places',
           data: jsonEncode(<String, dynamic>{'nameFilter': text}));
 
-      final result = (jsonDecode(response.data) as List<dynamic>)
+      final result = (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           // Расчёт расстояния, если задана точка отсчёта.
           .map(coord?.let((it) => (e) => mapper.map(e, it)) ?? mapper.map)
