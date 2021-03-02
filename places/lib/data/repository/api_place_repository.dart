@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
+import 'package:places/data/repository/network_exception.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
@@ -29,13 +30,18 @@ class ApiPlaceRepository extends PlaceRepository {
       final newPlace = mapper.parse(response.data);
       return newPlace.id;
     } on DioError catch (e) {
-      if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 409) {
-        throw RepositoryAlreadyExistsException();
-      }
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 409) {
+      //   throw RepositoryAlreadyExistsException();
+      // }
 
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 
@@ -46,13 +52,18 @@ class ApiPlaceRepository extends PlaceRepository {
       final response = await dio.get<String>('/place/$id');
       return mapper.parse(response.data);
     } on DioError catch (e) {
-      if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-        throw RepositoryNotFoundException();
-      }
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
+      //   throw RepositoryNotFoundException();
+      // }
 
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 
@@ -63,13 +74,18 @@ class ApiPlaceRepository extends PlaceRepository {
       await dio.put<String>('/place/${place.id}',
           data: mapper.stringify(place, withId: false));
     } on DioError catch (e) {
-      if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-        throw RepositoryNotFoundException();
-      }
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
+      //   throw RepositoryNotFoundException();
+      // }
 
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 
@@ -79,13 +95,18 @@ class ApiPlaceRepository extends PlaceRepository {
     try {
       await dio.delete<String>('/place/$id');
     } on DioError catch (e) {
-      if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
-        throw RepositoryNotFoundException();
-      }
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // if (e.type == DioErrorType.RESPONSE && e.response.statusCode == 404) {
+      //   throw RepositoryNotFoundException();
+      // }
 
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 
@@ -137,11 +158,18 @@ class ApiPlaceRepository extends PlaceRepository {
           .map(mapper.map)
           .toList();
     } on DioError catch (e) {
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
+
+  static int counter = 0;
 
   /// Загружает список мест, соответствующих фильтру.
   @override
@@ -161,7 +189,7 @@ class ApiPlaceRepository extends PlaceRepository {
       // не работает. Поэтому делаем возможность не устанавливать радиус
       // (радиус = ∞), а по типам фильтруем вручную.
 
-      final response = await dio.post<String>('/filtered_places',
+      final response = await dio.post<String>((++counter).isEven ? '/filtered_places' : '/fake_list',
           data: jsonEncode(<String, dynamic>{
             if (coord != null && filter.radius.isFinite) ...<String, dynamic>{
               'lat': coord.lat,
@@ -190,9 +218,14 @@ class ApiPlaceRepository extends PlaceRepository {
 
       return result;
     } on DioError catch (e) {
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 
@@ -216,9 +249,14 @@ class ApiPlaceRepository extends PlaceRepository {
 
       return result;
     } on DioError catch (e) {
-      final error = RepositoryException.fromDio(e);
-      if (error == null) rethrow;
-      throw error;
+      throw NetworkException(
+        url: e.request.uri.path,
+        statusCode: e.response.statusCode,
+        message: e.message,
+      );
+      // final error = RepositoryException.fromDio(e);
+      // if (error == null) rethrow;
+      // throw error;
     }
   }
 }
