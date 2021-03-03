@@ -24,21 +24,6 @@ mixin _$PlaceStore on PlaceStoreBase, Store {
     });
   }
 
-  final _$isLoadingAtom = Atom(name: 'PlaceStoreBase.isLoading');
-
-  @override
-  bool get isLoading {
-    _$isLoadingAtom.reportRead();
-    return super.isLoading;
-  }
-
-  @override
-  set isLoading(bool value) {
-    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
-      super.isLoading = value;
-    });
-  }
-
   final _$filterAtom = Atom(name: 'PlaceStoreBase.filter');
 
   @override
@@ -54,18 +39,24 @@ mixin _$PlaceStore on PlaceStoreBase, Store {
     });
   }
 
-  final _$applyFilterAsyncAction = AsyncAction('PlaceStoreBase.applyFilter');
+  final _$PlaceStoreBaseActionController =
+      ActionController(name: 'PlaceStoreBase');
 
   @override
-  Future<void> applyFilter(Filter filter) {
-    return _$applyFilterAsyncAction.run(() => super.applyFilter(filter));
+  void applyFilter(Filter filter) {
+    final _$actionInfo = _$PlaceStoreBaseActionController.startAction(
+        name: 'PlaceStoreBase.applyFilter');
+    try {
+      return super.applyFilter(filter);
+    } finally {
+      _$PlaceStoreBaseActionController.endAction(_$actionInfo);
+    }
   }
 
   @override
   String toString() {
     return '''
 places: ${places},
-isLoading: ${isLoading},
 filter: ${filter}
     ''';
   }

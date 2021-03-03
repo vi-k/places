@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repository/base/filter.dart';
@@ -50,7 +51,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                 _buildHeader(context, theme, columnsCount, placeStore,
                     placeStore.filter),
               ],
-              body: placeStore.isLoading
+              body: placeStore.places.status == FutureStatus.pending
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )

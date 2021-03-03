@@ -20,20 +20,14 @@ abstract class PlaceStoreBase with Store {
   @observable
   ObservableFuture<List<Place>> places = ObservableFuture.value(null);
 
-  /// Состояние загрузки.
-  @observable
-  bool isLoading = false;
-
   /// Фильтр.
   @observable
   Filter filter = Filter();
 
   /// Применяет фильтр, загружает новый список.
   @action
-  Future<void> applyFilter(Filter filter) async {
-    isLoading = true;
+  void applyFilter(Filter filter) {
     this.filter = filter;
-    places = ObservableFuture.value(await placeInteractor.getPlaces(filter));
-    isLoading = false;
+    places = ObservableFuture(placeInteractor.getPlaces(filter));
   }
 }
