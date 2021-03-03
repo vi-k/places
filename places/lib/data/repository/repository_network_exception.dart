@@ -6,13 +6,15 @@ class RepositoryNetworkException extends RepositoryException {
     required this.url,
     required this.statusCode,
     required String message,
-  })   : networkMessage = message,
+    this.data,
+  })  : networkMessage = message,
         super(message);
 
   final String method;
   final String url;
   final int statusCode;
   final String networkMessage;
+  final String? data;
 
   @override
   String get message {
@@ -21,6 +23,7 @@ class RepositoryNetworkException extends RepositoryException {
           r'\s*\[' '$statusCode' r'\]$',
         ),
         '');
-    return 'В запросе $method $url возникла ошибка: $msg';
+    return 'В запросе $method $url возникла ошибка: $statusCode '
+        '$msg${data == null ? '' : '\n$data'}';
   }
 }

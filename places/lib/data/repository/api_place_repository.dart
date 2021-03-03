@@ -138,8 +138,6 @@ class ApiPlaceRepository extends PlaceRepository {
     }
   }
 
-  static int counter = 0;
-
   /// Загружает список мест, соответствующих фильтру.
   @override
   Future<List<PlaceBase>> loadFilteredList(
@@ -158,8 +156,7 @@ class ApiPlaceRepository extends PlaceRepository {
       // не работает. Поэтому делаем возможность не устанавливать радиус
       // (радиус = ∞), а по типам фильтруем вручную.
 
-      final response = await dio.post<String>(
-          (++counter).isEven ? '/filtered_places' : '/fake_list',
+      final response = await dio.post<String>('/filtered_places',
           data: jsonEncode(<String, dynamic>{
             if (coord != null && filter.radius.isFinite) ...<String, dynamic>{
               'lat': coord.lat,
