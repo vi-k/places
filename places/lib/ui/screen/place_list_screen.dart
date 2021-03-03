@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/main.dart';
+import 'package:places/data/repository/base/filter.dart';
+import 'package:places/store/place_store/place_store.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
-import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/search_bar.dart';
@@ -27,7 +29,6 @@ class PlaceListScreen extends StatefulWidget {
 class _PlaceListScreenState extends State<PlaceListScreen> {
   @override
   Widget build(BuildContext context) {
-    final placeInteractor = context.read<PlaceInteractor>();
     final theme = MyTheme.of(context);
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
     final columnsCount = aspectRatio <= 4 / 5
@@ -36,54 +37,64 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ? 2
             : 3;
 
-    return Loader<List<Place>>(
-      load: () => placeInteractor.getPlaces(filter),
-      error: (context, error) => Scaffold(
-        body: Padding(
-          padding: commonPadding,
-          child: Failed(
-            message: error.toString(),
-            onRepeat: () => Loader.of<List<Place>>(context).reload(),
-          ),
-        ),
-      ),
-      builder: (context, _, places) => Scaffold(
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxScrolled) => [
-            _buildHeader(context, theme, columnsCount),
-          ],
-          body: RefreshIndicator(
-            onRefresh: () async => Loader.of<List<Place>>(context).reload(),
-            child: CustomScrollView(
-              slivers: [
-                PlaceCardGrid(
-                  cardType: Favorite.no,
-                  places: places,
-                  asSliver: true,
-                ),
+    return Provider(
+      create: (_) =>
+          PlaceStore(context.read<PlaceInteractor>())..applyFilter(Filter()),
+      child: Observer(
+        builder: (context) {
+          final placeStore = context.read<PlaceStore>();
+
+          return Scaffold(
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxScrolled) => [
+                _buildHeader(context, theme, columnsCount, placeStore,
+                    placeStore.filter),
               ],
+              body: placeStore.isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () async =>
+                          Loader.of<List<Place>>(context).reload(),
+                      child: CustomScrollView(
+                        slivers: [
+                          PlaceCardGrid(
+                            cardType: Favorite.no,
+                            places: placeStore.places.value,
+                            asSliver: true,
+                          ),
+                        ],
+                      ),
+                    ),
             ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: columnsCount == 2
-            ? FloatingActionButton(
-                onPressed: () => _newPlace(context),
-                child: const Icon(Icons.add),
-              )
-            : FloatingActionButton.extended(
-                isExtended: true,
-                onPressed: () => _newPlace(context),
-                icon: const Icon(Icons.add),
-                label: Text(stringNewPlace.toUpperCase()),
-              ),
-        bottomNavigationBar: const AppNavigationBar(index: 0),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: columnsCount == 2
+                ? FloatingActionButton(
+                    onPressed: () => _newPlace(context),
+                    child: const Icon(Icons.add),
+                  )
+                : FloatingActionButton.extended(
+                    isExtended: true,
+                    onPressed: () => _newPlace(context),
+                    icon: const Icon(Icons.add),
+                    label: Text(stringNewPlace.toUpperCase()),
+                  ),
+            bottomNavigationBar: const AppNavigationBar(index: 0),
+          );
+        },
       ),
     );
   }
 
   Widget _buildHeader(
-          BuildContext context, MyThemeData theme, int columnsCount) =>
+    BuildContext context,
+    MyThemeData theme,
+    int columnsCount,
+    PlaceStore placeStore,
+    Filter filter,
+  ) =>
       SliverFloatingHeader(
         key: ValueKey(filter),
         title: stringPlaceList,
@@ -97,10 +108,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             );
           },
           filter: filter,
-          onFilterChanged: (newFilter) {
-            filter = newFilter;
-            Loader.of<List<Place>>(context).reload();
-          },
+          onFilterChanged: placeStore.applyFilter,
         ),
         bottomHeight: smallButtonHeight,
       );

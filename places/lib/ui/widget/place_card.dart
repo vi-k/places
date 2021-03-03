@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/main.dart';
+import 'package:places/store/place_store/place_store.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -300,8 +300,10 @@ class _PlaceCardState extends State<PlaceCard> {
         label: PlaceTypeUi(place.type).lowerCaseName,
         style: textStyle,
         onPressed: () {
-          filter = filter.copyWith(placeTypes: {place.type});
-          Loader.of<List<Place>>(context).reload();
+          final placeStore = context.read<PlaceStore>();
+          final newFilter =
+              placeStore.filter.copyWith(placeTypes: {place.type});
+          placeStore.applyFilter(newFilter);
         },
       );
 
