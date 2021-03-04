@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_mobx/flutter_mobx.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mobx/mobx.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';

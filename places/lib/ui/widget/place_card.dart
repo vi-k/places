@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/wishlist/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place.dart';
@@ -17,7 +19,6 @@ import 'package:provider/provider.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
-import 'loader.dart';
 import 'small_button.dart';
 import 'svg_button.dart';
 
@@ -60,10 +61,7 @@ class _PlaceCardState extends State<PlaceCard> {
     final newPlace = await action(place);
 
     if (delete) {
-      final list = Loader.of<List<Place>>(context).data;
-      if (list != null) list.remove(place);
-      place = newPlace;
-      Loader.of<List<Place>>(context).update();
+      context.read<WishlistBloc>().add(WishlistDelete(place));
     } else {
       setState(() {
         place = newPlace;
@@ -299,12 +297,14 @@ class _PlaceCardState extends State<PlaceCard> {
         splashColor: splashColorDark2,
         label: PlaceTypeUi(place.type).lowerCaseName,
         style: textStyle,
-        onPressed: () {
-          final placeStore = context.read<PlaceStore>();
-          final newFilter =
-              placeStore.filter.copyWith(placeTypes: {place.type});
-          placeStore.applyFilter(newFilter);
-        },
+        onPressed: widget.cardType != Favorite.no
+            ? null
+            : () {
+                final placeStore = context.read<PlaceStore>();
+                final newFilter =
+                    placeStore.filter.copyWith(placeTypes: {place.type});
+                placeStore.applyFilter(newFilter);
+              },
       );
 
   Widget _buildSignatureButton(
