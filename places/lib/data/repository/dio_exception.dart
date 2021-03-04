@@ -12,25 +12,35 @@ String _messageFromJson(Map<String, dynamic> json) =>
         : json['error'].toString();
 
 RepositoryException createExceptionFromDio(DioError error) {
-  var message = error.message;
+  final method = error.request?.method ?? 'UNKNOWN METHOD';
+  final url = error.request?.uri.path ?? 'empty_path';
+  final statusCode = error.response?.statusCode ?? 0;
+  var message = error.message.replaceFirst(
+      RegExp(
+        r'\s*\[' '$statusCode' r'\]$',
+      ),
+      '');
+  String? data;
 
   if (error.type == DioErrorType.response) {
-    final dynamic data = error.response?.data;
-    if (data != null && data is String) {
-      if (data.isEmpty) message = 'no description';
+    final dynamic responseData = error.response?.data;
+    if (responseData != null && responseData is String) {
+      if (responseData.isEmpty) message = 'no description';
 
       try {
-        message = _messageFromJson(jsonDecode(data) as Map<String, dynamic>);
+        message =
+            _messageFromJson(jsonDecode(responseData) as Map<String, dynamic>);
       } on FormatException catch (_) {
-        message = 'unknown error: "$data"';
+        data = responseData;
       }
     }
   }
 
   return RepositoryNetworkException(
-    method: error.request?.method ?? 'UNKNOWN METHOD',
-    url: error.request?.uri.path ?? 'empty_path',
-    statusCode: error.response?.statusCode ?? 0,
+    method: method,
+    url: url,
+    statusCode: statusCode,
     message: message,
+    data: data,
   );
 }

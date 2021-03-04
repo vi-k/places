@@ -18,9 +18,7 @@ class PlaceInteractor {
   final LocationRepository locationRepository;
 
   final Map<int, PlaceUserInfo> _mockUserInfo = {};
-
   final Map<String, SearchHistory> _mockSearchInfo = {};
-
   String _lastSearchQuery = '';
 
   /// Загружает список мест, соответствующих фильтру.
