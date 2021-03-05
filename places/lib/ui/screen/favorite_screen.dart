@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/wishlist/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
@@ -6,7 +8,6 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/failed.dart';
-import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/tab_switch.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class _FavoriteScreenState extends State<FavoriteScreen>
 
   @override
   Widget build(BuildContext context) {
-    final placeInteractor = context.read<PlaceInteractor>();
+    final placeInteractor = context.watch<PlaceInteractor>();
 
     return Scaffold(
       appBar: SmallAppBar(
@@ -58,35 +59,38 @@ class _FavoriteScreenState extends State<FavoriteScreen>
       body: TabBarView(
         controller: tabController,
         children: [
-          Tab(
-            child: Loader<List<Place>>(
-              load: placeInteractor.getWishlist,
-              error: (context, error) => Failed(
-                message: error.toString(),
-                onRepeat: () => Loader.of<List<Place>>(context).reload(),
-              ),
-              builder: (context, _, places) => PlaceCardGrid(
-                cardType: Favorite.wishlist,
-                places: places,
-              ),
-            ),
-          ),
-          Tab(
-            child: Loader<List<Place>>(
-              load: placeInteractor.getVisited,
-              error: (context, error) => Failed(
-                message: error.toString(),
-                onRepeat: () => Loader.of<List<Place>>(context).reload(),
-              ),
-              builder: (context, _, places) => PlaceCardGrid(
-                cardType: Favorite.visited,
-                places: places,
-              ),
-            ),
-          ),
+          _buildTab(placeInteractor, Favorite.wishlist),
+          _buildTab(placeInteractor, Favorite.visited),
         ],
       ),
       bottomNavigationBar: const AppNavigationBar(index: 2),
     );
   }
+
+  Widget _buildTab(PlaceInteractor placeInteractor, Favorite listType) => Tab(
+        child: BlocProvider<WishlistBloc>(
+          create: (_) =>
+              WishlistBloc(placeInteractor, listType)..add(WishlistLoad()),
+          child: BlocBuilder<WishlistBloc, WishlistState>(
+            builder: (context, state) {
+              if (state is WishlistLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (state is WishlistLoaded) {
+                return PlaceCardGrid(
+                  cardType: listType,
+                  places: state.places,
+                );
+              }
+
+              // Оставляю WishlistInitial, чтобы не забывать отправлять
+              // первое событие.
+              return const Failed(message: stringUnknownState);
+            },
+          ),
+        ),
+      );
 }

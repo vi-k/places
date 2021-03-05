@@ -9,10 +9,12 @@ environment:
   sdk: ">=2.12.0-0 <3.0.0"
 
 dependencies:
+  bloc: ^7.0.0-nullsafety.3
   dio: ^4.0.0-beta2
   equatable: ^2.0.0-nullsafety.4
   flutter:
     sdk: flutter
+  flutter_bloc: ^7.0.0-nullsafety.3
   flutter_localizations:
     sdk: flutter
   flutter_mobx: ^1.1.0+2

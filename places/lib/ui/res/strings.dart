@@ -58,6 +58,7 @@ const stringToFavorite = 'В Избранное';
 const stringToSchedule = 'Запланировать';
 const stringToVisited = 'Посетил';
 const stringToWishlist = 'Хочу посетить';
+const stringUnknownState = 'Неопределённое состояние';
 const stringUnselected = 'Не выбрано';
 const stringVisitedName = 'Посетил';
 const stringWishlistName = 'Хочу посетить';
