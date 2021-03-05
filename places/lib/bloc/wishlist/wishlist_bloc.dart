@@ -31,6 +31,34 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
 
   @override
   Stream<WishlistState> mapEventToState(WishlistEvent event) async* {
-    yield* event.apply(state, this);
+    if (event is WishlistLoad) {
+      yield* _load(event);
+    } else if (event is WishlistDelete) {
+      yield* _delete(event);
+    }
+  }
+
+  Stream<WishlistState> _load(WishlistEvent event) async* {
+    yield WishlistLoading();
+    final places = await getList();
+    yield WishlistLoaded(places);
+  }
+
+  Stream<WishlistState> _delete(WishlistDelete event) async* {
+    final currentState = state;
+    if (currentState is! WishlistLoaded) {
+      yield WishlistLoading();
+      await removeFromList(event.place);
+      final places = await getList();
+      yield WishlistLoaded(places);
+    } else {
+      // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
+      final newPlaces = List<Place>.from(currentState.places)
+        ..remove(event.place);
+      yield WishlistLoaded(newPlaces);
+      // В нормальном случае здесь надо добавить обработку ошибок и при ошибке
+      // перезагружать список.
+      await removeFromList(event.place);
+    }
   }
 }
