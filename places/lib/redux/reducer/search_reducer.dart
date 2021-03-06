@@ -2,6 +2,7 @@ import 'package:places/redux/action/search_action.dart';
 import 'package:places/redux/state/app_state.dart';
 import 'package:places/redux/state/search_state.dart';
 
+/// Редьюсеры (см. search_action.dart).
 AppState searchStartReducer(AppState state, SearchStartAction action) =>
     state.copyWith(searchState: const SearchLoadingState());
 

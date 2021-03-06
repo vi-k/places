@@ -4,6 +4,7 @@ import 'package:places/redux/state/app_state.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:redux/redux.dart';
 
+/// Работа с поиском.
 class SearchMiddleware implements MiddlewareClass<AppState> {
   SearchMiddleware(this.placeInteractor);
 
