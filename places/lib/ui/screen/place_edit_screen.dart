@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/data/interactor/place_interactor.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:mwwm/mwwm.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/repository/base/location_repository.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/place_edit_wm.dart';
 import 'package:places/ui/widget/add_photo_card.dart';
 import 'package:places/ui/widget/get_image.dart';
 import 'package:places/ui/widget/photo_card.dart';
@@ -20,16 +20,21 @@ import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/focus.dart';
-import 'package:provider/provider.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:relation/relation.dart';
 
 import 'place_type_select_screen.dart';
 
 /// Экран добавления места.
-class PlaceEditScreen extends StatefulWidget {
+class PlaceEditScreen extends CoreMwwmWidget {
   const PlaceEditScreen({
     Key? key,
     this.place,
-  }) : super(key: key);
+    WidgetModelBuilder? wmBuilder,
+  }) : super(
+          key: key,
+          widgetModelBuilder: wmBuilder ?? PlaceEditWm.builder,
+        );
 
   /// Идентификатор места.
   ///
@@ -40,17 +45,25 @@ class PlaceEditScreen extends StatefulWidget {
   _PlaceEditScreenState createState() => _PlaceEditScreenState();
 }
 
-class _PlaceEditScreenState extends State<PlaceEditScreen> {
+class _PlaceEditScreenState extends WidgetState<PlaceEditWm> {
   final _formKey = GlobalKey<FormState>();
-  Place? _place;
-  PlaceTypeUi? _placeType;
-  final _photos = <String>[];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  bool get isNew => widget.place == null;
+  @override
+  void initState() {
+    super.initState();
+
+    final place = wm.place;
+    if (place != null) {
+      _nameController.text = place.name;
+      _latController.text = place.coord.lat.toStringAsFixed(6);
+      _lonController.text = place.coord.lon.toStringAsFixed(6);
+      _descriptionController.text = place.description;
+    }
+  }
 
   bool _cmpLists(List<String> a, List<String> b) {
     if (a.length != b.length) return false;
@@ -63,28 +76,13 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     return true;
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    final place = _place = widget.place;
-    if (place != null) {
-      _placeType = PlaceTypeUi(place.type);
-      _photos.addAll(place.photos);
-      _nameController.text = place.name;
-      _latController.text = place.coord.lat.toStringAsFixed(6);
-      _lonController.text = place.coord.lon.toStringAsFixed(6);
-      _descriptionController.text = place.description;
-    }
-  }
-
   // Проверяет данные перед сохранением.
   bool _validate() {
     if (!_formKey.currentState!.validate()) return false;
 
     // Если не выбран тип места, предупреждаем об этом пользователя
     // и отправляем его на страницу выбора типа.
-    if (_placeType == null) {
+    if (wm.placeTypeState.value.data == null) {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
         ..showSnackBar(const SnackBar(content: Text(stringNoPlaceType)));
@@ -99,46 +97,27 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   bool _needSave({bool forced = false}) {
     _formKey.currentState!.save();
 
-    final place = _place;
+    final place = wm.place;
     if (place == null) return true;
 
     return forced ||
         place.name != _nameController.text ||
-        place.type != _placeType?.type ||
+        place.type != wm.placeTypeState.value.data?.type ||
         place.coord.lat != double.parse(_latController.text) ||
         place.coord.lon != double.parse(_lonController.text) ||
         place.description != _descriptionController.text ||
-        !_cmpLists(place.photos, _photos);
+        !_cmpLists(place.photos, wm.photosState.value.data);
   }
 
   // Сохраняет изменения.
-  Future<Place> _save() async {
-    final placeInteractor = context.read<PlaceInteractor>();
-
-    var id = _place?.id;
-
-    final newPlace = Place(
-      id: id ?? 0,
-      name: _nameController.text,
-      coord: Coord(
-        double.parse(_latController.text),
-        double.parse(_lonController.text),
-      ),
-      photos: _photos,
-      description: _descriptionController.text,
-      type: _placeType!.type,
-      userInfo: PlaceUserInfo.zero,
-      calDistanceFrom: context.read<LocationRepository>().location,
-    );
-
-    if (id == null) {
-      id = await placeInteractor.addNewPlace(newPlace);
-    } else {
-      await placeInteractor.updatePlace(newPlace);
-    }
-
-    return newPlace;
-  }
+  Future<Place> _save() => wm.savePlace(
+        name: _nameController.text,
+        coord: Coord(
+          double.parse(_latController.text),
+          double.parse(_lonController.text),
+        ),
+        description: _descriptionController.text,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +125,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
     return Scaffold(
       appBar: SmallAppBar(
-        title: isNew ? stringNewPlace : stringEdit,
+        title: wm.isNew ? stringNewPlace : stringEdit,
         back: stringCancel,
       ),
       body: WillPopScope(
@@ -177,7 +156,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           await showDialog<void>(
             context: context,
             builder: (_) => AlertDialog(
-              title: Text(isNew ? stringDoCreate : stringDoSave),
+              title: Text(wm.isNew ? stringDoCreate : stringDoSave),
               actions: [
                 SmallButton(
                   label: stringNo,
@@ -237,46 +216,43 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   // как SingleChildScrollView + Row подстраиваются под размер. Это удобнее.
   Widget _buildPhotoGallery(BuildContext context) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            const SizedBox(width: commonSpacing),
-            AddPhotoCard(
-              onPressed: () async {
-                final url = await showModalBottomSheet<String>(
-                  context: context,
-                  clipBehavior: Clip.antiAlias,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => GetImage(),
-                );
-
-                if (url == null) return;
-                setState(() {
-                  _photos.add(url);
-                });
-              },
-            ),
-            for (final photo in _photos) ...[
+        child: EntityStateBuilder<List<String>>(
+          streamedState: wm.photosState,
+          child: (context, photos) => Row(
+            children: [
               const SizedBox(width: commonSpacing),
-              Dismissible(
-                key: ValueKey(photo),
-                direction: DismissDirection.up,
-                onDismissed: (_) {
-                  setState(() {
-                    _photos.remove(photo);
-                  });
+              AddPhotoCard(
+                onPressed: () async {
+                  final url = await showModalBottomSheet<String>(
+                    context: context,
+                    clipBehavior: Clip.antiAlias,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => GetImage(),
+                  );
+
+                  if (url == null) return;
+                  wm.addPhoto(url);
                 },
-                child: PhotoCard(
-                  url: photo,
-                  onClose: () {
-                    setState(() {
-                      _photos.remove(photo);
-                    });
-                  },
-                ),
               ),
+              for (final photo in photos) ...[
+                const SizedBox(width: commonSpacing),
+                Dismissible(
+                  key: ValueKey(photo),
+                  direction: DismissDirection.up,
+                  onDismissed: (_) {
+                    wm.removePhoto(photo);
+                  },
+                  child: PhotoCard(
+                    url: photo,
+                    onClose: () {
+                      wm.removePhoto(photo);
+                    },
+                  ),
+                ),
+              ],
+              const SizedBox(width: commonSpacing),
             ],
-            const SizedBox(width: commonSpacing),
-          ],
+          ),
         ),
       );
 
@@ -286,9 +262,12 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         spacing: 0,
         applyPaddingToChild: false,
         child: ListTile(
-          title: Text(
-            _placeType?.name ?? stringUnselected,
-            style: theme.textRegular16Light,
+          title: EntityStateBuilder<PlaceTypeUi?>(
+            streamedState: wm.placeTypeState,
+            child: (context, placeType) => Text(
+              placeType?.name ?? stringUnselected,
+              style: theme.textRegular16Light,
+            ),
           ),
           trailing: SvgPicture.asset(
             Svg24.view,
@@ -303,15 +282,13 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     final placeType = await Navigator.push<PlaceType>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            PlaceTypeSelectScreen(placeType: _placeType?.type),
+        builder: (context) => PlaceTypeSelectScreen(
+            placeType: wm.placeTypeState.value.data?.type),
       ),
     );
 
     if (placeType != null) {
-      setState(() {
-        _placeType = PlaceTypeUi(placeType);
-      });
+      await wm.placeTypeState.content(PlaceTypeUi(placeType));
     }
   }
 
@@ -321,7 +298,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         child: TextFormField(
           controller: _nameController,
           decoration: InputDecoration(
-            hintText: isNew ? stringNewPlaceFakeName : '',
+            hintText: wm.isNew ? stringNewPlaceFakeName : '',
           ),
           textInputAction: TextInputAction.next,
           onEditingComplete: () {
@@ -344,7 +321,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                 child: TextFormField(
                   controller: _latController,
                   decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLatitude : '',
+                    hintText: wm.isNew ? stringNewPlaceFakeLatitude : '',
                   ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
@@ -378,7 +355,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                   textInputAction: TextInputAction.next,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLongitude : '',
+                    hintText: wm.isNew ? stringNewPlaceFakeLongitude : '',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -428,7 +405,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         width: double.infinity,
         padding: commonPadding,
         child: StandartButton(
-          label: isNew ? stringCreate : stringSave,
+          label: wm.isNew ? stringCreate : stringSave,
           onPressed: () async {
             if (!_validate()) return;
             // Сохраняем и возвращаемся.

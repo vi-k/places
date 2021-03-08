@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:places/data/repository/api_place_mapper.dart';
 import 'package:places/data/repository/base/location_repository.dart';
+import 'package:places/error_handler.dart';
 import 'package:places/redux/middleware/search_middleware.dart';
 import 'package:places/redux/state/app_state.dart';
 import 'package:places/ui/screen/onboarding_screen.dart';
@@ -52,6 +53,9 @@ class _AppState extends State<App> {
           ),
           Provider<SettingsInteractor>(
             create: (_) => SettingsInteractor(),
+          ),
+          Provider<StandartErrorHandler>(
+            create: (_) => StandartErrorHandler(),
           ),
         ],
         builder: (context, _) {

@@ -119,7 +119,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
     final place = await Navigator.push<Place>(
         context,
         MaterialPageRoute(
-          builder: (context) => const PlaceEditScreen(),
+          builder: (context) => PlaceEditScreen(),
         ));
     if (place != null) Loader.of<List<Place>>(context).reload();
   }
