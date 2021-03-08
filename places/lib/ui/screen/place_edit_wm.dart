@@ -22,8 +22,9 @@ class PlaceEditWm extends WidgetModel {
     WidgetModelDependencies baseDependencies,
     this.placeInteractor,
     this.locationRepository,
-    this.place,
-  )   : placeTypeState = EntityStreamedState<PlaceTypeUi>(EntityState.content(
+    Place? place,
+  )   : placeState = EntityStreamedState<Place>(EntityState.content(place)),
+        placeTypeState = EntityStreamedState<PlaceTypeUi>(EntityState.content(
             place == null ? null : PlaceTypeUi(place.type))),
         photosState = EntityStreamedState<UnmodifiableListView<String>>(
             EntityState.content(
@@ -45,7 +46,7 @@ class PlaceEditWm extends WidgetModel {
   final LocationRepository locationRepository;
 
   /// Переданное место.
-  final Place? place;
+  final EntityStreamedState<Place?> placeState;
 
   /// Тип места.
   final EntityStreamedState<PlaceTypeUi?> placeTypeState;
@@ -54,7 +55,7 @@ class PlaceEditWm extends WidgetModel {
   final EntityStreamedState<UnmodifiableListView<String>> photosState;
 
   /// Создаём новое место или редактируем существующее?
-  bool get isNew => place == null;
+  bool get isNew => placeState.value.data == null;
 
   /// Добавляет фотографию.
   void addPhoto(String url) {
@@ -74,7 +75,9 @@ class PlaceEditWm extends WidgetModel {
     required Coord coord,
     required String description,
   }) async {
-    var id = place?.id;
+    await placeState.loading();
+
+    var id = placeState.value.data?.id;
 
     final newPlace = Place(
       id: id ?? 0,
@@ -92,6 +95,8 @@ class PlaceEditWm extends WidgetModel {
     } else {
       await placeInteractor.updatePlace(newPlace);
     }
+
+    await placeState.content(newPlace);
 
     return newPlace;
   }

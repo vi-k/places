@@ -56,7 +56,7 @@ class _PlaceEditScreenState extends WidgetState<PlaceEditWm> {
   void initState() {
     super.initState();
 
-    final place = wm.place;
+    final place = wm.placeState.value.data;
     if (place != null) {
       _nameController.text = place.name;
       _latController.text = place.coord.lat.toStringAsFixed(6);
@@ -97,7 +97,7 @@ class _PlaceEditScreenState extends WidgetState<PlaceEditWm> {
   bool _needSave({bool forced = false}) {
     _formKey.currentState!.save();
 
-    final place = wm.place;
+    final place = wm.placeState.value.data;
     if (place == null) return true;
 
     return forced ||
@@ -404,14 +404,20 @@ class _PlaceEditScreenState extends WidgetState<PlaceEditWm> {
   Widget _buildDone(BuildContext context) => Container(
         width: double.infinity,
         padding: commonPadding,
-        child: StandartButton(
-          label: wm.isNew ? stringCreate : stringSave,
-          onPressed: () async {
-            if (!_validate()) return;
-            // Сохраняем и возвращаемся.
-            Navigator.pop(
-                context, _needSave(forced: true) ? await _save() : null);
-          },
+        child: EntityStateBuilder<Place>(
+          streamedState: wm.placeState,
+          loadingChild: const Center(
+            child: CircularProgressIndicator(),
+          ),
+          child: (context, place) => StandartButton(
+            label: wm.isNew ? stringCreate : stringSave,
+            onPressed: () async {
+              if (!_validate()) return;
+              // Сохраняем и возвращаемся.
+              Navigator.pop(
+                  context, _needSave(forced: true) ? await _save() : null);
+            },
+          ),
         ),
       );
 }
