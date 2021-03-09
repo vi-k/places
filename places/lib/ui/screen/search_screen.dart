@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/search_history.dart';
+import 'package:places/redux/action/search_action.dart';
+import 'package:places/redux/state/app_state.dart';
+import 'package:places/redux/state/search_state.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/failed.dart';
-import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/place_small_card.dart';
 import 'package:places/ui/widget/search_bar.dart';
 import 'package:places/ui/widget/section.dart';
@@ -16,6 +20,8 @@ import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/svg_button.dart';
 import 'package:provider/provider.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:redux/redux.dart';
 
 /// Экран поиска.
 class SearchScreen extends StatefulWidget {
@@ -42,55 +48,55 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final placeInteractor = context.read<PlaceInteractor>();
     final theme = MyTheme.of(context);
 
-    return Loader<List<Place>?>(
-      load: () async => lastQuery.length < 2
-          ? null
-          : await placeInteractor.searchPlaces(lastQuery),
-      error: (context, error) => Failed(
-        message: error.toString(),
-        onRepeat: () => Loader.of<List<Place>?>(context).reload(),
-      ),
-      builder: (context, state, places) => Scaffold(
-        appBar: SmallAppBar(
-          title: stringPlaceList,
-          bottom: Padding(
-            padding: commonPadding,
-            child: SearchBar(
+    return Scaffold(
+      appBar: SmallAppBar(
+        title: stringPlaceList,
+        bottom: Padding(
+          padding: commonPadding,
+          child: StoreConnector<AppState, Store>(
+            converter: (store) => store,
+            builder: (context, store) => SearchBar(
               initialText: initialText,
               onTextChanged: (text) {
                 if (lastQuery != text) {
                   lastQuery = text;
-                  Loader.of<List<Place>?>(context).reload();
+                  store.dispatch(text.isEmpty
+                      ? const SearchLoadHistoryAction()
+                      : SearchStartAction(text));
                 }
               },
             ),
           ),
         ),
-        body: places == null
-            ? _buildHistory(placeInteractor, theme)
-            : places.isEmpty
-                ? const Failed(
-                    svg: Svg64.search,
-                    title: stringNothingFound,
-                    message: stringNothingFoundMessage,
+      ),
+      body: StoreConnector<AppState, SearchState>(
+        onInit: (store) => store.dispatch(const SearchLoadHistoryAction()),
+        converter: (store) => store.state.searchState,
+        builder: (context, state) => state is SearchHistoryState
+            ? _buildHistory(theme, state)
+            : state is SearchLoadingState
+                ? const Center(
+                    child: CircularProgressIndicator(),
                   )
-                : _buildResults(places),
+                : state is SearchResultState
+                    ? state.places.isEmpty
+                        ? const Failed(
+                            svg: Svg64.search,
+                            title: stringNothingFound,
+                            message: stringNothingFoundMessage,
+                          )
+                        : _buildResults(state.places)
+                    : throw ArgumentError(),
       ),
     );
   }
 
-  Widget _buildHistory(PlaceInteractor placeInteractor, MyThemeData theme) =>
-      Loader<List<SearchHistory>>(
-        load: placeInteractor.getSearchHistory,
-        error: (context, error) => Failed(
-          message: error.toString(),
-          onRepeat: () => Loader.of<List<Place>?>(context).reload(),
-        ),
-        builder: (context, state, searchList) => searchList == null ||
-                searchList.isEmpty
+  Widget _buildHistory(MyThemeData theme, SearchHistoryState state) =>
+      StoreConnector<AppState, List<SearchHistory>>(
+        converter: (store) => state.history,
+        builder: (context, history) => history.isEmpty
             ? const Failed(
                 svg: Svg64.search,
                 title: stringDoFind,
@@ -108,9 +114,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     fit: FlexFit.loose,
                     child: ListView.separated(
                       shrinkWrap: true,
-                      itemCount: searchList.length,
+                      itemCount: history.length,
                       itemBuilder: (context, index) {
-                        final searchInfo = searchList[index];
+                        final searchInfo = history[index];
                         return ListTile(
                           title: Text(
                             searchInfo.text,
@@ -138,15 +144,16 @@ class _SearchScreenState extends State<SearchScreen> {
                               initialText = searchInfo.text;
                             });
                           },
-                          trailing: SvgButton(
-                            Svg24.delete,
-                            color: theme.textRegular14Light.color,
-                            onPressed: () async {
-                              await placeInteractor
-                                  .removeFromSearchHistory(searchInfo.text);
-                              Loader.of<List<SearchHistory>>(context).reload();
-                            },
-                          ),
+                          trailing: StoreBuilder<AppState>(
+                              builder: (context, store) => SvgButton(
+                                    Svg24.delete,
+                                    color: theme.textRegular14Light.color,
+                                    onPressed: () {
+                                      store.dispatch(
+                                          SearchRemoveFromHistoryAction(
+                                              searchInfo.text));
+                                    },
+                                  )),
                         );
                       },
                       separatorBuilder: (_, __) => const Padding(
@@ -155,13 +162,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
                   ),
-                  SmallButton(
-                    label: stringClearHistory,
-                    style: theme.textMiddle16Accent,
-                    onPressed: () async {
-                      await placeInteractor.clearSearchHistory();
-                      Loader.of<List<SearchHistory>>(context).reload();
-                    },
+                  StoreBuilder<AppState>(
+                    builder: (context, store) => SmallButton(
+                      label: stringClearHistory,
+                      style: theme.textMiddle16Accent,
+                      onPressed: () {
+                        store.dispatch(const SearchClearHistoryAction());
+                      },
+                    ),
                   ),
                 ],
               ),
