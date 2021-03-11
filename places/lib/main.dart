@@ -50,7 +50,7 @@ Filter filter = Filter();
 
 Future<void> main() async {
   // await moveFromMockToRepository();
-  // await testPlaceRepository();
+  await testPlaceRepository();
 
   await initializeDateFormatting('ru_RU', null);
   Intl.defaultLocale = 'ru_RU';
@@ -80,67 +80,76 @@ Future<void> testPlaceRepository() async {
     }
   }
 
-  // final PlaceRepository placeRepository =
-  //     ApiPlaceRepository(dio, ApiPlaceMapper());
-  final PlaceRepository placeRepository = MockPlaceRepository();
+  final PlaceRepository placeRepository =
+      ApiPlaceRepository(dio, ApiPlaceMapper());
+  // final PlaceRepository placeRepository = MockPlaceRepository();
   final LocationRepository locationRepository = MockLocationRepository();
   final placeInteractor = PlaceInteractor(
       placeRepository: placeRepository, locationRepository: locationRepository);
 
   // Весь список
-  var list = await placeRepository.loadList();
-  printPlaces(list);
-
-  // Список постранично
-  list = await placeRepository.loadList(
-      count: 8,
-      pageBy: PlaceOrderBy.name,
-      pageLastValue: 'название',
-      orderBy: {PlaceOrderBy.name: Sort.asc, PlaceOrderBy.id: Sort.asc});
-  printPlaces(list);
-
-  // Создание места
-  final newPlaceId = await placeRepository.create(PlaceBase(
-    coord: const Coord(0, 0),
-    name: 'название',
-    type: PlaceType.other,
-    photos: ['фотография 1', 'фотография 2'],
-    description: 'описание',
-  ));
-  print('new place id: $newPlaceId');
-
-  list = await placeRepository.loadList();
-  printPlaces(list);
-
-  // Чтение места
-  var place = await placeRepository.read(newPlaceId);
-  print(place);
-
-  // Обновление места
-  place = place.copyWith(
-    name: 'название 2',
-    photos: [...place.photos, 'фотография 3'],
-    description: 'описание 2',
-  );
-
-  await placeRepository.update(place);
-
-  list = await placeRepository.loadList();
-  printPlaces(list);
-
-  // Удаление места
-  await placeRepository.delete(place.id);
-
-  list = await placeRepository.loadList();
-  printPlaces(list);
-
-  // Фильтр
-  list = await placeInteractor.getPlaces(
+  final list = await placeInteractor.getPlaces(
     Filter(
-      radius: const Distance.km(100),
+      // radius: const Distance.km(100),
       // typeFilter: {PlaceType.museum},
       // nameFilter: 'кра',
     ),
   );
   printPlaces(list);
+
+  // var list = await placeRepository.loadList();
+  // printPlaces(list);
+
+  // // Список постранично
+  // list = await placeRepository.loadList(
+  //     count: 8,
+  //     pageBy: PlaceOrderBy.name,
+  //     pageLastValue: 'название',
+  //     orderBy: {PlaceOrderBy.name: Sort.asc, PlaceOrderBy.id: Sort.asc});
+  // printPlaces(list);
+
+  // // Создание места
+  // final newPlaceId = await placeRepository.create(PlaceBase(
+  //   coord: const Coord(0, 0),
+  //   name: 'название',
+  //   type: PlaceType.other,
+  //   photos: ['фотография 1', 'фотография 2'],
+  //   description: 'описание',
+  // ));
+  // print('new place id: $newPlaceId');
+
+  // list = await placeRepository.loadList();
+  // printPlaces(list);
+
+  // // Чтение места
+  // var place = await placeRepository.read(newPlaceId);
+  // print(place);
+
+  // // Обновление места
+  // place = place.copyWith(
+  //   name: 'название 2',
+  //   photos: [...place.photos, 'фотография 3'],
+  //   description: 'описание 2',
+  // );
+
+  // await placeRepository.update(place);
+
+  // list = await placeRepository.loadList();
+  // printPlaces(list);
+
+  // // Удаление места
+  // await placeRepository.delete(place.id);
+
+  // list = await placeRepository.loadList();
+  // printPlaces(list);
+
+  // // Фильтр
+  // list = await placeInteractor.getPlaces(
+  //   Filter(
+  //     radius: const Distance.km(100),
+  //     // typeFilter: {PlaceType.museum},
+  //     // nameFilter: 'кра',
+  //   ),
+  // );
+  // printPlaces(list);
 }
