@@ -13,6 +13,7 @@ const Map<String, PlaceType> _map = {
   'park': PlaceType.park,
   'restaurant': PlaceType.restaurant,
   'other': PlaceType.other,
+  'temple': PlaceType.other,
 };
 
-PlaceType? placeTypeByName(String name) => _map[name];
+PlaceType? placeTypeByName(String name) => _map[name] ?? PlaceType.other;

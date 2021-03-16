@@ -79,7 +79,7 @@ class _FavoriteScreenState extends State<FavoriteScreen>
                 );
               }
 
-              if (state is WishlistLoaded) {
+              if (state is WishlistReady) {
                 return PlaceCardGrid(
                   cardType: listType,
                   places: state.places,

@@ -4,18 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/place/place_bloc.dart';
+import 'package:places/bloc/places/places_bloc.dart';
 import 'package:places/bloc/wishlist/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
-import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/store/place_store/place_store.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
-import 'package:provider/provider.dart';
+import 'package:places/utils/let_and_also.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
@@ -45,106 +45,99 @@ class PlaceCard extends StatefulWidget {
 }
 
 class _PlaceCardState extends State<PlaceCard> {
-  late Place place;
+  // late Place place;
 
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
 
-    place = widget.place;
-  }
+  //   place = widget.place;
+  // }
 
-  Future<void> _updatePlace(
-    Future<Place> Function(PlaceBase place) action, {
-    bool delete = false,
-  }) async {
-    final newPlace = await action(place);
+  // Future<void> _updatePlace(
+  //   Future<Place> Function(PlaceBase place) action, {
+  //   bool delete = false,
+  // }) async {
+  //   final newPlace = await action(place);
 
-    if (delete) {
-      context.read<WishlistBloc>().add(WishlistDelete(place));
-    } else {
-      setState(() {
-        place = newPlace;
-      });
-    }
-  }
+  //   if (delete) {
+  //     context.read<WishlistBloc>().add(WishlistRemove(place));
+  //   } else {
+  //     setState(() {
+  //       place = newPlace;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final theme = MyTheme.of(context);
 
-    return widget.cardType == Favorite.no
-        ? _buildCard(theme)
-        : Stack(
-            children: [
-              Container(),
-              Center(
-                child: Dismissible(
-                  key: ValueKey(place.id),
-                  direction: DismissDirection.horizontal,
-                  onDismissed: (direction) {
-                    final placeInteractor = context.read<PlaceInteractor>();
-                    if (widget.cardType == Favorite.wishlist) {
-                      _updatePlace(
-                          direction == DismissDirection.startToEnd
-                              ? (place) async {
-                                  final removedPlace = await placeInteractor
-                                      .removeFromWishlist(place);
-                                  return await placeInteractor
-                                      .addToVisited(removedPlace);
-                                }
-                              : placeInteractor.removeFromWishlist,
-                          delete: true);
-                    } else {
-                      _updatePlace(
-                          direction == DismissDirection.startToEnd
-                              ? placeInteractor.removeFromVisited
-                              : (place) async {
-                                  final removedPlace = await placeInteractor
-                                      .removeFromVisited(place);
-                                  return await placeInteractor
-                                      .addToWishlist(removedPlace);
-                                },
-                          delete: true);
-                    }
-                  },
-                  background: widget.cardType == Favorite.wishlist
-                      ? _buildBackground(theme,
-                          color: theme.accentColor,
-                          svg: Svg24.tick,
-                          label: stringToVisited,
-                          alignment: Alignment.centerLeft)
-                      : _buildBackground(theme,
-                          color: theme.attentionColor,
-                          svg: Svg24.bucket,
-                          label: stringDeleteFromVisited,
-                          alignment: Alignment.centerLeft),
-                  secondaryBackground: widget.cardType == Favorite.wishlist
-                      ? _buildBackground(theme,
-                          color: theme.attentionColor,
-                          svg: Svg24.bucket,
-                          label: stringDeleteFromWishlist,
-                          alignment: Alignment.centerRight)
-                      : _buildBackground(theme,
-                          color: theme.accentColor,
-                          svg: Svg24.heart,
-                          label: stringToWishlist,
-                          alignment: Alignment.centerRight),
-                  child: _buildCard(theme),
-                ),
-              ),
-            ],
-          );
+    return BlocProvider<PlaceBloc>(
+      create: (_) => PlaceBloc(context.read<PlaceInteractor>(), widget.place),
+      child: BlocBuilder<PlaceBloc, PlaceState>(
+          builder: (context, state) => widget.cardType == Favorite.no
+              ? _buildCard(context, theme, state.place)
+              : Stack(
+                  children: [
+                    Container(),
+                    Center(
+                      child: Dismissible(
+                        key: ValueKey(state.place.id),
+                        direction: DismissDirection.horizontal,
+                        onDismissed: (direction) {
+                          if (widget.cardType == Favorite.wishlist) {
+                            context.read<WishlistBloc>().add(
+                                direction == DismissDirection.startToEnd
+                                    ? WishlistMoveToAdjacentList(state.place)
+                                    : WishlistRemove(state.place));
+                          } else {
+                            context.read<WishlistBloc>().add(
+                                direction == DismissDirection.startToEnd
+                                    ? WishlistRemove(state.place)
+                                    : WishlistMoveToAdjacentList(state.place));
+                          }
+                        },
+                        background: widget.cardType == Favorite.wishlist
+                            ? _buildBackground(theme,
+                                color: theme.accentColor,
+                                svg: Svg24.tick,
+                                label: stringToVisited,
+                                alignment: Alignment.centerLeft)
+                            : _buildBackground(theme,
+                                color: theme.attentionColor,
+                                svg: Svg24.bucket,
+                                label: stringDeleteFromVisited,
+                                alignment: Alignment.centerLeft),
+                        secondaryBackground:
+                            widget.cardType == Favorite.wishlist
+                                ? _buildBackground(theme,
+                                    color: theme.attentionColor,
+                                    svg: Svg24.bucket,
+                                    label: stringDeleteFromWishlist,
+                                    alignment: Alignment.centerRight)
+                                : _buildBackground(theme,
+                                    color: theme.accentColor,
+                                    svg: Svg24.heart,
+                                    label: stringToWishlist,
+                                    alignment: Alignment.centerRight),
+                        child: _buildCard(context, theme, state.place),
+                      ),
+                    ),
+                  ],
+                )),
+    );
   }
 
-  Widget _buildCard(MyThemeData theme) => Card(
+  Widget _buildCard(BuildContext context, MyThemeData theme, Place place) =>
+      Card(
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildCardTop(),
-                _buildCardBottom(theme),
+                _buildCardTop(place),
+                _buildCardBottom(theme, place),
               ],
             ),
             // Поверх карточки невидимая кнопка
@@ -158,18 +151,16 @@ class _PlaceCardState extends State<PlaceCard> {
                     await PlaceDetails.showAsModalBottomSheet(context, place);
 
                 if (newPlace != null) {
-                  setState(() {
-                    place = newPlace;
-                  });
+                  context.read<PlaceBloc>().add(PlaceUpdate(newPlace));
                 }
               },
-              child: _buildSignatures(theme),
+              child: _buildSignatures(context, theme, place),
             ),
           ],
         ),
       );
 
-  Widget _buildCardTop() => Expanded(
+  Widget _buildCardTop(Place place) => Expanded(
         child: Stack(
           children: [
             Positioned.fill(
@@ -186,10 +177,10 @@ class _PlaceCardState extends State<PlaceCard> {
         ),
       );
 
-  Widget _buildSignatures(MyThemeData theme) {
+  Widget _buildSignatures(
+      BuildContext context, MyThemeData theme, Place place) {
     final textStyle = theme.textBold14White;
     final color = textStyle.color!;
-    final placeInteractor = context.read<PlaceInteractor>();
 
     final signatures = <Widget>[];
     if (widget.cardType == Favorite.no) {
@@ -200,21 +191,12 @@ class _PlaceCardState extends State<PlaceCard> {
                 ? Svg24.heartFull
                 : Svg24.heart,
             color,
-            () => _updatePlace(placeInteractor.toggleWishlist),
+            () => context.read<PlaceBloc>().add(PlaceToggleWishlist()),
           ),
         )
         ..add(
-          _buildSignatureButton(
-            Svg24.close,
-            color,
-            () => _updatePlace(
-              (_) async {
-                await placeInteractor.removePlace(place.id);
-                return place;
-              },
-              delete: true,
-            ),
-          ),
+          _buildSignatureButton(Svg24.close, color,
+              () => context.read<PlacesBloc>().add(PlacesRemove(place))),
         );
     }
 
@@ -245,8 +227,7 @@ class _PlaceCardState extends State<PlaceCard> {
 
               if (date != null) {
                 final userInfo = place.userInfo.copyWith(planToVisit: date);
-                await _updatePlace(
-                    (place) => placeInteractor.updateUserInfo(place, userInfo));
+                context.read<PlaceBloc>().add(PlaceUpdateUserInfo(userInfo));
               }
             },
           ),
@@ -255,8 +236,7 @@ class _PlaceCardState extends State<PlaceCard> {
           _buildSignatureButton(
             Svg24.close,
             color,
-            () =>
-                _updatePlace(placeInteractor.removeFromWishlist, delete: true),
+            () => context.read<WishlistBloc>().add(WishlistRemove(place)),
           ),
         );
     }
@@ -274,7 +254,9 @@ class _PlaceCardState extends State<PlaceCard> {
           _buildSignatureButton(
             Svg24.close,
             color,
-            () => _updatePlace(placeInteractor.addToWishlist, delete: true),
+            () => context
+                .read<WishlistBloc>()
+                .add(WishlistMoveToAdjacentList(place)),
           ),
         );
     }
@@ -284,7 +266,7 @@ class _PlaceCardState extends State<PlaceCard> {
       padding: cardSignaturesPadding,
       child: Row(
         children: [
-          _buildSignaturePlaceType(textStyle),
+          _buildSignaturePlaceType(context, textStyle, place),
           const Spacer(),
           ...signatures,
         ],
@@ -292,7 +274,9 @@ class _PlaceCardState extends State<PlaceCard> {
     );
   }
 
-  Widget _buildSignaturePlaceType(TextStyle textStyle) => SmallButton(
+  Widget _buildSignaturePlaceType(
+          BuildContext context, TextStyle textStyle, Place place) =>
+      SmallButton(
         highlightColor: highlightColorDark2,
         splashColor: splashColorDark2,
         label: PlaceTypeUi(place.type).lowerCaseName,
@@ -300,10 +284,11 @@ class _PlaceCardState extends State<PlaceCard> {
         onPressed: widget.cardType != Favorite.no
             ? null
             : () {
-                final placeStore = context.read<PlaceStore>();
-                final newFilter =
-                    placeStore.filter.copyWith(placeTypes: {place.type});
-                placeStore.applyFilter(newFilter);
+                context.read<PlacesBloc>().let((it) {
+                  final newFilter =
+                      it.state.filter.copyWith(placeTypes: {place.type});
+                  it.add(PlacesLoad(newFilter));
+                });
               },
       );
 
@@ -317,7 +302,7 @@ class _PlaceCardState extends State<PlaceCard> {
         onPressed: onPressed,
       );
 
-  Widget _buildCardBottom(MyThemeData theme) => Expanded(
+  Widget _buildCardBottom(MyThemeData theme, Place place) => Expanded(
         child: Container(
             padding: commonPadding,
             child: RichText(

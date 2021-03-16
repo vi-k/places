@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
 import 'data/model/place_base.dart';
-import 'data/model/place_type.dart';
 import 'data/repository/api_place_mapper.dart';
 import 'data/repository/api_place_repository.dart';
 import 'data/repository/base/filter.dart';
@@ -16,9 +15,6 @@ import 'data/repository/base/place_repository.dart';
 import 'data/repository/dio_exception.dart';
 import 'data/repository/mock_place_repository.dart';
 import 'data/repository/repository_exception.dart';
-import 'utils/coord.dart';
-import 'utils/distance.dart';
-import 'utils/sort.dart';
 
 final dio = Dio(BaseOptions(
   baseUrl: 'https://test-backend-flutter.surfstudio.ru',
@@ -75,8 +71,8 @@ Future<void> moveFromMockToRepository() async {
 Future<void> testPlaceRepository() async {
   void printPlaces(List<PlaceBase> places) {
     for (final place in places) {
-      print(place.toString(short: true));
-      // print(place.toString());
+      // print(place.toString(short: true));
+      print(place.toString());
     }
   }
 

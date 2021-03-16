@@ -1,5 +1,7 @@
 part of 'wishlist_bloc.dart';
 
+/// Состояния для WishlistBloc.
+@immutable
 abstract class WishlistState extends Equatable {
   const WishlistState();
 
@@ -17,8 +19,8 @@ class WishlistInitial extends WishlistState {}
 class WishlistLoading extends WishlistState {}
 
 /// Состояние: данные загружены.
-class WishlistLoaded extends WishlistState {
-  const WishlistLoaded(this.places);
+class WishlistReady extends WishlistState {
+  const WishlistReady(this.places);
 
   final List<Place> places;
 
