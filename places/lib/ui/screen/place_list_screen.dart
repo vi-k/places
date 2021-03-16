@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/places/places_bloc.dart';
+import 'package:places/bloc/places_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repository/base/filter.dart';
@@ -45,9 +45,8 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ],
             body: state is PlacesReady
                 ? RefreshIndicator(
-                    onRefresh: () async => context
-                        .read<PlacesBloc>()
-                        .add(const PlacesReload()),
+                    onRefresh: () async =>
+                        context.read<PlacesBloc>().add(const PlacesReload()),
                     child: CustomScrollView(
                       slivers: [
                         PlaceCardGrid(

@@ -9,7 +9,7 @@ abstract class PlacesState extends Equatable {
   final Filter filter;
 
   @override
-  List<Object> get props => [filter];
+  List<Object?> get props => [filter];
 }
 
 /// Состояние: загрузка данных.
@@ -24,5 +24,5 @@ class PlacesReady extends PlacesState {
   final List<Place> places;
 
   @override
-  List<Object> get props => [places];
+  List<Object?> get props => [filter, places];
 }

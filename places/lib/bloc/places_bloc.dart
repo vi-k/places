@@ -5,9 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/base/filter.dart';
-import 'package:places/utils/distance.dart';
 
 part 'places_event.dart';
 part 'places_state.dart';
@@ -28,7 +26,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     } else if (event is PlacesReload) {
       yield* _reload(state.filter);
     } else if (event is PlacesRemove) {
-      yield* _delete(event);
+      yield* _removePlace(event);
     }
   }
 
@@ -38,11 +36,8 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     yield PlacesReady(filter, places);
   }
 
-  Stream<PlacesState> _delete(PlacesRemove event) async* {
-    final currentState = state;
-    if (currentState is! PlacesReady) {
-      throw ArgumentError('PlacesDelete: state must be PlacesReady');
-    }
+  Stream<PlacesState> _removePlace(PlacesRemove event) async* {
+    final currentState = state as PlacesReady;
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
     final newPlaces = List<Place>.from(currentState.places)

@@ -6,7 +6,7 @@ abstract class WishlistEvent extends Equatable {
   const WishlistEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 
   @override
   String toString() => '$runtimeType';
@@ -22,7 +22,7 @@ class WishlistRemove extends WishlistEvent {
   final Place place;
 
   @override
-  List<Object> get props => [place];
+  List<Object?> get props => [place];
 }
 
 /// Событие: удалить карточку из избранного
@@ -32,5 +32,5 @@ class WishlistMoveToAdjacentList extends WishlistEvent {
   final Place place;
 
   @override
-  List<Object> get props => [place];
+  List<Object?> get props => [place];
 }

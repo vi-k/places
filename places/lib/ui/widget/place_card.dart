@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/place/place_bloc.dart';
-import 'package:places/bloc/places/places_bloc.dart';
-import 'package:places/bloc/wishlist/wishlist_bloc.dart';
+import 'package:places/bloc/place_bloc.dart';
+import 'package:places/bloc/places_bloc.dart';
+import 'package:places/bloc/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
@@ -151,7 +151,7 @@ class _PlaceCardState extends State<PlaceCard> {
                     await PlaceDetails.showAsModalBottomSheet(context, place);
 
                 if (newPlace != null) {
-                  context.read<PlaceBloc>().add(PlaceUpdate(newPlace));
+                  context.read<PlaceBloc>().add(PlaceChanged(newPlace));
                 }
               },
               child: _buildSignatures(context, theme, place),
@@ -191,7 +191,7 @@ class _PlaceCardState extends State<PlaceCard> {
                 ? Svg24.heartFull
                 : Svg24.heart,
             color,
-            () => context.read<PlaceBloc>().add(PlaceToggleWishlist()),
+            () => context.read<PlaceBloc>().add(const PlaceToggleWishlist()),
           ),
         )
         ..add(

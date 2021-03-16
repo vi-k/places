@@ -49,7 +49,6 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
   }
 
   Stream<WishlistState> _remove(WishlistRemove event) async* {
-    assert(state is WishlistReady);
     final currentState = state as WishlistReady;
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.

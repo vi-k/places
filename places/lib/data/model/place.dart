@@ -51,6 +51,8 @@ class Place extends PlaceBase {
   /// Пользовательская информация, сп.
   final PlaceUserInfo userInfo;
 
+  bool get isNew => id == 0;
+
   @override
   String toString({bool short = false, bool withType = true}) => withType
       ? 'Place(${toString(short: short, withType: false)})'

@@ -18,7 +18,7 @@ class ApiPlaceMapper {
         coord: Coord(value['lat'] as double, value['lng'] as double),
         name: value['name'] as String,
         photos: (value['urls'] as List<dynamic>).whereType<String>().toList(),
-        type: placeTypeByName(value['placeType'] as String)!,
+        type: placeTypeByName(value['placeType'] as String),
         description: value['description'] as String,
         calDistanceFrom: calDistanceFrom,
       );

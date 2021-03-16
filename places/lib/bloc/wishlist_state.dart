@@ -6,7 +6,7 @@ abstract class WishlistState extends Equatable {
   const WishlistState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 /// Начальное состояние.
@@ -25,5 +25,5 @@ class WishlistReady extends WishlistState {
   final List<Place> places;
 
   @override
-  List<Object> get props => [places];
+  List<Object?> get props => [places];
 }

@@ -5,7 +5,7 @@ abstract class SearchState extends Equatable {
   const SearchState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 /// Состояние: загрузка результатов.
@@ -20,7 +20,7 @@ class SearchReady extends SearchState {
   final List<Place> places;
 
   @override
-  List<Object> get props => [places];
+  List<Object?> get props => [places];
 }
 
 /// Состояние: показ истории.
@@ -30,5 +30,5 @@ class SearchHistoryReady extends SearchState {
   final List<SearchHistory> history;
 
   @override
-  List<Object> get props => [history];
+  List<Object?> get props => [history];
 }

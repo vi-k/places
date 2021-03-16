@@ -5,7 +5,7 @@ abstract class SearchEvent extends Equatable {
   const SearchEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 /// Начать поиск.
@@ -15,7 +15,7 @@ class Search extends SearchEvent {
   final String text;
 
   @override
-  List<Object> get props => [text];
+  List<Object?> get props => [text];
 }
 
 /// Загрузить историю поиска.
@@ -35,5 +35,5 @@ class SearchRemoveFromHistory extends SearchEvent {
   final String text;
 
   @override
-  List<Object> get props => [text];
+  List<Object?> get props => [text];
 }

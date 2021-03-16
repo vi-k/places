@@ -10,6 +10,7 @@ import 'package:places/data/model/search_history.dart';
 part 'search_event.dart';
 part 'search_state.dart';
 
+/// BLoC для поиска.
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc(this._placeInteractor) : super(const SearchLoading());
 
@@ -19,7 +20,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Stream<SearchState> mapEventToState(
     SearchEvent event,
   ) async* {
-    print(event);
     if (event is Search) {
       yield* _search(event);
     } else if (event is SearchLoadHistory) {

@@ -74,7 +74,10 @@ class PlaceInteractor {
   Future<Place> getPlace(int id) async => _loadUserInfo(await _getPlace(id));
 
   /// Добавляет новое место.
-  Future<int> addNewPlace(PlaceBase place) => placeRepository.create(place);
+  Future<Place> addNewPlace(PlaceBase place) async {
+    final id = await placeRepository.create(place);
+    return await getPlace(id);
+  }
 
   /// Обновляет место.
   Future<void> updatePlace(PlaceBase place) => placeRepository.update(place);
