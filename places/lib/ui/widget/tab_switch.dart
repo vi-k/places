@@ -63,7 +63,7 @@ class TabSwitch extends StatelessWidget {
         ),
       );
 
-  Positioned _buildThumb(MyThemeData theme) {
+  Widget _buildThumb(MyThemeData theme) {
     final thumbSize = _maxFlex ~/ tabs.length;
 
     return Positioned.fill(
@@ -116,7 +116,7 @@ class TabSwitch extends StatelessWidget {
     );
   }
 
-  Positioned _buildButtons() => Positioned.fill(
+  Widget _buildButtons() => Positioned.fill(
         child: Row(
           children: [
             for (var i = 0; i < tabs.length; i++)
