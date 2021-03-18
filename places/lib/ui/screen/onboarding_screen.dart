@@ -52,12 +52,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _pageController.addListener(() {
       setState(() {
         _currentPage = _pageController.page ?? 0;
-        final pageIndex = _currentPage.floor();
-        if (pageIndex.toDouble() == _currentPage) {
-          if (!_animControllers[pageIndex].isCompleted) {
-            _animControllers[pageIndex]
-              ..reset()
-              ..forward();
+        final pageIndex = _currentPage.round();
+        if ((_currentPage - pageIndex).abs() < 0.1) {
+          final animController = _animControllers[pageIndex];
+          if (animController.isDismissed) {
+            animController.forward();
           }
         }
       });
@@ -66,13 +65,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   void dispose() {
-    super.dispose();
-
     _pageController.dispose();
 
     for (final animController in _animControllers) {
       animController.dispose();
     }
+
+    super.dispose();
   }
 
   void _skip() {
@@ -100,7 +99,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;
 
-    _animControllers[0].forward();
+    Future<void>.delayed(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        _animControllers[0].forward();
+      }
+    });
 
     return Scaffold(
       body: Column(

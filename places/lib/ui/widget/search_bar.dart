@@ -80,6 +80,7 @@ class _SearchBarState extends State<SearchBar> {
   void dispose() {
     _textController.dispose();
     _textStreamController.close();
+
     super.dispose();
   }
 

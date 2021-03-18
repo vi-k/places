@@ -37,7 +37,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Инициализация темы.
     _initTheme(settings.isDark);
 
-    await Future<void>.delayed(const Duration(milliseconds: 3200));
+    //await Future<void>.delayed(const Duration(milliseconds: 3200));
 
     yield AppReady();
   }

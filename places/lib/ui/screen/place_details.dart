@@ -268,6 +268,7 @@ class _GalleryState extends State<_Gallery> {
   @override
   void initState() {
     super.initState();
+
     _controller.addListener(() {
       setState(() {
         _currentPage = _controller.page ?? 0;
@@ -277,8 +278,9 @@ class _GalleryState extends State<_Gallery> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+
+    super.dispose();
   }
 
   @override

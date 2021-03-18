@@ -41,8 +41,9 @@ class _PageViewSelectorState extends State<PageViewSelector> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.removeListener(_onPageChanged);
+
+    super.dispose();
   }
 
   @override
