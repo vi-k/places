@@ -10,26 +10,23 @@ import 'package:places/data/model/place_base.dart';
 part 'wishlist_event.dart';
 part 'wishlist_state.dart';
 
-/// BLoC для избранного.
+/// Базовый класс BLoC'а для избранного.
 ///
-/// Одновременно и для "Хочу посетить" и для "Посетил", т.к. оба списка
-/// по функционалу одинаковы.
-class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
-  WishlistBloc(PlaceInteractor placeInteractor, Favorite listType)
-      : _getList = listType == Favorite.wishlist
-            ? placeInteractor.getWishlist
-            : placeInteractor.getVisited,
-        _removeFromList = listType == Favorite.wishlist
-            ? placeInteractor.removeFromWishlist
-            : placeInteractor.removeFromVisited,
-        _addToAdjacentList = listType == Favorite.wishlist
-            ? placeInteractor.addToVisited
-            : placeInteractor.addToWishlist,
-        super(WishlistInitial());
+/// Реализации: [WishlistBloc] и [VisitedBloc]
+abstract class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
+  WishlistBloc._(this.placeInteractor) : super(WishlistInitial());
 
-  final Future<List<Place>> Function() _getList;
-  final Future<Place> Function(PlaceBase place) _removeFromList;
-  final Future<Place> Function(PlaceBase place) _addToAdjacentList;
+  factory WishlistBloc(
+          PlaceInteractor placeInteractor, Favorite listType) =>
+      listType == Favorite.wishlist
+          ? WishlistWishlistBloc(placeInteractor)
+          : WishlistVisitedBloc(placeInteractor);
+
+  final PlaceInteractor placeInteractor;
+
+  Future<List<Place>> _getList();
+  Future<Place> _removeFromList(PlaceBase place);
+  Future<Place> _addToAdjacentList(PlaceBase place);
 
   @override
   Stream<WishlistState> mapEventToState(WishlistEvent event) async* {
@@ -74,4 +71,36 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
     await _removeFromList(event.place);
     await _addToAdjacentList(event.place);
   }
+}
+
+class WishlistWishlistBloc extends WishlistBloc {
+  WishlistWishlistBloc(PlaceInteractor placeInteractor)
+      : super._(placeInteractor);
+
+  @override
+  Future<List<Place>> _getList() => placeInteractor.getWishlist();
+
+  @override
+  Future<Place> _removeFromList(PlaceBase place) =>
+      placeInteractor.removeFromWishlist(place);
+
+  @override
+  Future<Place> _addToAdjacentList(PlaceBase place) =>
+      placeInteractor.addToVisited(place);
+}
+
+class WishlistVisitedBloc extends WishlistBloc {
+  WishlistVisitedBloc(PlaceInteractor placeInteractor)
+      : super._(placeInteractor);
+
+  @override
+  Future<List<Place>> _getList() => placeInteractor.getVisited();
+
+  @override
+  Future<Place> _removeFromList(PlaceBase place) =>
+      placeInteractor.removeFromVisited(place);
+
+  @override
+  Future<Place> _addToAdjacentList(PlaceBase place) =>
+      placeInteractor.addToWishlist(place);
 }
