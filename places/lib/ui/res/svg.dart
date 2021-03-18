@@ -54,3 +54,7 @@ class SvgTutorial {
  static const tutorial2 = 'res/tutorial/tutorial_2.svg';
  static const tutorial3 = 'res/tutorial/tutorial_3.svg';
 }
+
+class SvgSplash {
+ static const splash = 'res/splash/splash.svg';
+}

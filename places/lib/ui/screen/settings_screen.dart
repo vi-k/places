@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/settings_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
-import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
+import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 import 'onboarding_screen.dart';
@@ -19,14 +19,14 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Scaffold(
       appBar: const SmallAppBar(
         title: stringSettings,
       ),
-      body: BlocBuilder<SettingsBloc, SettingsState>(
-        builder: (context, state) => state is! SettingsReady
+      body: BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) => state is! AppReady
             ? const SizedBox()
             : ListView(
                 children: [
@@ -35,10 +35,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       stringIsDark,
                       style: theme.textRegular14Main,
                     ),
-                    value: state.settings.isDark,
+                    value: context.watch<AppBloc>().settings.isDark,
                     onChanged: (value) {
-                      context.read<SettingsBloc>().add(SettingsChange(
-                          state.settings.copyWith(isDark: value)));
+                      context.read<AppBloc>().let((it) {
+                        it.add(AppChangeSettings(
+                            it.settings.copyWith(isDark: value)));
+                      });
                     },
                   ),
                   const _ListDivider(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/settings_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -47,9 +47,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.pop(context);
     } else {
       // Если это первый экран, то запускаем основной экран
-      context.read<SettingsBloc>().let((it) {
-        final state = it.state as SettingsReady;
-        it.add(SettingsChange(state.settings.copyWith(showTutorial: false)));
+      context.read<AppBloc>().let((it) {
+        it.add(AppChangeSettings(it.settings.copyWith(showTutorial: false)));
       });
       Navigator.pushReplacement<void, void>(
         context,
@@ -62,7 +61,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final translate = _currentPage >= _lastPage - 0.5
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/widget/photo_card.dart';
 
@@ -31,7 +32,7 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Stack(
       children: [

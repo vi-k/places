@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/bloc/place_bloc.dart';
 import 'package:places/bloc/places_bloc.dart';
 import 'package:places/bloc/wishlist_bloc.dart';
@@ -71,7 +72,7 @@ class _PlaceCardState extends State<PlaceCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return BlocProvider<PlaceBloc>(
       create: (_) => PlaceBloc(context.read<PlaceInteractor>(), widget.place),

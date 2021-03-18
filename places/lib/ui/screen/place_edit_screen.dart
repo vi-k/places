@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/bloc/edit_place_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
@@ -71,7 +72,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return BlocProvider<EditPlaceBloc>(
       create: (_) => EditPlaceBloc(context.read<PlaceInteractor>()),

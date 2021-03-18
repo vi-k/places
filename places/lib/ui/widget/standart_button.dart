@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 import 'package:places/utils/let_and_also.dart';
 
 /// Стандартная универсальная кнопка.
@@ -36,7 +37,7 @@ class StandartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final textStyle = style ?? theme.textMiddle14White;
     final buttonStyle = ButtonStyle(
       backgroundColor: MaterialStateProperty.all(color),

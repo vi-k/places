@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
@@ -68,7 +70,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     // Перехватываем `pop`, чтобы передать значение.
     return WillPopScope(
@@ -281,7 +283,7 @@ class _GalleryState extends State<_Gallery> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final place = widget.place;
     final screenWidth = MediaQuery.of(context).size.width;
 

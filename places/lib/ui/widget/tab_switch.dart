@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 
 import 'small_button.dart';
 
@@ -21,7 +22,7 @@ class TabSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Container(
       height: smallButtonHeight,

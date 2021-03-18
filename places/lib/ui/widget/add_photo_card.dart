@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
-import 'package:places/ui/res/themes.dart';
 
 /// Виджет добавления фотокарточки.
 class AddPhotoCard extends StatelessWidget {
@@ -17,7 +18,7 @@ class AddPhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return SizedBox(
       width: photoCardSize,

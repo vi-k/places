@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/base/filter.dart';
@@ -49,7 +50,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Scaffold(
       appBar: SmallAppBar(

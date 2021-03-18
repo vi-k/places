@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// ignore: import_of_legacy_library_into_null_safe
+import 'package:places/bloc/app_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
-import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/filters_screen.dart';
 import 'package:places/utils/let_and_also.dart';
 
@@ -101,7 +101,7 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Stack(
       children: [
