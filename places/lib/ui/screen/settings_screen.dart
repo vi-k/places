@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:places/data/interactor/settings_interactor.dart';
-import 'package:places/data/model/settings.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/settings_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
-import 'package:places/ui/widget/loader.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -26,38 +25,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: const SmallAppBar(
         title: stringSettings,
       ),
-      body: ListView(
-        children: [
-          SwitchListTile(
-            title: Text(
-              stringIsDark,
-              style: theme.textRegular14Main,
-            ),
-            value: Loader.of<Settings>(context).data!.isDark,
-            onChanged: (value) {
-              context.read<SettingsInteractor>().changeSettings(isDark: value);
-              Loader.of<Settings>(context).reload();
-            },
-          ),
-          const _ListDivider(),
-          ListTile(
-            title: Text(
-              stringWatchTutorial,
-              style: theme.textRegular14Main,
-            ),
-            trailing: Icon(
-              Icons.info_outline,
-              color: theme.accentColor,
-            ),
-            onTap: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => OnboardingScreen(),
+      body: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, state) => state is! SettingsReady
+            ? const SizedBox()
+            : ListView(
+                children: [
+                  SwitchListTile(
+                    title: Text(
+                      stringIsDark,
+                      style: theme.textRegular14Main,
+                    ),
+                    value: state.settings.isDark,
+                    onChanged: (value) {
+                      context.read<SettingsBloc>().add(SettingsChange(
+                          state.settings.copyWith(isDark: value)));
+                    },
+                  ),
+                  const _ListDivider(),
+                  ListTile(
+                    title: Text(
+                      stringWatchTutorial,
+                      style: theme.textRegular14Main,
+                    ),
+                    trailing: Icon(
+                      Icons.info_outline,
+                      color: theme.accentColor,
+                    ),
+                    onTap: () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OnboardingScreen(),
+                      ),
+                    ),
+                  ),
+                  const _ListDivider(),
+                ],
               ),
-            ),
-          ),
-          const _ListDivider(),
-        ],
       ),
       bottomNavigationBar: const AppNavigationBar(index: 3),
     );

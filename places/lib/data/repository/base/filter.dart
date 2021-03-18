@@ -22,6 +22,9 @@ class Filter extends Equatable {
   /// Если `null`, то все.
   final Set<PlaceType>? placeTypes;
 
+  @override
+  List<Object?> get props => [radius, placeTypes];
+
   bool hasPlaceType(PlaceType placeType) =>
       placeTypes?.contains(placeType) ?? true;
 
@@ -58,7 +61,4 @@ class Filter extends Equatable {
         : '[${placeTypes!.map((e) => e.name).join(', ')}]';
     return 'Filter(radius: $radius, placeTypes: $placeTypesStr)';
   }
-
-  @override
-  List<Object?> get props => [radius, placeTypes];
 }

@@ -51,11 +51,11 @@ class PlaceBase {
     if (withType) {
       return 'PlaceBase(${toString(short: short, withType: false)})';
     } else {
-      final result = '#$id $name, ${type.name}, $distance';
+      final result = '#$id "$name", ${type.name}, $distance';
       return short
           ? result
-          : '$result, $coord, ${description.cut(20)}, '
-              'photos: ${photos.length}';
+          : '$result, $coord, "${description.cut(20)}", '
+              'photos: $photos';
     }
   }
 

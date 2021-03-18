@@ -15,4 +15,4 @@ const Map<String, PlaceType> _map = {
   'other': PlaceType.other,
 };
 
-PlaceType? placeTypeByName(String name) => _map[name];
+PlaceType placeTypeByName(String name) => _map[name] ?? PlaceType.other;

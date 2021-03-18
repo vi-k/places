@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/wishlist/wishlist_bloc.dart';
+import 'package:places/bloc/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
@@ -79,7 +79,7 @@ class _FavoriteScreenState extends State<FavoriteScreen>
                 );
               }
 
-              if (state is WishlistLoaded) {
+              if (state is WishlistReady) {
                 return PlaceCardGrid(
                   cardType: listType,
                   places: state.places,

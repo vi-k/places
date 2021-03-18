@@ -16,4 +16,7 @@ class SearchHistory {
         timestamp: timestamp ?? this.timestamp,
         count: count ?? this.count,
       );
+
+  @override
+  String toString() => 'SearchHistory($text, time: $timestamp, count: $count)';
 }
