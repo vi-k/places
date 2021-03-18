@@ -19,18 +19,47 @@ class OnboardingScreen extends StatefulWidget {
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
+  late final List<AnimationController> _animControllers;
+  late final List<Animation<double>> _animations;
+
   static const _lastPage = 2.0;
 
-  final _controller = PageController();
+  final _pageController = PageController();
   var _currentPage = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(() {
+
+    _animControllers = List<AnimationController>.generate(
+      3,
+      (index) => AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1500),
+      ),
+    );
+
+    _animations = List<Animation<double>>.generate(
+      3,
+      (index) => Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        curve: Curves.elasticOut,
+        parent: _animControllers[index],
+      )),
+    );
+
+    _pageController.addListener(() {
       setState(() {
-        _currentPage = _controller.page ?? 0;
+        _currentPage = _pageController.page ?? 0;
+        final pageIndex = _currentPage.floor();
+        if (pageIndex.toDouble() == _currentPage) {
+          if (!_animControllers[pageIndex].isCompleted) {
+            _animControllers[pageIndex]
+              ..reset()
+              ..forward();
+          }
+        }
       });
     });
   }
@@ -38,7 +67,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+
+    _pageController.dispose();
+
+    for (final animController in _animControllers) {
+      animController.dispose();
+    }
   }
 
   void _skip() {
@@ -66,6 +100,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;
 
+    _animControllers[0].forward();
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,22 +109,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ..._buildTop(theme, translate),
           Expanded(
             child: PageView(
-              controller: _controller,
+              controller: _pageController,
               children: [
                 _buildTutorial(
                   theme,
+                  pageIndex: 0,
                   svg: SvgTutorial.tutorial1,
                   caption: tutorial1Caption,
                   description: tutorial1Description,
                 ),
                 _buildTutorial(
                   theme,
+                  pageIndex: 1,
                   svg: SvgTutorial.tutorial2,
                   caption: tutorial2Caption,
                   description: tutorial2Description,
                 ),
                 _buildTutorial(
                   theme,
+                  pageIndex: 2,
                   svg: SvgTutorial.tutorial3,
                   caption: tutorial3Caption,
                   description: tutorial3Description,
@@ -124,46 +163,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildTutorial(
     MyThemeData theme, {
+    required int pageIndex,
     required String svg,
     required String caption,
     required String description,
-  }) =>
-      Padding(
-        padding: commonPaddingLR * 3,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          // mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              svg,
-              color: theme.mainTextColor2,
+  }) {
+    final image = SvgPicture.asset(svg, color: theme.mainTextColor2);
+
+    return Padding(
+      padding: commonPaddingLR * 3,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          AnimatedBuilder(
+            animation: _animControllers[pageIndex],
+            builder: (context, child) => Transform.scale(
+              scale: _animations[pageIndex].value,
+              child: child,
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  caption,
-                  textAlign: TextAlign.center,
-                  style: theme.textBold24Main2,
-                ),
-                const SizedBox(height: commonSpacing),
-                Text(
-                  description,
-                  textAlign: TextAlign.center,
-                  style: theme.textRegular14Light,
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
+            child: image,
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                caption,
+                textAlign: TextAlign.center,
+                style: theme.textBold24Main2,
+              ),
+              const SizedBox(height: commonSpacing),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: theme.textRegular14Light,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPageSelector() => Center(
         child: Padding(
           padding: commonPaddingLTR,
           child: PageViewSelector(
             count: 3,
-            controller: _controller,
+            controller: _pageController,
           ),
         ),
       );

@@ -22,7 +22,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> mapEventToState(
     AppEvent event,
   ) async* {
-    print(event);
     if (event is AppInit) {
       yield* _init();
     } else if (event is AppChangeSettings) {
@@ -38,13 +37,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Инициализация темы.
     _initTheme(settings.isDark);
 
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(milliseconds: 3200));
 
     yield AppReady();
   }
 
   void _initTheme(bool isDark) {
-    print('isDark: $isDark');
     _theme = isDark ? createDarkTheme() : createLightTheme();
   }
 
