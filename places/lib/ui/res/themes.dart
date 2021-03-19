@@ -194,7 +194,7 @@ const _baseInputDecorationTheme = InputDecorationTheme(
   contentPadding: EdgeInsets.fromLTRB(12, 10, 12, 10),
 );
 
-final myLightTheme = MyThemeData(
+MyThemeData createLightTheme() => MyThemeData(
   app: ThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.light,
@@ -293,7 +293,7 @@ final myLightTheme = MyThemeData(
   ),
 );
 
-final myDarkTheme = MyThemeData(
+MyThemeData createDarkTheme() => MyThemeData(
   app: ThemeData(
     fontFamily: 'Roboto',
     brightness: Brightness.dark,

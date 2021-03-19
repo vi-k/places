@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 
 class SliverFloatingHeader extends StatelessWidget {
   const SliverFloatingHeader({
@@ -20,7 +21,7 @@ class SliverFloatingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -86,7 +87,7 @@ class SliverTitleDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final maxHeight = maxExtent;
     final minHeight = minExtent;
     final flexibleSpace = maxHeight - minHeight;

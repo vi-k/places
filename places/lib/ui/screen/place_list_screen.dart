@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/bloc/places_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
@@ -26,7 +27,7 @@ class PlaceListScreen extends StatefulWidget {
 class _PlaceListScreenState extends State<PlaceListScreen> {
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
     final columnsCount = aspectRatio <= 4 / 5
         ? 1

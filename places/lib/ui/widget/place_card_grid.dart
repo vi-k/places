@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/themes.dart';
@@ -32,7 +34,7 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final places = widget.places;
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
     final columnsCount = aspectRatio <= 4 / 5

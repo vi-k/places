@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:places/bloc/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 
 /// Малая кнопка.
 ///
@@ -54,7 +55,7 @@ class SmallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
     final textStyle = style ??
         (onPressed != null
             ? theme.textRegular14Main

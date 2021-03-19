@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:places/bloc/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
-import 'package:places/ui/res/themes.dart';
 
 /// Селектор для PageView в виде линии и точек, плавно перетекающих друг
 /// в друга при изменении страницы.
@@ -40,13 +41,14 @@ class _PageViewSelectorState extends State<PageViewSelector> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.removeListener(_onPageChanged);
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = MyTheme.of(context);
+    final theme = context.watch<AppBloc>().theme;
 
     return Row(
       mainAxisSize: MainAxisSize.min,

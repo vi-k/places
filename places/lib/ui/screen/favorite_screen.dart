@@ -21,23 +21,22 @@ class FavoriteScreen extends StatefulWidget {
 class _FavoriteScreenState extends State<FavoriteScreen>
     with SingleTickerProviderStateMixin {
   static const _tabs = [stringWishlistName, stringVisitedName];
-  late TabController tabController;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    tabController = TabController(
+
+    _tabController = TabController(
       length: _tabs.length,
       vsync: this,
     );
-    tabController.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
   void dispose() {
-    tabController.dispose();
+    _tabController.dispose();
+
     super.dispose();
   }
 
@@ -52,12 +51,12 @@ class _FavoriteScreenState extends State<FavoriteScreen>
           padding: commonPaddingLBR,
           child: TabSwitch(
             tabs: _tabs,
-            tabController: tabController,
+            tabController: _tabController,
           ),
         ),
       ),
       body: TabBarView(
-        controller: tabController,
+        controller: _tabController,
         children: [
           _buildTab(placeInteractor, Favorite.wishlist),
           _buildTab(placeInteractor, Favorite.visited),
