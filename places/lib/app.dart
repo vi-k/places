@@ -40,7 +40,8 @@ class _AppState extends State<App> {
           ),
         ],
         builder: (context, _) => BlocProvider<AppBloc>(
-          create: (_) => AppBloc()..add(const AppInit()),
+          create: (_) =>
+              AppBloc(context.read<PlaceInteractor>())..add(const AppInit()),
           // error: (context, error) => MyTheme(
           //   myThemeData: myDarkTheme,
           //   child: Builder(

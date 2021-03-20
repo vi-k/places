@@ -10,6 +10,7 @@ import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/search_bar.dart';
@@ -91,14 +92,8 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         key: ValueKey(filter),
         title: stringPlaceList,
         bottom: SearchBar(
-          onTap: () async {
-            await Navigator.push<String>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SearchScreen(),
-              ),
-            );
-          },
+          onTap: () => standartNavigatorPush<String>(
+              context, () => const SearchScreen()),
           filter: filter,
           onFilterChanged: (filter) =>
               context.read<PlacesBloc>().add(PlacesLoad(filter)),
@@ -107,11 +102,8 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
       );
 
   Future<void> _newPlace(BuildContext context) async {
-    final place = await Navigator.push<Place>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const PlaceEditScreen(),
-        ));
+    final place = await standartNavigatorPush<Place>(
+        context, () => const PlaceEditScreen());
 
     if (place != null) {
       context.read<PlacesBloc>().add(const PlacesReload());

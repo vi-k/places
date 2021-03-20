@@ -22,25 +22,35 @@ class LoadableImage extends StatelessWidget {
 
     return Image.network(
       url,
-      // colorBlendMode: ,
       filterQuality: FilterQuality.high,
       fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, _) => frame == null
-          ? Container(
-              color: Colors.black12,
-              child: Center(
-                child: SvgPicture.asset(
-                  Svg24.photo,
-                  color: Colors.white30,
-                ),
-              ),
-            )
-          : child,
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return Stack(
-          children: [
-            child,
+      frameBuilder: (context, child, frame, _) => AnimatedCrossFade(
+        secondCurve: Curves.easeOutCubic,
+        duration: standartAnimationDuration,
+        layoutBuilder: (topChild, _, bottomChild, __) => Stack(
+          children: <Widget>[
+            Positioned.fill(child: topChild),
+            Positioned.fill(child: bottomChild),
+          ],
+        ),
+        firstChild: Container(
+          color: Colors.black12,
+          child: Center(
+            child: SvgPicture.asset(
+              Svg24.photo,
+              color: Colors.white30,
+            ),
+          ),
+        ),
+        secondChild: child,
+        crossFadeState: frame == null
+            ? CrossFadeState.showFirst
+            : CrossFadeState.showSecond,
+      ),
+      loadingBuilder: (context, child, progress) => Stack(
+        children: [
+          child,
+          if (progress != null)
             Align(
               alignment: Alignment.bottomCenter,
               child: LinearProgressIndicator(
@@ -51,9 +61,8 @@ class LoadableImage extends StatelessWidget {
                     : null,
               ),
             ),
-          ],
-        );
-      },
+        ],
+      ),
       errorBuilder: (context, error, stackTrace) => Align(
         alignment: Alignment.bottomCenter,
         child: Padding(

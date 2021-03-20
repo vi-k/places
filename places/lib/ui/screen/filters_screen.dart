@@ -6,6 +6,7 @@ import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/utils/distance_utils.dart';
 import 'package:places/ui/widget/section.dart';
 import 'package:places/ui/widget/place_type_filter.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
@@ -13,8 +14,6 @@ import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
-
-import 'utils/distance_utils.dart';
 
 /// Экран настроек фильтра.
 class FiltersScreen extends StatefulWidget {

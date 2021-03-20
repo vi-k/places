@@ -5,6 +5,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
 import 'package:places/ui/widget/failed.dart';
@@ -79,6 +80,20 @@ class _FavoriteScreenState extends State<FavoriteScreen>
               }
 
               if (state is WishlistReady) {
+                if (state.places.isEmpty) {
+                  return listType == Favorite.wishlist
+                      ? const Failed(
+                          svg: Svg64.card,
+                          title: stringEmpty,
+                          message: stringWishlistMessage,
+                        )
+                      : const Failed(
+                          svg: Svg64.go,
+                          title: stringEmpty,
+                          message: stringVisitedMessage,
+                        );
+                }
+
                 return PlaceCardGrid(
                   cardType: listType,
                   places: state.places,

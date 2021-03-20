@@ -46,7 +46,7 @@ Filter filter = Filter();
 
 Future<void> main() async {
   // await moveFromMockToRepository();
-  await testPlaceRepository();
+  // await testPlaceRepository();
 
   await initializeDateFormatting('ru_RU', null);
   Intl.defaultLocale = 'ru_RU';
@@ -71,8 +71,8 @@ Future<void> moveFromMockToRepository() async {
 Future<void> testPlaceRepository() async {
   void printPlaces(List<PlaceBase> places) {
     for (final place in places) {
-      // print(place.toString(short: true));
-      print(place.toString());
+      print(place.toString(short: true));
+      // print(place.toString());
     }
   }
 
@@ -82,16 +82,6 @@ Future<void> testPlaceRepository() async {
   final LocationRepository locationRepository = MockLocationRepository();
   final placeInteractor = PlaceInteractor(
       placeRepository: placeRepository, locationRepository: locationRepository);
-
-  // Весь список
-  final list = await placeInteractor.getPlaces(
-    Filter(
-      // radius: const Distance.km(100),
-      // typeFilter: {PlaceType.museum},
-      // nameFilter: 'кра',
-    ),
-  );
-  printPlaces(list);
 
   // var list = await placeRepository.loadList();
   // printPlaces(list);

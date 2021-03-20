@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
@@ -6,7 +7,7 @@ import 'package:places/utils/string_ext.dart';
 import 'place_type.dart';
 
 /// Описание места (информация, не зависящая от пользователя).
-class PlaceBase {
+class PlaceBase extends Equatable {
   PlaceBase({
     this.id = 0,
     required this.name,
@@ -45,6 +46,9 @@ class PlaceBase {
   /// данных. Можно было бы рассчитывать каждый раз заново. Что лучше -
   /// рассчитывать или сохранять - вопрос спорный.
   final Distance distance;
+
+  @override
+  List<Object?> get props => [id, name, type, coord, photos, description];
 
   @override
   String toString({bool short = false, bool withType = true}) {

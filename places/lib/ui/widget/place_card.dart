@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +17,7 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:places/utils/let_and_also.dart';
 
 import 'cupertino_date_select.dart';
@@ -45,30 +47,12 @@ class PlaceCard extends StatefulWidget {
   _PlaceCardState createState() => _PlaceCardState();
 }
 
-class _PlaceCardState extends State<PlaceCard> {
-  // late Place place;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   place = widget.place;
-  // }
-
-  // Future<void> _updatePlace(
-  //   Future<Place> Function(PlaceBase place) action, {
-  //   bool delete = false,
-  // }) async {
-  //   final newPlace = await action(place);
-
-  //   if (delete) {
-  //     context.read<WishlistBloc>().add(WishlistRemove(place));
-  //   } else {
-  //     setState(() {
-  //       place = newPlace;
-  //     });
-  //   }
-  // }
+class _PlaceCardState extends State<PlaceCard>
+    with SingleTickerProviderStateMixin {
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,14 +131,7 @@ class _PlaceCardState extends State<PlaceCard> {
               highlightColor: theme.app.highlightColor,
               splashColor: theme.app.splashColor,
               onLongPress: widget.onLongPress,
-              onPressed: () async {
-                final newPlace =
-                    await PlaceDetails.showAsModalBottomSheet(context, place);
-
-                if (newPlace != null) {
-                  context.read<PlaceBloc>().add(PlaceChanged(newPlace));
-                }
-              },
+              onPressed: () => _gotoPlaceDetails(context, place),
               child: _buildSignatures(context, theme, place),
             ),
           ],
@@ -162,19 +139,22 @@ class _PlaceCardState extends State<PlaceCard> {
       );
 
   Widget _buildCardTop(Place place) => Expanded(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: LoadableImage(
-                url: place.photos.isEmpty ? '' : place.photos[0],
+        child: Hero(
+          tag: 'Place#${place.id}',
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: LoadableImage(
+                  url: place.photos.isEmpty ? '' : place.photos[0],
+                ),
               ),
-            ),
-            Positioned.fill(
-              child: Container(
-                color: highlightColorDark2,
+              Positioned.fill(
+                child: Container(
+                  color: highlightColorDark2,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
@@ -188,7 +168,8 @@ class _PlaceCardState extends State<PlaceCard> {
       signatures
         ..add(
           _buildSignatureButton(
-            place.userInfo.favorite == Favorite.wishlist
+            place.userInfo.favorite == Favorite.wishlist ||
+                    place.userInfo.favorite == Favorite.visited
                 ? Svg24.heartFull
                 : Svg24.heart,
             color,
@@ -295,12 +276,24 @@ class _PlaceCardState extends State<PlaceCard> {
 
   Widget _buildSignatureButton(
           String svg, Color color, void Function() onPressed) =>
-      SvgButton(
-        svg,
-        highlightColor: highlightColorDark2,
-        splashColor: splashColorDark2,
-        color: color,
-        onPressed: onPressed,
+      AnimatedSwitcher(
+        duration: standartAnimationDuration,
+        switchInCurve: Curves.easeInOutCubic,
+        switchOutCurve: Curves.easeInOutCubic,
+        layoutBuilder: (currentChild, previousChildren) => Stack(
+          children: <Widget>[
+            ...previousChildren,
+            if (currentChild != null) currentChild,
+          ],
+        ),
+        child: SvgButton(
+          svg,
+          key: ValueKey(svg.hashCode ^ color.hashCode),
+          highlightColor: highlightColorDark2,
+          splashColor: splashColorDark2,
+          color: color,
+          onPressed: onPressed,
+        ),
       );
 
   Widget _buildCardBottom(MyThemeData theme, Place place) => Expanded(
@@ -366,5 +359,14 @@ class _PlaceCardState extends State<PlaceCard> {
         ),
       ),
     );
+  }
+
+  Future<void> _gotoPlaceDetails(BuildContext context, Place place) async {
+    final newPlace = await standartNavigatorPush<Place>(
+        context, () => PlaceDetails(place: place));
+
+    if (newPlace != null && newPlace != place) {
+      context.read<PlaceBloc>().add(PlaceChanged(newPlace));
+    }
   }
 }

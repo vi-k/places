@@ -37,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       3,
       (index) => AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: 1500),
+        duration: const Duration(milliseconds: 1000),
       ),
     );
 
@@ -99,10 +99,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;
 
-    Future<void>.delayed(const Duration(milliseconds: 1000), () {
-      if (mounted) {
-        _animControllers[0].forward();
-      }
+    // Запуск первой анимации надо задержать.
+    Future<void>.delayed(standartAnimationDuration, () {
+      if (mounted) _animControllers[0].forward();
     });
 
     return Scaffold(

@@ -54,7 +54,11 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     final currentState = state as PlaceReady;
 
     yield PlaceLoading(state);
-    final newPlace = await _placeInteractor.toggleWishlist(currentState.place);
+    final newPlace = currentState.place.userInfo.favorite == Favorite.wishlist
+        ? await _placeInteractor.removeFromWishlist(currentState.place)
+        : currentState.place.userInfo.favorite == Favorite.visited
+            ? await _placeInteractor.removeFromVisited(currentState.place)
+            : await _placeInteractor.addToWishlist(currentState.place);
     yield PlaceReady(newPlace);
   }
 }

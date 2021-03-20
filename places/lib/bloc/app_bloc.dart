@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/place.dart';
 import 'package:places/data/model/settings.dart';
+import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/themes.dart';
 
 part 'app_event.dart';
@@ -10,7 +13,9 @@ part 'app_state.dart';
 
 /// BLoC для инициализации приложения.
 class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc() : super(const AppIniting());
+  AppBloc(this._placeInteractor) : super(const AppIniting());
+
+  final PlaceInteractor _placeInteractor;
 
   late Settings _settings;
   Settings get settings => _settings;
@@ -37,7 +42,17 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Инициализация темы.
     _initTheme(settings.isDark);
 
-    //await Future<void>.delayed(const Duration(milliseconds: 3200));
+    // Иммитация инициализации: получаем список мест для тестирования.
+    await Future.wait([
+      Future(() async {
+        final places = await _placeInteractor.getPlaces(Filter());
+        for (final place in places) {
+          print(place.toString(short: true));
+          // print(place.toString());
+        }
+      }),
+      Future<void>.delayed(const Duration(seconds: 4)),
+    ]);
 
     yield AppReady();
   }
