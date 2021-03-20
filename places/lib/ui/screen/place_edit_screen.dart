@@ -136,22 +136,17 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             ),
             for (final photo in _photos) ...[
               const SizedBox(width: commonSpacing),
-              if (_place != null && photo == _photos[0])
-                SizedBox(
-                  width: photoCardSize,
-                  height: photoCardSize,
-                  child: Hero(
-                    tag: 'Place#${_place!.id}',
-                    flightShuttleBuilder: standartFlightShuttleBuilder,
-                    child: _buildPhoto(photo),
-                  ),
-                )
-              else
-                SizedBox(
-                  width: photoCardSize,
-                  height: photoCardSize,
-                  child: _buildPhoto(photo),
-                ),
+              SizedBox(
+                width: photoCardSize,
+                height: photoCardSize,
+                child: _place != null && photo == _photos[0]
+                    ? Hero(
+                        tag: 'Place#${_place!.id}',
+                        flightShuttleBuilder: standartFlightShuttleBuilder,
+                        child: _buildPhoto(photo),
+                      )
+                    : _buildPhoto(photo),
+              ),
             ],
             const SizedBox(width: commonSpacing),
           ],

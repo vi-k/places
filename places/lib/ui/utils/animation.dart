@@ -8,32 +8,29 @@ Widget standartFlightShuttleBuilder(
     HeroFlightDirection flightDirection,
     BuildContext fromHeroContext,
     BuildContext toHeroContext) {
-  final fromHero = fromHeroContext.widget as Hero;
-  final toHero = toHeroContext.widget as Hero;
+  final Widget bottomHero;
+  final Widget topHero;
+
+  if (flightDirection == HeroFlightDirection.push) {
+    bottomHero = fromHeroContext.widget as Hero;
+    topHero = toHeroContext.widget as Hero;
+  } else {
+    bottomHero = toHeroContext.widget as Hero;
+    topHero = fromHeroContext.widget as Hero;
+  }
 
   return AnimatedBuilder(
     animation: animation,
     builder: (context, child) => Stack(
       children: [
-        if (flightDirection == HeroFlightDirection.push) ...[
-          Opacity(
-            opacity: 1 - animation.value,
-            child: fromHero,
-          ),
-          Opacity(
-            opacity: animation.value,
-            child: toHero,
-          ),
-        ] else ...[
-          Opacity(
-            opacity: 1 - animation.value,
-            child: toHero,
-          ),
-          Opacity(
-            opacity: animation.value,
-            child: fromHero,
-          ),
-        ]
+        Opacity(
+          opacity: 1 - animation.value,
+          child: bottomHero,
+        ),
+        Opacity(
+          opacity: animation.value,
+          child: topHero,
+        ),
       ],
     ),
   );

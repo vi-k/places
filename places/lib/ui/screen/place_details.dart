@@ -285,15 +285,7 @@ class _GalleryState extends State<_Gallery> {
                 PageView(
                   controller: _controller,
                   children: [
-                    if (place.photos.isNotEmpty)
-                      SizedBox(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: LoadableImage(
-                          url: place.photos[0],
-                        ),
-                      ),
-                    for (final url in place.photos.skip(1))
+                    for (final url in place.photos)
                       SizedBox(
                         width: double.infinity,
                         height: double.infinity,

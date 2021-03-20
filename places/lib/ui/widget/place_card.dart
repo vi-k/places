@@ -50,11 +50,6 @@ class PlaceCard extends StatefulWidget {
 class _PlaceCardState extends State<PlaceCard>
     with SingleTickerProviderStateMixin {
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
 

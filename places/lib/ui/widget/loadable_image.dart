@@ -25,7 +25,7 @@ class LoadableImage extends StatelessWidget {
       filterQuality: FilterQuality.high,
       fit: BoxFit.cover,
       frameBuilder: (context, child, frame, _) => AnimatedCrossFade(
-        secondCurve: Curves.easeOutCubic,
+        secondCurve: Curves.fastOutSlowIn,
         duration: standartAnimationDuration,
         layoutBuilder: (topChild, _, bottomChild, __) => Stack(
           children: <Widget>[
