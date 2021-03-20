@@ -6,7 +6,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/settings.dart';
 import 'package:places/data/model/filter.dart';
-import 'package:places/data/repository/base/store_repository.dart';
+import 'package:places/data/repository/base/key_value_repository.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
@@ -25,7 +25,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   static const placeTypesTag = 'placeTypes';
 
   final PlaceInteractor _placeInteractor;
-  final StoreRepository _storeRepository;
+  final KeyValueRepository _storeRepository;
 
   late Settings _settings;
   Settings get settings => _settings;

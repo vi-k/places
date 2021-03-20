@@ -1,9 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'base/store_repository.dart';
+import 'base/key_value_repository.dart';
 
 // Хранение данных через SharedPreferences.
-class SharedPreferencesStoreRepository extends StoreRepository {
+class SharedPreferencesRepository extends KeyValueRepository {
   SharedPreferences? _prefs;
 
   Future<SharedPreferences> _getSharedPreferences() async =>

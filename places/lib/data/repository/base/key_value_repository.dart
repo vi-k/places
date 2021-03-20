@@ -1,5 +1,5 @@
 /// Интерфейс для хранения данных.
-abstract class StoreRepository {
+abstract class KeyValueRepository {
   Future<bool?> loadBool(String key);
   Future<int?> loadInt(String key);
   Future<double?> loadDouble(String key);

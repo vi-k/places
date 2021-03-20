@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:places/data/repository/api_place_mapper.dart';
 import 'package:places/data/repository/base/location_repository.dart';
-import 'package:places/data/repository/shared_preferences_store_repository.dart';
+import 'package:places/data/repository/shared_preferences_repository.dart';
 import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/place_list_screen.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +14,7 @@ import 'data/interactor/place_interactor.dart';
 import 'data/repository/api_place_repository.dart';
 import 'data/repository/base/mock_location_repository.dart';
 import 'data/repository/base/place_repository.dart';
-import 'data/repository/base/store_repository.dart';
+import 'data/repository/base/key_value_repository.dart';
 import 'main.dart';
 import 'ui/screen/splash_screen.dart';
 
@@ -28,8 +28,8 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          Provider<StoreRepository>(
-            create: (_) => SharedPreferencesStoreRepository(),
+          Provider<KeyValueRepository>(
+            create: (_) => SharedPreferencesRepository(),
           ),
           Provider<PlaceRepository>(
             create: (_) => ApiPlaceRepository(dio, ApiPlaceMapper()),
@@ -47,7 +47,7 @@ class _AppState extends State<App> {
         ],
         builder: (context, _) => BlocProvider<AppBloc>(
           create: (_) => AppBloc(
-            context.read<StoreRepository>(),
+            context.read<KeyValueRepository>(),
             context.read<PlaceInteractor>(),
           )..add(const AppInit()),
           // error: (context, error) => MyTheme(
