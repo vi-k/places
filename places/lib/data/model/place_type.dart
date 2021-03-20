@@ -16,3 +16,6 @@ const Map<String, PlaceType> _map = {
 };
 
 PlaceType placeTypeByName(String name) => _map[name] ?? PlaceType.other;
+
+Set<PlaceType> placeTypesFromList(List<String> list) =>
+    list.map(placeTypeByName).toSet();

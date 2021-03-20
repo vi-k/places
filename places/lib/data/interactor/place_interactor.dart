@@ -1,8 +1,8 @@
+import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/model/search_history.dart';
-import 'package:places/data/repository/base/filter.dart';
 import 'package:places/data/repository/base/location_repository.dart';
 import 'package:places/data/repository/base/place_repository.dart';
 import 'package:places/data/repository/repository_exception.dart';

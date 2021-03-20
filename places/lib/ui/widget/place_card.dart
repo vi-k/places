@@ -18,11 +18,9 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
-import 'package:places/utils/let_and_also.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
-import 'small_button.dart';
 import 'svg_button.dart';
 
 /// Карточка места.
@@ -175,9 +173,7 @@ class _PlaceCardState extends State<PlaceCard>
           _buildSignatureButton(Svg24.close, color,
               () => context.read<PlacesBloc>().add(PlacesRemove(place))),
         );
-    }
-
-    if (widget.cardType == Favorite.wishlist) {
+    } else if (widget.cardType == Favorite.wishlist) {
       signatures
         ..add(
           _buildSignatureButton(
@@ -216,9 +212,7 @@ class _PlaceCardState extends State<PlaceCard>
             () => context.read<WishlistBloc>().add(WishlistRemove(place)),
           ),
         );
-    }
-
-    if (widget.cardType == Favorite.visited) {
+    } else if (widget.cardType == Favorite.visited) {
       signatures
         ..add(
           _buildSignatureButton(
@@ -253,20 +247,12 @@ class _PlaceCardState extends State<PlaceCard>
 
   Widget _buildSignaturePlaceType(
           BuildContext context, TextStyle textStyle, Place place) =>
-      SmallButton(
-        highlightColor: highlightColorDark2,
-        splashColor: splashColorDark2,
-        label: PlaceTypeUi(place.type).lowerCaseName,
-        style: textStyle,
-        onPressed: widget.cardType != Favorite.no
-            ? null
-            : () {
-                context.read<PlacesBloc>().let((it) {
-                  final newFilter =
-                      it.state.filter.copyWith(placeTypes: {place.type});
-                  it.add(PlacesLoad(newFilter));
-                });
-              },
+      Padding(
+        padding: commonPaddingLR,
+        child: Text(
+          PlaceTypeUi(place.type).lowerCaseName,
+          style: textStyle,
+        ),
       );
 
   Widget _buildSignatureButton(

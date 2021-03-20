@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:places/bloc/app_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/themes.dart';
