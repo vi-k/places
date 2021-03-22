@@ -14,24 +14,16 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _animController;
-  late final Animation<double> _animation;
+  late final AnimationController _animController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1500),
+  )..repeat();
 
-  @override
-  void initState() {
-    super.initState();
-
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-    _animController.repeat();
-
-    _animation = Tween<double>(begin: 0, end: 4 * pi).animate(CurvedAnimation(
-      curve: Curves.easeInOutExpo,
-      parent: _animController,
-    ));
-  }
+  late final Animation<double> _animation =
+      Tween<double>(begin: 0, end: 4 * pi).animate(CurvedAnimation(
+    curve: Curves.easeInOutExpo,
+    parent: _animController,
+  ));
 
   @override
   void dispose() {

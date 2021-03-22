@@ -55,27 +55,19 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  Filter? filter;
-  final _textController = TextEditingController();
-  final _textStreamController = StreamController<String>();
+  late Filter? filter = widget.filter;
 
-  @override
-  void initState() {
-    super.initState();
+  late final TextEditingController _textController =
+      TextEditingController(text: widget.initialText)
+        ..addListener(() {
+          _textStreamController.add(_textController.text);
+        });
 
-    filter = widget.filter;
-    _textController
-      ..text = widget.initialText
-      ..addListener(() {
-        _textStreamController.add(_textController.text);
-      });
-
-    _textStreamController.stream
-        .debounceTime(widget.debounceTime)
-        .listen((data) async {
-      widget.onTextChanged?.call(data);
-    });
-  }
+  late final StreamController<String> _textStreamController =
+      StreamController<String>()
+        ..stream.debounceTime(widget.debounceTime).listen((data) async {
+          widget.onTextChanged?.call(data);
+        });
 
   @override
   void dispose() {

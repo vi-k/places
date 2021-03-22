@@ -43,13 +43,7 @@ class CupertinoDateSelect extends StatefulWidget {
 }
 
 class CupertinoDateSelectState extends State<CupertinoDateSelect> {
-  late DateTime date;
-
-  @override
-  void initState() {
-    super.initState();
-    date = widget.initialDate;
-  }
+  late DateTime date = widget.initialDate;
 
   @override
   Widget build(BuildContext context) => Column(

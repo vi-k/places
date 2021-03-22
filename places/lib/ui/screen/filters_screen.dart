@@ -31,7 +31,7 @@ class FiltersScreen extends StatefulWidget {
 class _FiltersScreenState extends State<FiltersScreen> {
   static const _maxDistance = Distance.km(100);
   static final _maxValue = distanceToValue(_maxDistance).toDouble() + 1;
-  late Filter _filter;
+  late Filter _filter = widget.filter;
   int? _cardCount;
 
   Filter get filter => _filter;
@@ -39,12 +39,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
     _filter = value;
     _cardCount = null;
     _recalcCardCount();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    filter = widget.filter;
   }
 
   @override

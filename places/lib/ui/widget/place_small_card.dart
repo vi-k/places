@@ -22,14 +22,7 @@ class PlaceSmallCard extends StatefulWidget {
 }
 
 class _PlaceSmallCardState extends State<PlaceSmallCard> {
-  late Place place;
-
-  @override
-  void initState() {
-    super.initState();
-
-    place = widget.place;
-  }
+  late Place _place = widget.place;
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +40,11 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
               SizedBox(
                 width: photoCardSize,
                 height: photoCardSize,
-                child: place.photos.isEmpty
+                child: _place.photos.isEmpty
                     ? null
                     : Hero(
-                        tag: 'Place#${place.id}',
-                        child: PhotoCard(url: place.photos[0]),
+                        tag: 'Place#${_place.id}',
+                        child: PhotoCard(url: _place.photos[0]),
                       ),
               ),
               const SizedBox(width: commonSpacing),
@@ -61,13 +54,13 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      place.name,
+                      _place.name,
                       maxLines: 1,
                       style: theme.textRegular14Main,
                     ),
                     const SizedBox(height: commonSpacing1_2),
                     Text(
-                      '${PlaceTypeUi(place.type).name}, ${place.distance}',
+                      '${PlaceTypeUi(_place.type).name}, ${_place.distance}',
                       maxLines: 1,
                       style: theme.textRegular14Light,
                     ),
@@ -84,10 +77,10 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
             splashColor: theme.app.splashColor,
             onPressed: () async {
               final newPlace = await standartNavigatorPush<Place>(
-                  context, () => PlaceDetails(place: place));
+                  context, () => PlaceDetails(place: _place));
 
               if (newPlace != null) {
-                place = newPlace;
+                _place = newPlace;
                 setState(() {});
               }
             },

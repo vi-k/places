@@ -4,54 +4,49 @@ import 'base/key_value_repository.dart';
 
 // Хранение данных через SharedPreferences.
 class SharedPreferencesRepository extends KeyValueRepository {
-  SharedPreferences? _prefs;
-
-  Future<SharedPreferences> _getSharedPreferences() async =>
-      _prefs ?? await SharedPreferences.getInstance();
-
   @override
   Future<bool?> loadBool(String key) async =>
-      (await _getSharedPreferences()).getBool(key);
+      (await SharedPreferences.getInstance()).getBool(key);
 
   @override
   Future<int?> loadInt(String key) async =>
-      (await _getSharedPreferences()).getInt(key);
+      (await SharedPreferences.getInstance()).getInt(key);
 
   @override
   Future<double?> loadDouble(String key) async =>
-      (await _getSharedPreferences()).getDouble(key);
+      (await SharedPreferences.getInstance()).getDouble(key);
 
   @override
   Future<String?> loadString(String key) async =>
-      (await _getSharedPreferences()).getString(key);
+      (await SharedPreferences.getInstance()).getString(key);
 
   @override
   Future<List<String>?> loadStringList(String key) async =>
-      (await _getSharedPreferences()).getStringList(key);
+      (await SharedPreferences.getInstance()).getStringList(key);
 
   @override
   Future<bool> saveBool(String key, bool value) async =>
-      await (await _getSharedPreferences()).setBool(key, value);
+      await (await SharedPreferences.getInstance()).setBool(key, value);
 
   @override
   Future<bool> saveInt(String key, int value) async =>
-      await (await _getSharedPreferences()).setInt(key, value);
+      await (await SharedPreferences.getInstance()).setInt(key, value);
 
   @override
   Future<bool> saveDouble(String key, double value) async =>
-      await (await _getSharedPreferences()).setDouble(key, value);
+      await (await SharedPreferences.getInstance()).setDouble(key, value);
 
   @override
   Future<bool> saveString(String key, String value) async =>
-      await (await _getSharedPreferences()).setString(key, value);
+      await (await SharedPreferences.getInstance()).setString(key, value);
 
   @override
   Future<bool> saveStringList(String key, List<String> value) async =>
-      await (await _getSharedPreferences()).setStringList(key, value);
+      await (await SharedPreferences.getInstance()).setStringList(key, value);
 
   @override
   Future<bool> remove(String key) async {
-    final prefs = await _getSharedPreferences();
+    final prefs = await SharedPreferences.getInstance();
     return await prefs.remove(key);
   }
 }
