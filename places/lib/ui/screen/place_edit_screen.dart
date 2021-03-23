@@ -14,6 +14,8 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/hero_tags.dart';
 import 'package:places/ui/widget/add_photo_card.dart';
 import 'package:places/ui/widget/get_image.dart';
 import 'package:places/ui/widget/photo_card.dart';
@@ -113,9 +115,6 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       );
 
   // Фотографии мест.
-  // ListView для строки не очень подходит, т.к. занимает всё пространство
-  // по вертикали. Можно ограничить только явным указанием размера. В то время
-  // как SingleChildScrollView + Row подстраиваются под размер. Это удобнее.
   Widget _buildPhotoGallery(BuildContext context) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -138,26 +137,38 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             ),
             for (final photo in _photos) ...[
               const SizedBox(width: commonSpacing),
-              Dismissible(
-                key: ValueKey(photo),
-                direction: DismissDirection.up,
-                onDismissed: (_) {
-                  setState(() {
-                    _photos.remove(photo);
-                  });
-                },
-                child: PhotoCard(
-                  url: photo,
-                  onClose: () {
-                    setState(() {
-                      _photos.remove(photo);
-                    });
-                  },
-                ),
+              SizedBox(
+                width: photoCardSize,
+                height: photoCardSize,
+                child: _place != null && photo == _photos[0]
+                    ? Hero(
+                        tag: heroPlaceTag(_place!),
+                        flightShuttleBuilder: standartFlightShuttleBuilder,
+                        child: _buildPhoto(photo),
+                      )
+                    : _buildPhoto(photo),
               ),
             ],
             const SizedBox(width: commonSpacing),
           ],
+        ),
+      );
+
+  Dismissible _buildPhoto(String photo) => Dismissible(
+        key: ValueKey(photo),
+        direction: DismissDirection.up,
+        onDismissed: (_) {
+          setState(() {
+            _photos.remove(photo);
+          });
+        },
+        child: PhotoCard(
+          url: photo,
+          onClose: () {
+            setState(() {
+              _photos.remove(photo);
+            });
+          },
         ),
       );
 
@@ -181,13 +192,8 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
   // Получение типа места.
   Future<void> _getPlaceType() async {
-    final placeType = await Navigator.push<PlaceType>(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            PlaceTypeSelectScreen(placeType: _placeType?.type),
-      ),
-    );
+    final placeType = await standartNavigatorPush<PlaceType>(
+        context, () => PlaceTypeSelectScreen(placeType: _placeType?.type));
 
     if (placeType != null) {
       setState(() {

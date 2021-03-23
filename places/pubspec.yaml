@@ -33,7 +33,7 @@ flutter:
     - res/svg24/
     - res/svg32/
     - res/svg64/
-    - res/splash/
+    - res/any/
     - res/tutorial/
 
   fonts:

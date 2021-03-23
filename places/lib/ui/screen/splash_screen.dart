@@ -27,8 +27,8 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _animController.repeat();
 
-    _animation = Tween<double>(begin: 0, end: -2 * pi).animate(CurvedAnimation(
-      curve: Curves.easeInOut,
+    _animation = Tween<double>(begin: 0, end: 4 * pi).animate(CurvedAnimation(
+      curve: Curves.easeInOutExpo,
       parent: _animController,
     ));
   }
@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
                     angle: _animation.value,
                     child: child,
                   ),
-                  child: SvgPicture.asset(SvgSplash.splash),
+                  child: SvgPicture.asset(SvgAny.splash),
                 ),
                 // "Прогрев" - загружаем первую картинку туториала, иначе она
                 // появится позже.

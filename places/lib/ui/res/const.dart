@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Цвета.
@@ -72,3 +73,7 @@ const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
 const cardSignaturesPadding2 = EdgeInsets.only(left: 8, right: 8);
 const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
+
+/// Анимация.
+const standartAnimationDuration =
+    Duration(milliseconds: kReleaseMode ? 300 : 1000);

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/utils/let_and_also.dart';
@@ -53,12 +54,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Icons.info_outline,
                       color: theme.accentColor,
                     ),
-                    onTap: () => Navigator.push<void>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OnboardingScreen(),
-                      ),
-                    ),
+                    onTap: () => standartNavigatorPush<void>(
+                        context, () => OnboardingScreen()),
                   ),
                   const _ListDivider(),
                 ],

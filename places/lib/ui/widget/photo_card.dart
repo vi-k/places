@@ -21,41 +21,33 @@ class PhotoCard extends StatelessWidget {
   final void Function()? onClose;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: photoCardSize,
-        height: photoCardSize,
-        child: Material(
-          type: MaterialType.transparency,
-          borderRadius: BorderRadius.circular(textFieldRadius),
-          clipBehavior: Clip.antiAlias,
-          child: Stack(
-            children: [
-              SizedBox(
-                width: photoCardSize,
-                height: photoCardSize,
-                child: LoadableImage(url: url),
-              ),
-              if (onClose != null)
-                Positioned.fill(
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: SvgButton(
-                        Svg24.clear,
-                        iconSize: clearIconSize,
-                        width: clearButtonSize,
-                        height: clearButtonSize,
-                        color: mainColor100,
-                        highlightColor: highlightColorDark2,
-                        splashColor: splashColorDark2,
-                        onPressed: onClose,
-                      ),
-                    ),
-                  ),
+  Widget build(BuildContext context) => Material(
+    type: MaterialType.transparency,
+    borderRadius: BorderRadius.circular(textFieldRadius),
+    clipBehavior: Clip.antiAlias,
+    child: Stack(
+      children: [
+        LoadableImage(url: url),
+        if (onClose != null)
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: SvgButton(
+                  Svg24.clear,
+                  iconSize: clearIconSize,
+                  width: clearButtonSize,
+                  height: clearButtonSize,
+                  color: mainColor100,
+                  highlightColor: highlightColorDark2,
+                  splashColor: splashColorDark2,
+                  onPressed: onClose,
                 ),
-            ],
+              ),
+            ),
           ),
-        ),
-      );
+      ],
+    ),
+  );
 }

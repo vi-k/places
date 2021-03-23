@@ -58,7 +58,7 @@ class _PageViewSelectorState extends State<PageViewSelector> {
           InkWell(
             onTap: () => _controller.animateToPage(
               i,
-              duration: const Duration(milliseconds: 500),
+              duration: standartAnimationDuration,
               curve: Curves.easeOut,
             ),
             child: Container(

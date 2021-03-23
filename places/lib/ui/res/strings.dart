@@ -20,6 +20,7 @@ const stringDoFind = 'Ищите';
 const stringDoFindMessage = 'Введите часть названия в строке поиска.';
 const stringDoSave = 'Сохранить?';
 const stringEdit = 'Редактировать';
+const stringEmpty = 'Пусто';
 const stringError = 'Ошибка';
 const stringFavorite = 'Избранное';
 const stringFile = 'Файл';
@@ -61,7 +62,9 @@ const stringToWishlist = 'Хочу посетить';
 const stringUnknownState = 'Неопределённое состояние';
 const stringUnselected = 'Не выбрано';
 const stringVisitedName = 'Посетил';
+const stringVisitedMessage = 'Завершите маршрут, чтобы место попало сюда.';
 const stringWishlistName = 'Хочу посетить';
+const stringWishlistMessage = 'Отмечайте понравившиеся места и они появиятся здесь.';
 const stringWatchTutorial = 'Смотреть туториал';
 const stringYes = 'Да';
 

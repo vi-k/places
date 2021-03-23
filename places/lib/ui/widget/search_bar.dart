@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/bloc/app_bloc.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:places/data/repository/base/filter.dart';
 import 'package:places/ui/res/const.dart';
@@ -23,7 +24,7 @@ class SearchBar extends StatefulWidget {
     this.onFilterChanged,
     String? initialText,
     this.onTextChanged,
-    this.debounceTime = const Duration(seconds: 1),
+    this.debounceTime = const Duration(milliseconds: 1000),
   })  : assert(filter != null && onFilterChanged != null ||
             initialText != null && onTextChanged != null),
         initialText = initialText ?? '',
@@ -157,12 +158,9 @@ class _SearchBarState extends State<SearchBar> {
                           Svg24.filter,
                           color: theme.accentColor,
                           onPressed: () async {
-                            final newFilter = await Navigator.push<Filter>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => FiltersScreen(filter: it),
-                              ),
-                            );
+                            final newFilter =
+                                await standartNavigatorPush<Filter>(
+                                    context, () => FiltersScreen(filter: it));
 
                             newFilter?.also((it) {
                               filter = newFilter;

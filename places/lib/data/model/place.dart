@@ -51,6 +51,10 @@ class Place extends PlaceBase {
   /// Пользовательская информация, сп.
   final PlaceUserInfo userInfo;
 
+  @override
+  List<Object?> get props =>
+      [id, name, type, coord, photos, description, userInfo];
+
   bool get isNew => id == 0;
 
   @override
