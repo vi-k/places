@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/bloc/app_bloc.dart';
 import 'package:places/bloc/place_bloc.dart';
-import 'package:places/bloc/places_bloc.dart';
 import 'package:places/bloc/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';

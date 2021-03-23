@@ -27,8 +27,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final DbRepository _dbRepository = SqliteDbRepository();
-
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
@@ -36,8 +34,7 @@ class _AppState extends State<App> {
             create: (_) => SharedPreferencesRepository(),
           ),
           Provider<DbRepository>(
-            create: (_) => _dbRepository,
-            // create: (_) => MockDbRepository(),
+            create: (_) => SqliteDbRepository(),
           ),
           Provider<PlaceRepository>(
             create: (_) => ApiPlaceRepository(dio, ApiPlaceMapper()),
