@@ -18,6 +18,7 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/hero_tags.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
@@ -133,7 +134,7 @@ class _PlaceCardState extends State<PlaceCard>
 
   Widget _buildCardTop(Place place) => Expanded(
         child: Hero(
-          tag: 'Place#${place.id}',
+          tag: heroPlaceTag(place),
           child: Stack(
             children: [
               Positioned.fill(

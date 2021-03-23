@@ -13,6 +13,7 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/hero_tags.dart';
 import 'package:places/ui/widget/loadable_image.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
@@ -88,7 +89,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Hero(
-                      tag: 'Place#${state.place.id}',
+                      tag: heroPlaceTag(state.place),
                       flightShuttleBuilder: standartFlightShuttleBuilder,
                       child: _Gallery(state.place),
                     ),

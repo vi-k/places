@@ -15,6 +15,7 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/hero_tags.dart';
 import 'package:places/ui/widget/add_photo_card.dart';
 import 'package:places/ui/widget/get_image.dart';
 import 'package:places/ui/widget/photo_card.dart';
@@ -141,7 +142,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                 height: photoCardSize,
                 child: _place != null && photo == _photos[0]
                     ? Hero(
-                        tag: 'Place#${_place!.id}',
+                        tag: heroPlaceTag(_place!),
                         flightShuttleBuilder: standartFlightShuttleBuilder,
                         child: _buildPhoto(photo),
                       )
