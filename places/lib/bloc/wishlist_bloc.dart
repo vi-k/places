@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/model/place_base.dart';
 
 part 'wishlist_event.dart';
 part 'wishlist_state.dart';
@@ -16,8 +15,7 @@ part 'wishlist_state.dart';
 abstract class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
   WishlistBloc._(this.placeInteractor) : super(WishlistInitial());
 
-  factory WishlistBloc(
-          PlaceInteractor placeInteractor, Favorite listType) =>
+  factory WishlistBloc(PlaceInteractor placeInteractor, Favorite listType) =>
       listType == Favorite.wishlist
           ? WishlistWishlistBloc(placeInteractor)
           : WishlistVisitedBloc(placeInteractor);
@@ -25,8 +23,8 @@ abstract class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
   final PlaceInteractor placeInteractor;
 
   Future<List<Place>> _getList();
-  Future<Place> _removeFromList(PlaceBase place);
-  Future<Place> _addToAdjacentList(PlaceBase place);
+  Future<Place> _removeFromList(Place place);
+  Future<Place> _addToAdjacentList(Place place);
 
   @override
   Stream<WishlistState> mapEventToState(WishlistEvent event) async* {
@@ -81,11 +79,11 @@ class WishlistWishlistBloc extends WishlistBloc {
   Future<List<Place>> _getList() => placeInteractor.getWishlist();
 
   @override
-  Future<Place> _removeFromList(PlaceBase place) =>
+  Future<Place> _removeFromList(Place place) =>
       placeInteractor.removeFromWishlist(place);
 
   @override
-  Future<Place> _addToAdjacentList(PlaceBase place) =>
+  Future<Place> _addToAdjacentList(Place place) =>
       placeInteractor.addToVisited(place);
 }
 
@@ -97,10 +95,10 @@ class WishlistVisitedBloc extends WishlistBloc {
   Future<List<Place>> _getList() => placeInteractor.getVisited();
 
   @override
-  Future<Place> _removeFromList(PlaceBase place) =>
+  Future<Place> _removeFromList(Place place) =>
       placeInteractor.removeFromVisited(place);
 
   @override
-  Future<Place> _addToAdjacentList(PlaceBase place) =>
+  Future<Place> _addToAdjacentList(Place place) =>
       placeInteractor.addToWishlist(place);
 }

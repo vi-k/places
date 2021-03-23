@@ -172,7 +172,8 @@ class _PlaceCardState extends State<PlaceCard>
         )
         ..add(
           _buildSignatureButton(Svg24.close, color,
-              () => context.read<PlacesBloc>().add(PlacesRemove(place))),
+              // () => context.read<PlacesBloc>().add(PlacesRemove(place))),
+              () {}),
         );
     } else if (widget.cardType == Favorite.wishlist) {
       signatures

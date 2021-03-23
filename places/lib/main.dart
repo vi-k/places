@@ -5,13 +5,12 @@ import 'package:intl/intl.dart';
 import 'app.dart';
 import 'data/interactor/place_interactor.dart';
 import 'data/model/filter.dart';
+import 'data/repository/db_repository/mock_db_repository.dart';
+import 'data/repository/location_repository/real_location_repository.dart';
 import 'data/repository/place_repository/api_place_mapper.dart';
 import 'data/repository/place_repository/api_place_repository.dart';
-import 'data/repository/location_repository/location_repository.dart';
 import 'data/repository/place_repository/dio_exception.dart';
-import 'data/repository/db_repository/mock_db_repository.dart';
 import 'data/repository/place_repository/mock_place_repository.dart';
-import 'data/repository/location_repository/real_location_repository.dart';
 import 'data/repository/place_repository/repository_exception.dart';
 
 final dio = Dio(BaseOptions(

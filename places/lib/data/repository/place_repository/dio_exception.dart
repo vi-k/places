@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'repository_exception.dart';
-import '../place_repository/repository_network_exception.dart';
+import 'repository_network_exception.dart';
 
 String _messageFromJson(Map<String, dynamic> json) =>
     json.containsKey('reasons')

@@ -38,8 +38,8 @@ class SearchHistoryEntity extends DataClass
     return map;
   }
 
-  SearchHistoryTableCompanion toCompanion(bool nullToAbsent) {
-    return SearchHistoryTableCompanion(
+  SearchHistoryCompanion toCompanion(bool nullToAbsent) {
+    return SearchHistoryCompanion(
       request: Value(request),
       timestamp: Value(timestamp),
       count: Value(count),
@@ -94,16 +94,16 @@ class SearchHistoryEntity extends DataClass
           other.count == this.count);
 }
 
-class SearchHistoryTableCompanion extends UpdateCompanion<SearchHistoryEntity> {
+class SearchHistoryCompanion extends UpdateCompanion<SearchHistoryEntity> {
   final Value<String> request;
   final Value<DateTime> timestamp;
   final Value<int> count;
-  const SearchHistoryTableCompanion({
+  const SearchHistoryCompanion({
     this.request = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.count = const Value.absent(),
   });
-  SearchHistoryTableCompanion.insert({
+  SearchHistoryCompanion.insert({
     required String request,
     required DateTime timestamp,
     required int count,
@@ -122,9 +122,9 @@ class SearchHistoryTableCompanion extends UpdateCompanion<SearchHistoryEntity> {
     });
   }
 
-  SearchHistoryTableCompanion copyWith(
+  SearchHistoryCompanion copyWith(
       {Value<String>? request, Value<DateTime>? timestamp, Value<int>? count}) {
-    return SearchHistoryTableCompanion(
+    return SearchHistoryCompanion(
       request: request ?? this.request,
       timestamp: timestamp ?? this.timestamp,
       count: count ?? this.count,
@@ -148,7 +148,7 @@ class SearchHistoryTableCompanion extends UpdateCompanion<SearchHistoryEntity> {
 
   @override
   String toString() {
-    return (StringBuffer('SearchHistoryTableCompanion(')
+    return (StringBuffer('SearchHistoryCompanion(')
           ..write('request: $request, ')
           ..write('timestamp: $timestamp, ')
           ..write('count: $count')
@@ -157,11 +157,11 @@ class SearchHistoryTableCompanion extends UpdateCompanion<SearchHistoryEntity> {
   }
 }
 
-class $SearchHistoryTableTable extends SearchHistoryTable
-    with TableInfo<$SearchHistoryTableTable, SearchHistoryEntity> {
+class $SearchHistoryTable extends SearchHistory
+    with TableInfo<$SearchHistoryTable, SearchHistoryEntity> {
   final GeneratedDatabase _db;
   final String? _alias;
-  $SearchHistoryTableTable(this._db, [this._alias]);
+  $SearchHistoryTable(this._db, [this._alias]);
   final VerificationMeta _requestMeta = const VerificationMeta('request');
   @override
   late final GeneratedTextColumn request = _constructRequest();
@@ -198,11 +198,11 @@ class $SearchHistoryTableTable extends SearchHistoryTable
   @override
   List<GeneratedColumn> get $columns => [request, timestamp, count];
   @override
-  $SearchHistoryTableTable get asDslTable => this;
+  $SearchHistoryTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'search_history_table';
+  String get $tableName => _alias ?? 'search_history';
   @override
-  final String actualTableName = 'search_history_table';
+  final String actualTableName = 'search_history';
   @override
   VerificationContext validateIntegrity(
       Insertable<SearchHistoryEntity> instance,
@@ -239,21 +239,260 @@ class $SearchHistoryTableTable extends SearchHistoryTable
   }
 
   @override
-  $SearchHistoryTableTable createAlias(String alias) {
-    return $SearchHistoryTableTable(_db, alias);
+  $SearchHistoryTable createAlias(String alias) {
+    return $SearchHistoryTable(_db, alias);
+  }
+}
+
+class PlacesInfoEntity extends DataClass
+    implements Insertable<PlacesInfoEntity> {
+  final int placeId;
+  final int favorite;
+  final DateTime? planToVisit;
+  PlacesInfoEntity(
+      {required this.placeId, required this.favorite, this.planToVisit});
+  factory PlacesInfoEntity.fromData(
+      Map<String, dynamic> data, GeneratedDatabase db,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
+    return PlacesInfoEntity(
+      placeId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}place_id'])!,
+      favorite:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}favorite'])!,
+      planToVisit: dateTimeType
+          .mapFromDatabaseResponse(data['${effectivePrefix}plan_to_visit']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['place_id'] = Variable<int>(placeId);
+    map['favorite'] = Variable<int>(favorite);
+    if (!nullToAbsent || planToVisit != null) {
+      map['plan_to_visit'] = Variable<DateTime?>(planToVisit);
+    }
+    return map;
+  }
+
+  PlacesInfoCompanion toCompanion(bool nullToAbsent) {
+    return PlacesInfoCompanion(
+      placeId: Value(placeId),
+      favorite: Value(favorite),
+      planToVisit: planToVisit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planToVisit),
+    );
+  }
+
+  factory PlacesInfoEntity.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return PlacesInfoEntity(
+      placeId: serializer.fromJson<int>(json['placeId']),
+      favorite: serializer.fromJson<int>(json['favorite']),
+      planToVisit: serializer.fromJson<DateTime?>(json['planToVisit']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'placeId': serializer.toJson<int>(placeId),
+      'favorite': serializer.toJson<int>(favorite),
+      'planToVisit': serializer.toJson<DateTime?>(planToVisit),
+    };
+  }
+
+  PlacesInfoEntity copyWith(
+          {int? placeId, int? favorite, DateTime? planToVisit}) =>
+      PlacesInfoEntity(
+        placeId: placeId ?? this.placeId,
+        favorite: favorite ?? this.favorite,
+        planToVisit: planToVisit ?? this.planToVisit,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('PlacesInfoEntity(')
+          ..write('placeId: $placeId, ')
+          ..write('favorite: $favorite, ')
+          ..write('planToVisit: $planToVisit')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf(
+      $mrjc(placeId.hashCode, $mrjc(favorite.hashCode, planToVisit.hashCode)));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is PlacesInfoEntity &&
+          other.placeId == this.placeId &&
+          other.favorite == this.favorite &&
+          other.planToVisit == this.planToVisit);
+}
+
+class PlacesInfoCompanion extends UpdateCompanion<PlacesInfoEntity> {
+  final Value<int> placeId;
+  final Value<int> favorite;
+  final Value<DateTime?> planToVisit;
+  const PlacesInfoCompanion({
+    this.placeId = const Value.absent(),
+    this.favorite = const Value.absent(),
+    this.planToVisit = const Value.absent(),
+  });
+  PlacesInfoCompanion.insert({
+    this.placeId = const Value.absent(),
+    required int favorite,
+    this.planToVisit = const Value.absent(),
+  }) : favorite = Value(favorite);
+  static Insertable<PlacesInfoEntity> custom({
+    Expression<int>? placeId,
+    Expression<int>? favorite,
+    Expression<DateTime?>? planToVisit,
+  }) {
+    return RawValuesInsertable({
+      if (placeId != null) 'place_id': placeId,
+      if (favorite != null) 'favorite': favorite,
+      if (planToVisit != null) 'plan_to_visit': planToVisit,
+    });
+  }
+
+  PlacesInfoCompanion copyWith(
+      {Value<int>? placeId,
+      Value<int>? favorite,
+      Value<DateTime?>? planToVisit}) {
+    return PlacesInfoCompanion(
+      placeId: placeId ?? this.placeId,
+      favorite: favorite ?? this.favorite,
+      planToVisit: planToVisit ?? this.planToVisit,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (placeId.present) {
+      map['place_id'] = Variable<int>(placeId.value);
+    }
+    if (favorite.present) {
+      map['favorite'] = Variable<int>(favorite.value);
+    }
+    if (planToVisit.present) {
+      map['plan_to_visit'] = Variable<DateTime?>(planToVisit.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlacesInfoCompanion(')
+          ..write('placeId: $placeId, ')
+          ..write('favorite: $favorite, ')
+          ..write('planToVisit: $planToVisit')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PlacesInfoTable extends PlacesInfo
+    with TableInfo<$PlacesInfoTable, PlacesInfoEntity> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $PlacesInfoTable(this._db, [this._alias]);
+  final VerificationMeta _placeIdMeta = const VerificationMeta('placeId');
+  @override
+  late final GeneratedIntColumn placeId = _constructPlaceId();
+  GeneratedIntColumn _constructPlaceId() {
+    return GeneratedIntColumn(
+      'place_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _favoriteMeta = const VerificationMeta('favorite');
+  @override
+  late final GeneratedIntColumn favorite = _constructFavorite();
+  GeneratedIntColumn _constructFavorite() {
+    return GeneratedIntColumn(
+      'favorite',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _planToVisitMeta =
+      const VerificationMeta('planToVisit');
+  @override
+  late final GeneratedDateTimeColumn planToVisit = _constructPlanToVisit();
+  GeneratedDateTimeColumn _constructPlanToVisit() {
+    return GeneratedDateTimeColumn(
+      'plan_to_visit',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [placeId, favorite, planToVisit];
+  @override
+  $PlacesInfoTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'places_info';
+  @override
+  final String actualTableName = 'places_info';
+  @override
+  VerificationContext validateIntegrity(Insertable<PlacesInfoEntity> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('place_id')) {
+      context.handle(_placeIdMeta,
+          placeId.isAcceptableOrUnknown(data['place_id']!, _placeIdMeta));
+    }
+    if (data.containsKey('favorite')) {
+      context.handle(_favoriteMeta,
+          favorite.isAcceptableOrUnknown(data['favorite']!, _favoriteMeta));
+    } else if (isInserting) {
+      context.missing(_favoriteMeta);
+    }
+    if (data.containsKey('plan_to_visit')) {
+      context.handle(
+          _planToVisitMeta,
+          planToVisit.isAcceptableOrUnknown(
+              data['plan_to_visit']!, _planToVisitMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {placeId};
+  @override
+  PlacesInfoEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return PlacesInfoEntity.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $PlacesInfoTable createAlias(String alias) {
+    return $PlacesInfoTable(_db, alias);
   }
 }
 
 abstract class _$SqliteDbRepository extends GeneratedDatabase {
   _$SqliteDbRepository(QueryExecutor e)
       : super(SqlTypeSystem.defaultInstance, e);
+  late final $SearchHistoryTable searchHistory = $SearchHistoryTable(this);
   late final Index timestampIndex = Index('timestamp_index',
       'CREATE INDEX IF NOT EXISTS timestamp_index ON search_history (timestamp);');
-  late final $SearchHistoryTableTable searchHistoryTable =
-      $SearchHistoryTableTable(this);
+  late final $PlacesInfoTable placesInfo = $PlacesInfoTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [timestampIndex, searchHistoryTable];
+      [searchHistory, timestampIndex, placesInfo];
 }

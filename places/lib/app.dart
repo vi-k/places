@@ -2,23 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:places/data/repository/place_repository/api_place_mapper.dart';
-import 'package:places/data/repository/location_repository/location_repository.dart';
-import 'package:places/data/repository/key_value_repository/shared_preferences_repository.dart';
-import 'package:places/ui/screen/onboarding_screen.dart';
-import 'package:places/ui/screen/place_list_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'bloc/app_bloc.dart';
 import 'data/interactor/place_interactor.dart';
-import 'data/repository/place_repository/api_place_repository.dart';
 import 'data/repository/db_repository/db_repository.dart';
-import 'data/repository/key_value_repository/key_value_repository.dart';
-import 'data/repository/location_repository/mock_location_repository.dart';
-import 'data/repository/place_repository/place_repository.dart';
-import 'data/repository/db_repository/mock_db_repository.dart';
 import 'data/repository/db_repository/sqlite_db_repository.dart';
+import 'data/repository/key_value_repository/key_value_repository.dart';
+import 'data/repository/key_value_repository/shared_preferences_repository.dart';
+import 'data/repository/location_repository/location_repository.dart';
+import 'data/repository/location_repository/mock_location_repository.dart';
+import 'data/repository/place_repository/api_place_mapper.dart';
+import 'data/repository/place_repository/api_place_repository.dart';
+import 'data/repository/place_repository/place_repository.dart';
 import 'main.dart';
+import 'ui/screen/onboarding_screen.dart';
+import 'ui/screen/place_list_screen.dart';
 import 'ui/screen/splash_screen.dart';
 
 /// Основной виджет-приложение.
@@ -28,6 +27,8 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  final DbRepository _dbRepository = SqliteDbRepository();
+
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
@@ -35,7 +36,8 @@ class _AppState extends State<App> {
             create: (_) => SharedPreferencesRepository(),
           ),
           Provider<DbRepository>(
-            create: (_) => SqliteDbRepository(),
+            create: (_) => _dbRepository,
+            // create: (_) => MockDbRepository(),
           ),
           Provider<PlaceRepository>(
             create: (_) => ApiPlaceRepository(dio, ApiPlaceMapper()),
