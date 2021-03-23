@@ -2,19 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:places/data/repository/api_place_mapper.dart';
-import 'package:places/data/repository/base/location_repository.dart';
-import 'package:places/data/repository/shared_preferences_repository.dart';
+import 'package:places/data/repository/place_repository/api_place_mapper.dart';
+import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repository/key_value_repository/shared_preferences_repository.dart';
 import 'package:places/ui/screen/onboarding_screen.dart';
 import 'package:places/ui/screen/place_list_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'bloc/app_bloc.dart';
 import 'data/interactor/place_interactor.dart';
-import 'data/repository/api_place_repository.dart';
-import 'data/repository/base/mock_location_repository.dart';
-import 'data/repository/base/place_repository.dart';
-import 'data/repository/base/key_value_repository.dart';
+import 'data/repository/place_repository/api_place_repository.dart';
+import 'data/repository/db_repository/db_repository.dart';
+import 'data/repository/key_value_repository/key_value_repository.dart';
+import 'data/repository/location_repository/mock_location_repository.dart';
+import 'data/repository/place_repository/place_repository.dart';
+import 'data/repository/db_repository/mock_db_repository.dart';
+import 'data/repository/db_repository/sqlite_db_repository.dart';
 import 'main.dart';
 import 'ui/screen/splash_screen.dart';
 
@@ -31,16 +34,27 @@ class _AppState extends State<App> {
           Provider<KeyValueRepository>(
             create: (_) => SharedPreferencesRepository(),
           ),
+          Provider<DbRepository>(
+            create: (_) => SqliteDbRepository(),
+          ),
           Provider<PlaceRepository>(
             create: (_) => ApiPlaceRepository(dio, ApiPlaceMapper()),
           ),
           Provider<LocationRepository>(
             create: (_) => MockLocationRepository(),
           ),
-          ProxyProvider2<PlaceRepository, LocationRepository, PlaceInteractor>(
-            update: (_, placeRepository, locationRepository, __) =>
+          ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
+              PlaceInteractor>(
+            update: (
+              _,
+              placeRepository,
+              dbRepository,
+              locationRepository,
+              __,
+            ) =>
                 PlaceInteractor(
               placeRepository: placeRepository,
+              dbRepository: dbRepository,
               locationRepository: locationRepository,
             ),
           ),

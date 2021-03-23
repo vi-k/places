@@ -8,7 +8,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/repository/base/location_repository.dart';
+import 'package:places/data/repository/location_repository/location_repository.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';

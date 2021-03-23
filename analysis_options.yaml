@@ -14,7 +14,7 @@ analyzer:
     # Build
     - 'build/**'
     # Generated code
-    - 'lib/**.g.dart'
+    - '**.g.dart'
     - 'lib/**.freezed.dart'
     - 'lib/**.graphql.dart'
     - 'lib/generated_plugin_registrant.dart'

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'repository_exception.dart';
-import 'repository_network_exception.dart';
+import '../place_repository/repository_network_exception.dart';
 
 String _messageFromJson(Map<String, dynamic> json) =>
     json.containsKey('reasons')
@@ -12,8 +12,8 @@ String _messageFromJson(Map<String, dynamic> json) =>
         : json['error'].toString();
 
 RepositoryException createExceptionFromDio(DioError error) {
-  final method = error.request?.method ?? 'UNKNOWN METHOD';
-  final url = error.request?.uri.path ?? 'empty_path';
+  final method = error.requestOptions.method;
+  final url = error.requestOptions.uri.path;
   final statusCode = error.response?.statusCode ?? 0;
   var message = error.message.replaceFirst(
       RegExp(

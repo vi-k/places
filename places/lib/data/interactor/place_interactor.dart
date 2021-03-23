@@ -2,23 +2,25 @@ import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/model/search_history.dart';
-import 'package:places/data/repository/base/location_repository.dart';
-import 'package:places/data/repository/base/place_repository.dart';
-import 'package:places/data/repository/repository_exception.dart';
+import 'package:places/data/model/search_request.dart';
+import 'package:places/data/repository/db_repository/db_repository.dart';
+import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repository/place_repository/place_repository.dart';
+import 'package:places/data/repository/place_repository/repository_exception.dart';
 
 /// Интерактор для доступа к местам.
 class PlaceInteractor {
   PlaceInteractor({
     required this.placeRepository,
+    required this.dbRepository,
     required this.locationRepository,
   });
 
   final PlaceRepository placeRepository;
+  final DbRepository dbRepository;
   final LocationRepository locationRepository;
 
   final Map<int, PlaceUserInfo> _mockUserInfo = {};
-  final Map<String, SearchHistory> _mockSearchInfo = {};
   String _lastSearchQuery = '';
 
   /// Загружает список мест, соответствующих фильтру.
@@ -39,36 +41,32 @@ class PlaceInteractor {
 
     if (places.isNotEmpty) {
       if (query.contains(_lastSearchQuery)) {
-        _mockSearchInfo.remove(_lastSearchQuery);
+        await dbRepository.deleteSearchRequest(_lastSearchQuery);
       }
       _lastSearchQuery = query;
-      _mockSearchInfo[query] =
-          SearchHistory(timestamp: DateTime.now(), count: places.length);
+      await dbRepository.saveSearchRequest(SearchRequest(
+        query,
+        timestamp: DateTime.now(),
+        count: places.length,
+      ));
     }
 
     return _loadUserInfoForList(places);
   }
 
   /// Возвращает историю поиска.
-  Future<List<SearchHistory>> getSearchHistory() async {
+  Future<List<SearchRequest>> getSearchHistory() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
-    return _mockSearchInfo.entries
-        .map((e) => e.value.copyWith(text: e.key))
-        .toList()
-          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return dbRepository.getSearchHistory();
   }
 
   /// Очищает историю поиска.
-  Future<void> clearSearchHistory() async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _mockSearchInfo.clear();
-  }
+  Future<void> clearSearchHistory() =>
+    dbRepository.clearSearchHistory();
 
   /// Удаляет из истории поиска.
-  Future<void> removeFromSearchHistory(String text) async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _mockSearchInfo.remove(text);
-  }
+  Future<void> removeFromSearchHistory(String requestText) =>
+      dbRepository.deleteSearchRequest(requestText);
 
   /// Загружает информацию о месте.
   Future<Place> getPlace(int id) async => _loadUserInfo(await _getPlace(id));

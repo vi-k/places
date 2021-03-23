@@ -1,6 +1,6 @@
 import 'package:places/utils/coord.dart';
 
-import 'base/location_repository.dart';
+import 'location_repository.dart';
 
 class RealLocationRepository implements LocationRepository {
   @override
