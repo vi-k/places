@@ -26,27 +26,27 @@ class SharedPreferencesRepository extends KeyValueRepository {
 
   @override
   Future<bool> saveBool(String key, bool value) async =>
-      await (await SharedPreferences.getInstance()).setBool(key, value);
+      (await SharedPreferences.getInstance()).setBool(key, value);
 
   @override
   Future<bool> saveInt(String key, int value) async =>
-      await (await SharedPreferences.getInstance()).setInt(key, value);
+      (await SharedPreferences.getInstance()).setInt(key, value);
 
   @override
   Future<bool> saveDouble(String key, double value) async =>
-      await (await SharedPreferences.getInstance()).setDouble(key, value);
+      (await SharedPreferences.getInstance()).setDouble(key, value);
 
   @override
   Future<bool> saveString(String key, String value) async =>
-      await (await SharedPreferences.getInstance()).setString(key, value);
+      (await SharedPreferences.getInstance()).setString(key, value);
 
   @override
   Future<bool> saveStringList(String key, List<String> value) async =>
-      await (await SharedPreferences.getInstance()).setStringList(key, value);
+      (await SharedPreferences.getInstance()).setStringList(key, value);
 
   @override
   Future<bool> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.remove(key);
+    return prefs.remove(key);
   }
 }
