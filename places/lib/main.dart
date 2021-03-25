@@ -30,7 +30,6 @@ final dio = Dio(BaseOptions(
       print('Выполняется запрос: ${options.method} ${options.uri}');
       if (options.data != null) {
         print('data: ${options.data}');
-        handler.next(options);
       }
       handler.next(options);
     },

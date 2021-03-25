@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:places/bloc/app_bloc.dart';
 import 'package:places/bloc/place_bloc.dart';
+import 'package:places/bloc/places_bloc.dart';
 import 'package:places/bloc/wishlist_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
@@ -18,6 +19,7 @@ import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/utils/hero_tags.dart';
+import 'package:places/ui/widget/small_button.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
@@ -170,9 +172,30 @@ class _PlaceCardState extends State<PlaceCard>
           ),
         )
         ..add(
-          _buildSignatureButton(Svg24.close, color,
-              // () => context.read<PlacesBloc>().add(PlacesRemove(place))),
-              () {}),
+          _buildSignatureButton(Svg24.close, color, () async {
+            final doDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text(stringDoDelete),
+                    actions: [
+                      SmallButton(
+                        label: stringCancel,
+                        onPressed: () => Navigator.pop(context, false),
+                      ),
+                      SmallButton(
+                        label: stringYes,
+                        onPressed: () => Navigator.pop(context, true),
+                      ),
+                    ],
+                  ),
+                ) ??
+                false;
+
+            if (doDelete) {
+              context.read<PlacesBloc>().add(PlacesRemove(place));
+            }
+          }),
+          // () {}),
         );
     } else if (widget.cardType == Favorite.wishlist) {
       signatures

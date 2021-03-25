@@ -16,6 +16,7 @@ const stringDescription = 'Описание';
 const stringDistance = 'Расстояние';
 const stringDoCancel = 'Выйти без сохранения?';
 const stringDoCreate = 'Создать?';
+const stringDoDelete = 'Удалить? Вы уверены?';
 const stringDoFind = 'Ищите';
 const stringDoFindMessage = 'Введите часть названия в строке поиска.';
 const stringDoSave = 'Сохранить?';
