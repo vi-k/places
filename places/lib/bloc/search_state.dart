@@ -27,7 +27,7 @@ class SearchReady extends SearchState {
 class SearchHistoryReady extends SearchState {
   const SearchHistoryReady(this.history);
 
-  final List<SearchHistory> history;
+  final List<SearchRequest> history;
 
   @override
   List<Object?> get props => [history];

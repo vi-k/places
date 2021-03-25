@@ -2,24 +2,25 @@ import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/model/search_history.dart';
-import 'package:places/data/repository/base/location_repository.dart';
-import 'package:places/data/repository/base/place_repository.dart';
-import 'package:places/data/repository/repository_exception.dart';
+import 'package:places/data/model/search_request.dart';
+import 'package:places/data/repository/db_repository/db_repository.dart';
+import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repository/place_repository/place_repository.dart';
+import 'package:places/data/repository/place_repository/repository_exception.dart';
 
 /// Интерактор для доступа к местам.
 class PlaceInteractor {
   PlaceInteractor({
     required this.placeRepository,
+    required this.dbRepository,
     required this.locationRepository,
   });
 
   final PlaceRepository placeRepository;
+  final DbRepository dbRepository;
   final LocationRepository locationRepository;
 
-  final Map<int, PlaceUserInfo> _mockUserInfo = {};
-  final Map<String, SearchHistory> _mockSearchInfo = {};
-  String _lastSearchQuery = '';
+  String _lastSearchRequest = '';
 
   /// Загружает список мест, соответствующих фильтру.
   Future<List<Place>> getPlaces(Filter filter) async {
@@ -27,48 +28,43 @@ class PlaceInteractor {
     final places = await placeRepository.loadFilteredList(
         coord: locationRepository.location, filter: filter);
 
-    return _loadUserInfoForList(places);
+    return await _loadUserInfoForList(places);
   }
 
   /// Загружает список мест, содержащих в названии заданный текст.
-  Future<List<Place>> searchPlaces(String text) async {
+  Future<List<Place>> searchPlaces(String requestText) async {
     // Получаем список из репозитория
-    final query = text.toLowerCase();
+    final request = requestText.toLowerCase();
     final places = await placeRepository.search(
-        coord: locationRepository.location, text: query);
+        coord: locationRepository.location, text: request);
 
     if (places.isNotEmpty) {
-      if (query.contains(_lastSearchQuery)) {
-        _mockSearchInfo.remove(_lastSearchQuery);
+      if (request.contains(_lastSearchRequest)) {
+        await dbRepository.deleteSearchRequest(_lastSearchRequest);
       }
-      _lastSearchQuery = query;
-      _mockSearchInfo[query] =
-          SearchHistory(timestamp: DateTime.now(), count: places.length);
+      _lastSearchRequest = request;
+      await dbRepository.saveSearchRequest(SearchRequest(
+        request,
+        timestamp: DateTime.now(),
+        count: places.length,
+      ));
     }
 
     return _loadUserInfoForList(places);
   }
 
   /// Возвращает историю поиска.
-  Future<List<SearchHistory>> getSearchHistory() async {
+  Future<List<SearchRequest>> getSearchHistory() async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
-    return _mockSearchInfo.entries
-        .map((e) => e.value.copyWith(text: e.key))
-        .toList()
-          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return dbRepository.getSearchHistory();
   }
 
   /// Очищает историю поиска.
-  Future<void> clearSearchHistory() async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _mockSearchInfo.clear();
-  }
+  Future<void> clearSearchHistory() => dbRepository.clearSearchHistory();
 
   /// Удаляет из истории поиска.
-  Future<void> removeFromSearchHistory(String text) async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _mockSearchInfo.remove(text);
-  }
+  Future<void> removeFromSearchHistory(String requestText) =>
+      dbRepository.deleteSearchRequest(requestText);
 
   /// Загружает информацию о месте.
   Future<Place> getPlace(int id) async => _loadUserInfo(await _getPlace(id));
@@ -86,46 +82,52 @@ class PlaceInteractor {
   Future<void> removePlace(int id) => placeRepository.delete(id);
 
   /// Загружает список "Хочу посетить".
-  Future<List<Place>> getWishlist() =>
-      _getPlacesByUserInfo(_mockUserInfo.entries
-          .where((e) => e.value.favorite == Favorite.wishlist));
+  Future<List<Place>> getWishlist() async {
+    final wishlist = await dbRepository.getFavorites(Favorite.wishlist);
+    return _getPlacesByUserInfo(wishlist);
+  }
 
   /// Добавляет в список "Хочу посетить".
-  Future<Place> addToWishlist(PlaceBase place) =>
+  Future<Place> addToWishlist(Place place) =>
       _addToFavorite(place, Favorite.wishlist);
 
   /// Удаляет из списка "Хочу посетить".
-  Future<Place> removeFromWishlist(PlaceBase place) =>
+  Future<Place> removeFromWishlist(Place place) =>
       _removeFromFavorite(place, Favorite.wishlist);
 
   /// Переключает в список "Хочу посетить" и обратно.
-  Future<Place> toggleWishlist(PlaceBase place) =>
+  Future<Place> toggleWishlist(Place place) =>
       _toggleFavorite(place, Favorite.wishlist);
 
   /// Загружает посещённые места.
-  Future<List<Place>> getVisited() => _getPlacesByUserInfo(
-      _mockUserInfo.entries.where((e) => e.value.favorite == Favorite.visited));
+  Future<List<Place>> getVisited() async {
+    final visited = await dbRepository.getFavorites(Favorite.visited);
+    return _getPlacesByUserInfo(visited);
+  }
 
   /// Добавляет в список посещённых мест.
-  Future<Place> addToVisited(PlaceBase place) =>
+  Future<Place> addToVisited(Place place) =>
       _addToFavorite(place, Favorite.visited);
 
   /// Удаляет из списка посещённых мест.
-  Future<Place> removeFromVisited(PlaceBase place) =>
+  Future<Place> removeFromVisited(Place place) =>
       _removeFromFavorite(place, Favorite.visited);
 
   /// Переключает в список посещённых мест и обратно.
-  Future<Place> toggleVisited(PlaceBase place) =>
+  Future<Place> toggleVisited(Place place) =>
       _toggleFavorite(place, Favorite.visited);
 
   Future<Place> updateUserInfo(PlaceBase place, PlaceUserInfo userInfo) async {
-    _mockUserInfo[place.id] = userInfo;
+    await dbRepository.updatePlaceUserInfo(place.id, userInfo);
     return Place.from(place, userInfo: userInfo);
   }
 
   /// Загружает пользовательскую информацию о месте.
-  Future<Place> _loadUserInfo(PlaceBase place) async => Place.from(place,
-      userInfo: _mockUserInfo[place.id] ?? PlaceUserInfo.zero);
+  Future<Place> _loadUserInfo(PlaceBase place) async => Place.from(
+        place,
+        userInfo: await dbRepository.loadPlaceUserInfo(place.id) ??
+            PlaceUserInfo.zero,
+      );
 
   /// Загружает пользовательскую информацию для списка.
   ///
@@ -154,12 +156,11 @@ class PlaceInteractor {
   Future<PlaceBase> _getPlace(int id) => placeRepository.read(id);
 
   /// Возвращает список мест по списку пользовательской информации.
-  Future<List<Place>> _getPlacesByUserInfo(
-      Iterable<MapEntry<int, PlaceUserInfo>> iterable) async {
+  Future<List<Place>> _getPlacesByUserInfo(Map<int, PlaceUserInfo> map) async {
     final list = <Place>[];
     final coord = locationRepository.location;
 
-    await Future.forEach<MapEntry<int, PlaceUserInfo>>(iterable, (e) async {
+    await Future.forEach<MapEntry<int, PlaceUserInfo>>(map.entries, (e) async {
       try {
         final place = (await _getPlace(e.key)).copyWith(calDistanceFrom: coord);
         list.add(Place.from(place, userInfo: e.value));
@@ -174,11 +175,10 @@ class PlaceInteractor {
   }
 
   /// Добавляет в избранное.
-  Future<Place> _addToFavorite(PlaceBase place, Favorite favorite) async {
-    final userInfo = _mockUserInfo[place.id] =
-        _mockUserInfo[place.id]?.copyWith(favorite: favorite) ??
-            PlaceUserInfo(favorite: favorite);
-    return Place.from(place, userInfo: userInfo);
+  Future<Place> _addToFavorite(Place place, Favorite favorite) async {
+    final newUserInfo = place.userInfo.copyWith(favorite: favorite);
+    await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
+    return Place.from(place, userInfo: newUserInfo);
   }
 
   /// Удаляет из избранного.
@@ -186,33 +186,21 @@ class PlaceInteractor {
   /// Или удаляет полностью, или, если есть заполненные данные, то
   /// удаляет соответствующую пометку. Если пользователь снова отметит место как
   /// избранное, то информация восстановится.
-  Future<Place> _removeFromFavorite(PlaceBase place, Favorite favorite) async {
-    var userInfo = _mockUserInfo[place.id] ?? PlaceUserInfo.zero;
-    if (userInfo.favorite == favorite) {
-      if (userInfo.isEmpty) {
-        _mockUserInfo.remove(place.id);
-        userInfo = PlaceUserInfo.zero;
-      } else {
-        userInfo =
-            _mockUserInfo[place.id] = userInfo.copyWith(favorite: Favorite.no);
-      }
-    }
-    return Place.from(place, userInfo: userInfo);
+  Future<Place> _removeFromFavorite(Place place, Favorite favorite) async {
+    final newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
+    await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
+    return Place.from(place, userInfo: newUserInfo);
   }
 
   /// Переключает в избранное и обратно.
-  Future<Place> _toggleFavorite(PlaceBase place, Favorite favorite) async {
-    var userInfo = _mockUserInfo[place.id] ?? PlaceUserInfo.zero;
-    if (userInfo.favorite != favorite) {
-      userInfo =
-          _mockUserInfo[place.id] = userInfo.copyWith(favorite: favorite);
-    } else if (userInfo.isEmpty) {
-      _mockUserInfo.remove(place.id);
-      userInfo = PlaceUserInfo.zero;
+  Future<Place> _toggleFavorite(Place place, Favorite favorite) async {
+    PlaceUserInfo newUserInfo;
+    if (place.userInfo.favorite != favorite) {
+      newUserInfo = place.userInfo.copyWith(favorite: favorite);
     } else {
-      userInfo =
-          _mockUserInfo[place.id] = userInfo.copyWith(favorite: Favorite.no);
+      newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
     }
-    return Place.from(place, userInfo: userInfo);
+    await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
+    return Place.from(place, userInfo: newUserInfo);
   }
 }

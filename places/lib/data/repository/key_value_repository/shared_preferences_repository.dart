@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'base/key_value_repository.dart';
+import 'key_value_repository.dart';
 
 // Хранение данных через SharedPreferences.
 class SharedPreferencesRepository extends KeyValueRepository {

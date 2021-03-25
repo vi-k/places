@@ -6,7 +6,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/settings.dart';
 import 'package:places/data/model/filter.dart';
-import 'package:places/data/repository/base/key_value_repository.dart';
+import 'package:places/data/repository/key_value_repository/key_value_repository.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
@@ -65,9 +65,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   // Инициализация приложения.
   Future<AppState> _init() async {
+    _settings = await _loadSettings();
+
     await Future.wait([
       // Загрузка настроек.
-      _loadSettings().then((settings) => _settings = settings),
+      // _loadSettings().then((settings) => _settings = settings),
       // Иммитация инициализации: получение списка мест для тестирования.
       _placeInteractor.getPlaces(Filter()).then((places) {
         for (final place in places) {

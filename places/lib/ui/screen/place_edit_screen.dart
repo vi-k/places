@@ -8,7 +8,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/repository/base/location_repository.dart';
+import 'package:places/data/repository/location_repository/location_repository.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -349,24 +349,23 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   Future<bool> _onWillPop(BuildContext context) async {
     // Если есть ошибки в данных, диалог: Выйти без сохранения?
     if (!_validate()) {
-      final exit = await showDialog<bool>(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text(stringDoCancel),
-          actions: [
-            SmallButton(
-              label: stringCancel,
-              onPressed: () => Navigator.pop(context, false),
+      return await showDialog<bool>(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text(stringDoCancel),
+              actions: [
+                SmallButton(
+                  label: stringCancel,
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                SmallButton(
+                  label: stringYes,
+                  onPressed: () => Navigator.pop(context, true),
+                ),
+              ],
             ),
-            SmallButton(
-              label: stringYes,
-              onPressed: () => Navigator.pop(context, true),
-            ),
-          ],
-        ),
-      );
-
-      return exit ?? false;
+          ) ??
+          false;
     }
 
     // Если нет изменений, выходим сразу.

@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/model/search_history.dart';
+import 'package:places/data/model/search_request.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
@@ -57,7 +57,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     final currentState = state as SearchHistoryReady;
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
-    final newHistory = List<SearchHistory>.from(currentState.history)
+    final newHistory = List<SearchRequest>.from(currentState.history)
       ..removeWhere((e) => e.text == event.text);
     yield SearchHistoryReady(newHistory);
     // TODO: Добавить обработку ошибок.

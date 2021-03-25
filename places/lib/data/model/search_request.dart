@@ -1,7 +1,7 @@
-/// Элемент истории поиска.
-class SearchHistory {
-  const SearchHistory({
-    this.text = '',
+/// Запрос поиска.
+class SearchRequest {
+  const SearchRequest(
+    this.text, {
     required this.timestamp,
     required this.count,
   });
@@ -10,9 +10,9 @@ class SearchHistory {
   final DateTime timestamp;
   final int count;
 
-  SearchHistory copyWith({String? text, DateTime? timestamp, int? count}) =>
-      SearchHistory(
-        text: text ?? this.text,
+  SearchRequest copyWith({String? text, DateTime? timestamp, int? count}) =>
+      SearchRequest(
+        text ?? this.text,
         timestamp: timestamp ?? this.timestamp,
         count: count ?? this.count,
       );

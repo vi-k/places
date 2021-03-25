@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'app.dart';
-import 'data/repository/api_place_mapper.dart';
-import 'data/repository/api_place_repository.dart';
-import 'data/repository/dio_exception.dart';
-import 'data/repository/mock_place_repository.dart';
-import 'data/repository/repository_exception.dart';
+import 'data/interactor/place_interactor.dart';
+import 'data/model/filter.dart';
+import 'data/repository/db_repository/mock_db_repository.dart';
+import 'data/repository/location_repository/real_location_repository.dart';
+import 'data/repository/place_repository/api_place_mapper.dart';
+import 'data/repository/place_repository/api_place_repository.dart';
+import 'data/repository/place_repository/dio_exception.dart';
+import 'data/repository/place_repository/mock_place_repository.dart';
+import 'data/repository/place_repository/repository_exception.dart';
 
 final dio = Dio(BaseOptions(
   baseUrl: 'https://test-backend-flutter.surfstudio.ru',
@@ -26,8 +30,8 @@ final dio = Dio(BaseOptions(
       print('Выполняется запрос: ${options.method} ${options.uri}');
       if (options.data != null) {
         print('data: ${options.data}');
-        handler.next(options);
       }
+      handler.next(options);
     },
     onResponse: (response, handler) {
       print(
@@ -41,7 +45,6 @@ Future<void> main() async {
   // await moveFromMockToRepository();
   // await testPlaceRepository();
 
-  // await initializeDateFormatting('ru_RU', null);
   Intl.defaultLocale = 'ru_RU';
 
   runApp(App());
@@ -59,4 +62,21 @@ Future<void> moveFromMockToRepository() async {
       await placeRepository.update(place);
     }
   }
+}
+
+Future<void> testPlaceRepository() async {
+  final placeRepository = ApiPlaceRepository(dio, ApiPlaceMapper());
+  final dbRepository = MockDbRepository();
+  final locationRepository = RealLocationRepository();
+  final placeInteractor = PlaceInteractor(
+    placeRepository: placeRepository,
+    dbRepository: dbRepository,
+    locationRepository: locationRepository,
+  );
+  final list = await placeInteractor.getPlaces(Filter());
+  print(list);
+
+  // final places = await placeRepository.loadFilteredList(
+  //   coord: locationRepository.location, filter: Filter());
+  // print(places);
 }

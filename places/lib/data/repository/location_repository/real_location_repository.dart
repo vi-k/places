@@ -1,7 +1,8 @@
 import 'package:places/utils/coord.dart';
 
-import 'base/location_repository.dart';
+import 'location_repository.dart';
 
+/// Получение координат (в будущем).
 class RealLocationRepository implements LocationRepository {
   @override
   Coord get location => const Coord(48.479672, 135.070692);

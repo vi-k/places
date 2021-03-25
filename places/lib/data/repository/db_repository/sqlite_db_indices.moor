@@ -1,0 +1,3 @@
+import 'sqlite_db_repository.dart';
+
+CREATE INDEX IF NOT EXISTS timestamp_index ON search_history (timestamp);
