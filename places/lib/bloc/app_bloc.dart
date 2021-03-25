@@ -38,9 +38,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     AppEvent event,
   ) async* {
     if (event is AppInit) {
-      yield* _init();
+      yield await _init();
     } else if (event is AppChangeSettings) {
-      yield* _changeSettings(event);
+      yield await _changeSettings(event);
     }
   }
 
@@ -64,15 +64,14 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   // Инициализация приложения.
-  Stream<AppState> _init() async* {
+  Future<AppState> _init() async {
+    _settings = await _loadSettings();
+
     await Future.wait([
       // Загрузка настроек.
-      Future(() async {
-        _settings = await _loadSettings();
-      }),
+      // _loadSettings().then((settings) => _settings = settings),
       // Иммитация инициализации: получение списка мест для тестирования.
-      Future(() async {
-        final places = await _placeInteractor.getPlaces(Filter());
+      _placeInteractor.getPlaces(Filter()).then((places) {
         for (final place in places) {
           print(place.toString(short: true));
           // print(place.toString());
@@ -85,7 +84,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Инициализация темы.
     _initTheme(_settings.isDark);
 
-    yield AppReady();
+    return AppReady();
   }
 
   void _initTheme(bool isDark) {
@@ -93,31 +92,23 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   // Изменение настроек.
-  Stream<AppState> _changeSettings(AppChangeSettings event) async* {
-    final isDark = event.settings.isDark;
-    if (isDark != _settings.isDark) {
-      await _storeRepository.saveBool(isDarkTag, isDark);
-      _initTheme(isDark);
+  Future<AppState> _changeSettings(AppChangeSettings event) async {
+    if (event.settings.isDark != _settings.isDark) {
+      _initTheme(event.settings.isDark);
     }
-
-    final showTutorial = event.settings.showTutorial;
-    if (showTutorial != _settings.showTutorial) {
-      await _storeRepository.saveBool(showTutorialTag, showTutorial);
-    }
-
-    final filter = event.settings.filter;
-    if (filter != _settings.filter) {
-      await _storeRepository.saveDouble(radiusTag, filter.radius.value);
-      if (filter.placeTypes == null) {
-        await _storeRepository.remove(placeTypesTag);
-      } else {
-        await _storeRepository.saveStringList(
-            placeTypesTag, filter.placeTypes!.map((e) => e.name).toList());
-      }
-    }
-
     _settings = event.settings;
 
-    yield AppReady();
+    await Future.wait([
+      _storeRepository.saveBool(isDarkTag, _settings.isDark),
+      _storeRepository.saveBool(showTutorialTag, _settings.showTutorial),
+      _storeRepository.saveDouble(radiusTag, _settings.filter.radius.value),
+      if (_settings.filter.placeTypes == null)
+        _storeRepository.remove(placeTypesTag)
+      else
+        _storeRepository.saveStringList(placeTypesTag,
+            _settings.filter.placeTypes!.map((e) => e.name).toList()),
+    ]);
+
+    return AppReady();
   }
 }

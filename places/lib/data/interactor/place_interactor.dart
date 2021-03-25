@@ -28,7 +28,7 @@ class PlaceInteractor {
     final places = await placeRepository.loadFilteredList(
         coord: locationRepository.location, filter: filter);
 
-    return _loadUserInfoForList(places);
+    return await _loadUserInfoForList(places);
   }
 
   /// Загружает список мест, содержащих в названии заданный текст.
