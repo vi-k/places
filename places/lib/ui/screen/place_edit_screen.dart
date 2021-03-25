@@ -47,7 +47,7 @@ class PlaceEditScreen extends StatefulWidget {
 
 class _PlaceEditScreenState extends State<PlaceEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  Place? _place;
+  late final Place? _place = widget.place;
   PlaceTypeUi? _placeType;
   final _photos = <String>[];
   final TextEditingController _nameController = TextEditingController();
@@ -55,13 +55,13 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   final TextEditingController _lonController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  bool get isNew => widget.place == null;
+  bool get isNew => _place == null;
 
   @override
   void initState() {
     super.initState();
 
-    final place = _place = widget.place;
+    final place = _place;
     if (place != null) {
       _placeType = PlaceTypeUi(place.type);
       _photos.addAll(place.photos);

@@ -1,3 +1,4 @@
+import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/base/place_repository.dart';
@@ -5,8 +6,6 @@ import 'package:places/data/repository/repository_exception.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
-
-import 'base/filter.dart';
 
 /// Моковый репозиторий мест.
 class MockPlaceRepository extends PlaceRepository {

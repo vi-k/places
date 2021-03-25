@@ -391,30 +391,3 @@ MyThemeData createDarkTheme() => MyThemeData(
     focusedErrorBorder: _border(null, focused: true),
   ),
 );
-
-/// Виджет для предоставления собственной темы приложения вниз по дереву.
-///
-/// Доступ: `MyTheme.of(context)`. Возвращает MyThemeData (не MyThemeData?),
-/// поэтому, если вверху дерева не будет виджета, приложение рухнет.
-/// Подразумевается, что тот, кто пользуется, тот понимает, что он делает,
-/// а функция убирает лишнюю необходимость заботиться о null.
-class MyTheme extends InheritedWidget {
-  const MyTheme({
-    Key? key,
-    required Widget child,
-    required this.myThemeData,
-  }) : super(key: key, child: child);
-
-  final MyThemeData myThemeData;
-
-  static MyThemeData of(BuildContext context, {bool listen = true}) {
-    final widget = listen
-        ? context.dependOnInheritedWidgetOfExactType<MyTheme>()!
-        : context.getElementForInheritedWidgetOfExactType<MyTheme>()!.widget
-            as MyTheme;
-    return widget.myThemeData;
-  }
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
-}

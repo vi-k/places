@@ -24,20 +24,14 @@ class PageViewSelector extends StatefulWidget {
 }
 
 class _PageViewSelectorState extends State<PageViewSelector> {
-  late PageController _controller;
+  late final PageController _controller = widget.controller
+    ..addListener(_onPageChanged);
+
   var _currentPage = 0.0;
 
   void _onPageChanged() => setState(() {
         _currentPage = _controller.page ?? 0;
       });
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = widget.controller;
-    _controller.addListener(_onPageChanged);
-  }
 
   @override
   void dispose() {

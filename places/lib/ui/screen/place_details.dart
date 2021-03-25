@@ -245,19 +245,14 @@ class _Gallery extends StatefulWidget {
 }
 
 class _GalleryState extends State<_Gallery> {
-  final _controller = PageController();
-  var _currentPage = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller.addListener(() {
+  late final PageController _controller = PageController()
+    ..addListener(() {
       setState(() {
         _currentPage = _controller.page ?? 0;
       });
     });
-  }
+
+  var _currentPage = 0.0;
 
   @override
   void dispose() {

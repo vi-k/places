@@ -22,17 +22,10 @@ class FavoriteScreen extends StatefulWidget {
 class _FavoriteScreenState extends State<FavoriteScreen>
     with SingleTickerProviderStateMixin {
   static const _tabs = [stringWishlistName, stringVisitedName];
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _tabController = TabController(
-      length: _tabs.length,
-      vsync: this,
-    );
-  }
+  late final TabController _tabController = TabController(
+    length: _tabs.length,
+    vsync: this,
+  );
 
   @override
   void dispose() {

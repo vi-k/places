@@ -69,8 +69,7 @@ const commonPaddingLTR = EdgeInsets.only(left: 16, top: 16, right: 16);
 const commonPaddingTB = EdgeInsets.only(top: 16, bottom: 16);
 const commonPadding1_2 = EdgeInsets.all(8);
 const appBarPadding = EdgeInsets.only(left: 16, top: 40, right: 16, bottom: 16);
-const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
-const cardSignaturesPadding2 = EdgeInsets.only(left: 8, right: 8);
+const cardSignaturesPadding = EdgeInsets.only(top: 8, left: 8, right: 8);
 const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
 

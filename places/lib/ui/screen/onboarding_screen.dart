@@ -21,39 +21,31 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen>
     with TickerProviderStateMixin {
-  late final List<AnimationController> _animControllers;
-  late final List<Animation<double>> _animations;
+  static const int _pageCount = 3;
+  static const double _lastPage = _pageCount - 1;
 
-  static const _lastPage = 2.0;
+  late final List<AnimationController> _animControllers =
+      List<AnimationController>.generate(
+          _pageCount,
+          (index) => AnimationController(
+                vsync: this,
+                duration: const Duration(milliseconds: 1000),
+              ));
 
-  final _pageController = PageController();
-  var _currentPage = 0.0;
+  late final List<Animation<double>> _animations =
+      List<Animation<double>>.generate(
+          _pageCount,
+          (index) => Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                curve: Curves.elasticOut,
+                parent: _animControllers[index],
+              )));
 
-  @override
-  void initState() {
-    super.initState();
-
-    _animControllers = List<AnimationController>.generate(
-      3,
-      (index) => AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 1000),
-      ),
-    );
-
-    _animations = List<Animation<double>>.generate(
-      3,
-      (index) => Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-        curve: Curves.elasticOut,
-        parent: _animControllers[index],
-      )),
-    );
-
-    _pageController.addListener(() {
+  late final PageController _pageController = PageController()
+    ..addListener(() {
       setState(() {
         _currentPage = _pageController.page ?? 0;
         final pageIndex = _currentPage.round();
-        if ((_currentPage - pageIndex).abs() < 0.1) {
+        if (_currentPage == pageIndex) {
           final animController = _animControllers[pageIndex];
           if (animController.isDismissed) {
             animController.forward();
@@ -61,7 +53,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         }
       });
     });
-  }
+
+  var _currentPage = 0.0;
 
   @override
   void dispose() {

@@ -5,6 +5,7 @@ import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/screen/place_details.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/photo_card.dart';
 
 /// Карточка места для экрана поиска.
@@ -21,14 +22,7 @@ class PlaceSmallCard extends StatefulWidget {
 }
 
 class _PlaceSmallCardState extends State<PlaceSmallCard> {
-  late Place place;
-
-  @override
-  void initState() {
-    super.initState();
-
-    place = widget.place;
-  }
+  late Place _place = widget.place;
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +37,16 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
           ),
           child: Row(
             children: [
-              if (place.photos.isEmpty)
-                const SizedBox(width: photoCardSize, height: photoCardSize)
-              else
-                PhotoCard(url: place.photos[0]),
+              SizedBox(
+                width: photoCardSize,
+                height: photoCardSize,
+                child: _place.photos.isEmpty
+                    ? null
+                    : Hero(
+                        tag: 'Place#${_place.id}',
+                        child: PhotoCard(url: _place.photos[0]),
+                      ),
+              ),
               const SizedBox(width: commonSpacing),
               Expanded(
                 child: Column(
@@ -54,13 +54,13 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      place.name,
+                      _place.name,
                       maxLines: 1,
                       style: theme.textRegular14Main,
                     ),
                     const SizedBox(height: commonSpacing1_2),
                     Text(
-                      '${PlaceTypeUi(place.type).name}, ${place.distance}',
+                      '${PlaceTypeUi(_place.type).name}, ${_place.distance}',
                       maxLines: 1,
                       style: theme.textRegular14Light,
                     ),
@@ -76,10 +76,11 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
             highlightColor: theme.app.highlightColor,
             splashColor: theme.app.splashColor,
             onPressed: () async {
-              final newPlace =
-                  await PlaceDetails.showAsModalBottomSheet(context, place);
+              final newPlace = await standartNavigatorPush<Place>(
+                  context, () => PlaceDetails(place: _place));
+
               if (newPlace != null) {
-                place = newPlace;
+                _place = newPlace;
                 setState(() {});
               }
             },
