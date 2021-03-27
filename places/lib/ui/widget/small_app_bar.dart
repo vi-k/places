@@ -82,16 +82,17 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               // Выводим кнопку возврата, если можно вернуться.
               if (Navigator.canPop(context))
-                back?.let((it) => SmallButton(
-                          label: it,
-                          style: theme.textMiddle16Light,
-                          onPressed: () => Navigator.pop(context),
-                        )) ??
-                    SvgButton(
-                      Svg24.back,
-                      onPressed: () => Navigator.pop(context),
-                      color: theme.mainTextColor2,
-                    )
+                back == null
+                    ? SvgButton(
+                        Svg24.back,
+                        onPressed: () => Navigator.maybePop(context),
+                        color: theme.mainTextColor2,
+                      )
+                    : SmallButton(
+                        label: back!,
+                        style: theme.textMiddle16Light,
+                        onPressed: () => Navigator.maybePop(context),
+                      )
               else
                 const SizedBox.shrink(),
               if (button != null)

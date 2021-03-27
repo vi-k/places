@@ -43,7 +43,7 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
                 child: _place.photos.isEmpty
                     ? null
                     : Hero(
-                        tag: 'Place#${_place.id}',
+                        tag: _place.photos[0],
                         child: PhotoCard(url: _place.photos[0]),
                       ),
               ),

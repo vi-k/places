@@ -65,11 +65,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   // Инициализация приложения.
   Future<AppState> _init() async {
-    _settings = await _loadSettings();
-
     await Future.wait([
       // Загрузка настроек.
-      // _loadSettings().then((settings) => _settings = settings),
+      _loadSettings().then((settings) => _settings = settings),
       // Иммитация инициализации: получение списка мест для тестирования.
       _placeInteractor.getPlaces(Filter()).then((places) {
         for (final place in places) {

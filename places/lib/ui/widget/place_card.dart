@@ -18,11 +18,11 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
-import 'package:places/ui/utils/hero_tags.dart';
-import 'package:places/ui/widget/small_button.dart';
+import 'package:places/utils/date.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
+import 'small_button.dart';
 import 'svg_button.dart';
 
 /// Карточка места.
@@ -133,25 +133,27 @@ class _PlaceCardState extends State<PlaceCard>
         ),
       );
 
-  Widget _buildCardTop(Place place) => Expanded(
-        child: Hero(
-          tag: heroPlaceTag(place),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: LoadableImage(
-                  url: place.photos.isEmpty ? '' : place.photos[0],
-                ),
+  Widget _buildCardTop(Place place) {
+    final url = place.photos.isEmpty ? null : place.photos[0];
+
+    return Expanded(
+      child: Hero(
+        tag: url ?? '',
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: url == null ? const SizedBox() : LoadableImage(url: url),
+            ),
+            Positioned.fill(
+              child: Container(
+                color: highlightColorDark2,
               ),
-              Positioned.fill(
-                child: Container(
-                  color: highlightColorDark2,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   Widget _buildSignatures(
       BuildContext context, MyThemeData theme, Place place) {
@@ -172,30 +174,8 @@ class _PlaceCardState extends State<PlaceCard>
           ),
         )
         ..add(
-          _buildSignatureButton(Svg24.close, color, () async {
-            final doDelete = await showDialog<bool>(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text(stringDoDelete),
-                    actions: [
-                      SmallButton(
-                        label: stringCancel,
-                        onPressed: () => Navigator.pop(context, false),
-                      ),
-                      SmallButton(
-                        label: stringYes,
-                        onPressed: () => Navigator.pop(context, true),
-                      ),
-                    ],
-                  ),
-                ) ??
-                false;
-
-            if (doDelete) {
-              context.read<PlacesBloc>().add(PlacesRemove(place));
-            }
-          }),
-          // () {}),
+          _buildSignatureButton(
+              Svg24.close, color, () => _deletePlace(context, place)),
         );
     } else if (widget.cardType == Favorite.wishlist) {
       signatures
@@ -203,30 +183,7 @@ class _PlaceCardState extends State<PlaceCard>
           _buildSignatureButton(
             Svg24.calendar,
             place.userInfo.planToVisit == null ? color : theme.accentColor,
-            () async {
-              final today = DateTime.now();
-              var date = place.userInfo.planToVisit;
-
-              date = Platform.isIOS
-                  ? await showCupertinoDatePicker(
-                      context: context,
-                      initialDate: date ?? today,
-                      firstDate:
-                          date != null && date.isBefore(today) ? date : today,
-                    )
-                  : await showDatePicker(
-                      context: context,
-                      initialDate: date ?? today,
-                      firstDate:
-                          date != null && date.isBefore(today) ? date : today,
-                      lastDate: DateTime(today.year + 10, 12, 31),
-                    );
-
-              if (date != null) {
-                final userInfo = place.userInfo.copyWith(planToVisit: date);
-                context.read<PlaceBloc>().add(PlaceUpdateUserInfo(userInfo));
-              }
-            },
+            () => _setDate(context, place),
           ),
         )
         ..add(
@@ -372,6 +329,62 @@ class _PlaceCardState extends State<PlaceCard>
 
     if (newPlace != null && newPlace != place) {
       context.read<PlaceBloc>().add(PlaceChanged(newPlace));
+    }
+  }
+
+  Future<void> _deletePlace(BuildContext context, Place place) async {
+    final doDelete = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text(stringDoDelete),
+            actions: [
+              SmallButton(
+                label: stringCancel,
+                onPressed: () => Navigator.pop(context, false),
+              ),
+              SmallButton(
+                label: stringYes,
+                onPressed: () => Navigator.pop(context, true),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (doDelete) {
+      context.read<PlacesBloc>().add(PlacesRemove(place));
+    }
+  }
+
+  Future<void> _setDate(BuildContext context, Place place) async {
+    final today = Date.today();
+    final yesterday = Date.yesterday();
+    var date = place.userInfo.planToVisit;
+    print('today: $today');
+    print('yesterday: $yesterday');
+
+    date = Platform.isIOS
+        ? await showCupertinoDatePicker(
+            context: context,
+            initialDate: date ?? today,
+            firstDate: date != null && date.isBefore(today) ? date : yesterday,
+          )
+        : await showDatePicker(
+            context: context,
+            initialDate: date ?? today,
+            firstDate: date != null && date.isBefore(today) ? date : yesterday,
+            lastDate: DateTime(today.year + 10, 12, 31),
+          );
+
+    // Не знаю, как удалить дату. Как временное решение - удаляю, если дата
+    // посещения установлена в прошлом.
+    if (date != null) {
+      print('date: $date');
+      final userInfo = date.isBefore(today)
+          ? place.userInfo.copyWith(planToVisitReset: true)
+          : place.userInfo.copyWith(planToVisit: date);
+
+      context.read<PlaceBloc>().add(PlaceUpdateUserInfo(userInfo));
     }
   }
 }

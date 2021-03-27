@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,21 +12,46 @@ import 'package:places/ui/res/svg.dart';
 class LoadableImage extends StatelessWidget {
   const LoadableImage({
     Key? key,
-    required this.url,
-  }) : super(key: key);
+    this.url,
+    this.path,
+  })  : assert(url != null && path == null || url == null && path != null),
+        super(key: key);
 
   /// Url картинки.
-  final String url;
+  final String? url;
+
+  /// Путь к картинке.
+  final String? path;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = context.watch<AppBloc>().theme;
+  Widget build(BuildContext context) => url != null
+      ? Image.network(
+          url!,
+          filterQuality: FilterQuality.high,
+          fit: BoxFit.cover,
+          frameBuilder: _frameBuilder,
+          loadingBuilder: _loadingBuilder,
+          errorBuilder: _errorBuilder,
+        )
+      : Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(1),
+        child: Image.file(
+            File(path!),
+            filterQuality: FilterQuality.high,
+            fit: BoxFit.cover,
+            frameBuilder: _frameBuilder,
+            errorBuilder: _errorBuilder,
+          ),
+      );
 
-    return Image.network(
-      url,
-      filterQuality: FilterQuality.high,
-      fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, _) => AnimatedCrossFade(
+  Widget _frameBuilder(
+    BuildContext context,
+    Widget child,
+    int? frame,
+    bool wasSynchronouslyLoaded,
+  ) =>
+      AnimatedCrossFade(
         secondCurve: Curves.fastOutSlowIn,
         duration: standartAnimationDuration,
         layoutBuilder: (topChild, _, bottomChild, __) => Stack(
@@ -46,8 +73,14 @@ class LoadableImage extends StatelessWidget {
         crossFadeState: frame == null
             ? CrossFadeState.showFirst
             : CrossFadeState.showSecond,
-      ),
-      loadingBuilder: (context, child, progress) => Stack(
+      );
+
+  Widget _loadingBuilder(
+    BuildContext context,
+    Widget child,
+    ImageChunkEvent? progress,
+  ) =>
+      Stack(
         children: [
           child,
           if (progress != null)
@@ -62,16 +95,22 @@ class LoadableImage extends StatelessWidget {
               ),
             ),
         ],
-      ),
-      errorBuilder: (context, error, stackTrace) => Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: commonPadding,
-          child: Text(
-            error.toString(),
-            textAlign: TextAlign.center,
-            style: theme.textRegular16Light56,
-          ),
+      );
+
+  Widget _errorBuilder(
+    BuildContext context,
+    Object error,
+    StackTrace? stackTrace,
+  ) {
+    final theme = context.watch<AppBloc>().theme;
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: commonPadding,
+        child: Text(
+          error.toString(),
+          textAlign: TextAlign.center,
+          style: theme.textRegular16Light56,
         ),
       ),
     );

@@ -15,9 +15,9 @@ import 'data/repository/place_repository/repository_exception.dart';
 
 final dio = Dio(BaseOptions(
   baseUrl: 'https://test-backend-flutter.surfstudio.ru',
-  connectTimeout: 5000,
-  receiveTimeout: 5000,
-  sendTimeout: 5000,
+  connectTimeout: 10000,
+  receiveTimeout: 10000,
+  sendTimeout: 10000,
   responseType: ResponseType.json,
 ))
   ..interceptors.add(InterceptorsWrapper(

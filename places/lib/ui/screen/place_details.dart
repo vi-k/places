@@ -13,7 +13,6 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
-import 'package:places/ui/utils/hero_tags.dart';
 import 'package:places/ui/widget/loadable_image.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
@@ -88,11 +87,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       detailsImageSize - MediaQuery.of(context).padding.top,
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
-                    background: Hero(
-                      tag: heroPlaceTag(state.place),
-                      flightShuttleBuilder: standartFlightShuttleBuilder,
-                      child: _Gallery(state.place),
-                    ),
+                    background: _Gallery(state.place),
                   ),
                 ),
                 SliverPadding(
@@ -285,8 +280,12 @@ class _GalleryState extends State<_Gallery> {
                       SizedBox(
                         width: double.infinity,
                         height: double.infinity,
-                        child: LoadableImage(
-                          url: url,
+                        child: Hero(
+                          tag: url,
+                          flightShuttleBuilder: standartFlightShuttleBuilder,
+                          child: LoadableImage(
+                            url: url,
+                          ),
                         ),
                       ),
                   ],

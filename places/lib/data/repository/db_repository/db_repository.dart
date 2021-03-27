@@ -3,7 +3,7 @@ import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/model/search_request.dart';
 
 /// Интерфейс для работы с БД.
-mixin DbRepository {
+abstract class DbRepository {
   Future<List<SearchRequest>> getSearchHistory();
   Future<void> saveSearchRequest(SearchRequest request);
   Future<void> deleteSearchRequest(String requestText);

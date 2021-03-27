@@ -20,6 +20,7 @@ part 'sqlite_db_tables.dart';
     'sqlite_db_indices.moor',
   },
 )
+// ignore: prefer_mixin
 class SqliteDbRepository extends _$SqliteDbRepository with DbRepository {
   SqliteDbRepository() : super(_openConnection());
 

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
+import 'package:places/utils/let_and_also.dart';
 
+import 'edit_dialog.dart';
+import 'small_button.dart';
 import 'standart_button.dart';
 
 var _mockPhotosCounter = -1;
@@ -27,6 +31,14 @@ const _mockPhotos = [
 String get _nextMockPhoto {
   if (++_mockPhotosCounter >= _mockPhotos.length) _mockPhotosCounter = 0;
   return _mockPhotos[_mockPhotosCounter];
+}
+
+class GetImageResult {
+  GetImageResult({this.url, this.path})
+      : assert(url != null && path == null || url == null && path != null);
+
+  final String? url;
+  final String? path;
 }
 
 /// Выбора источника фотографии места: камера, галерея, файл.
@@ -54,20 +66,14 @@ class GetImage extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               shrinkWrap: true,
               children: [
-                _buildItem(context, style, Svg24.camera, stringCamera, () {
-                  // Временно добавляем моковые фотографии.
-                  Navigator.pop(context, _nextMockPhoto);
-                }),
+                _buildItem(context, style, Svg24.camera, stringCamera,
+                    () => _getImage(context, ImageSource.camera)),
                 _buildDivider(),
-                _buildItem(context, style, Svg24.photo, stringPhoto, () {
-                  // Временно добавляем моковые фотографии.
-                  Navigator.pop(context, _nextMockPhoto);
-                }),
+                _buildItem(context, style, Svg24.photo, stringPhoto,
+                    () => _getImage(context, ImageSource.gallery)),
                 _buildDivider(),
-                _buildItem(context, style, Svg24.file, stringFile, () {
-                  // Временно добавляем моковые фотографии.
-                  Navigator.pop(context, _nextMockPhoto);
-                }),
+                _buildItem(context, style, Svg24.share, stringUrl,
+                    () => _getUrl(context)),
               ],
             ),
           ),
@@ -109,4 +115,27 @@ class GetImage extends StatelessWidget {
         ),
         onTap: onTap,
       );
+
+  Future<void> _getImage(BuildContext context, ImageSource source) async {
+    final pickedFile = await ImagePicker().getImage(source: source);
+    Navigator.pop(
+        context, pickedFile?.let((it) => GetImageResult(path: it.path)));
+  }
+
+  Future<void> _getUrl(BuildContext context) async {
+    final url = await showDialog<String?>(
+      context: context,
+      builder: (_) => EditDialog(
+        title: const Text(stringDoEnterUrl),
+        builder: (context, controller) => TextField(
+          controller: controller,
+          autofocus: true,
+          minLines: 1,
+          maxLines: 10,
+        ),
+      ),
+    );
+
+    Navigator.pop(context, url?.let((it) => GetImageResult(url: it)));
+  }
 }
