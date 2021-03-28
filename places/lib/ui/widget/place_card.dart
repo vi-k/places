@@ -269,7 +269,9 @@ class _PlaceCardState extends State<PlaceCard>
                 style: theme.textMiddle16Main,
                 children: [
                   TextSpan(
-                    text: '${place.distance}\n${place.description}',
+                    text:
+                        '${place.distance ?? '<сервис геолокации отключен>'}\n'
+                        '${place.description}',
                     style: theme.textRegular14Light,
                   ),
                 ],

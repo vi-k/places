@@ -5,7 +5,6 @@ import 'package:places/bloc/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
-import 'package:places/utils/let_and_also.dart';
 
 import 'small_button.dart';
 import 'svg_button.dart';

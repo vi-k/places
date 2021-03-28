@@ -349,7 +349,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                     if (!_maybeSave() || !_validate()) return;
 
                     // Сохраняем.
-                    _prepareForSave();
+                    _formKey.currentState!.save();
                     _save(context);
                   },
                 ),
@@ -373,7 +373,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
     // Если нет изменений, выходим сразу.
     if (_validate()) {
-      _prepareForSave();
+      _formKey.currentState!.save();
       if (!_needSave()) return true;
     }
 
@@ -423,11 +423,6 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     return false;
   }
 
-  // Готовит к сохранению.
-  void _prepareForSave() {
-    _formKey.currentState!.save();
-  }
-
   // Проверяет, нужно ли сохранять.
   bool _needSave() =>
       _place?.let((it) =>
@@ -440,7 +435,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       true;
 
   // Отправляет данные на сохранение.
-  void _save(BuildContext context) {
+  Future<void> _save(BuildContext context) async {
     final place = Place(
       id: _place?.id ?? 0,
       name: _nameController.text,
@@ -452,7 +447,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       description: _descriptionController.text,
       type: _placeType!.type,
       userInfo: PlaceUserInfo.zero,
-      calDistanceFrom: context.read<LocationRepository>().location,
+      calcDistanceFrom: await context.read<LocationRepository>().getLocation(),
     );
 
     context

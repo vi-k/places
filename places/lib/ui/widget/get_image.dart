@@ -9,29 +9,7 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/utils/let_and_also.dart';
 
 import 'edit_dialog.dart';
-import 'small_button.dart';
 import 'standart_button.dart';
-
-var _mockPhotosCounter = -1;
-const _mockPhotos = [
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Russian_chapel_at_Fort_Ross_%282016%29.jpg/1280px-Russian_chapel_at_Fort_Ross_%282016%29.jpg',
-  'https://top10.travel/wp-content/uploads/2014/12/hram-vasiliya-blazhennogo.jpg',
-  'https://img.gazeta.ru/files3/957/10301957/00-pic905-895x505-58873.jpg',
-  'https://way2day.com/wp-content/uploads/2018/06/Dostoprimechatelnosti-Turtsii.jpg',
-  'https://uploads.europa24.ru/rs/580w/news/2017-08/berlinskiy-dom-59819f21c5469.jpg',
-  'https://top10.travel/wp-content/uploads/2014/09/brandenburgskie-vorota-1.jpg',
-  'https://vibirai.ru/image/1155920.w640.jpg',
-  'https://kor.ill.in.ua/m/610x385/2445355.jpg',
-  'https://www.topkurortov.com/wp-content/uploads/2015/12/pizanskaya-bashnia.jpg',
-  'https://tripplanet.ru/wp-content/uploads/europe/england/london/london-dostoprimechatelnosti.jpg',
-  'https://crimeaguide.com/wp-content/uploads/2016/05/last.jpg',
-  'https://architectureguru.ru/wp-content/uploads/2015/09/1-18.jpg',
-];
-
-String get _nextMockPhoto {
-  if (++_mockPhotosCounter >= _mockPhotos.length) _mockPhotosCounter = 0;
-  return _mockPhotos[_mockPhotosCounter];
-}
 
 class GetImageResult {
   GetImageResult({this.url, this.path})

@@ -26,9 +26,9 @@ class PlaceInteractor {
   Future<List<Place>> getPlaces(Filter filter) async {
     // Получаем список из репозитория
     final places = await placeRepository.loadFilteredList(
-        coord: locationRepository.location, filter: filter);
+        coord: await locationRepository.getLocation(), filter: filter);
 
-    return await _loadUserInfoForList(places);
+    return _loadUserInfoForList(places);
   }
 
   /// Загружает список мест, содержащих в названии заданный текст.
@@ -36,7 +36,7 @@ class PlaceInteractor {
     // Получаем список из репозитория
     final request = requestText.toLowerCase();
     final places = await placeRepository.search(
-        coord: locationRepository.location, text: request);
+        coord: await locationRepository.getLocation(), text: request);
 
     if (places.isNotEmpty) {
       if (request.contains(_lastSearchRequest)) {
@@ -54,10 +54,8 @@ class PlaceInteractor {
   }
 
   /// Возвращает историю поиска.
-  Future<List<SearchRequest>> getSearchHistory() async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    return dbRepository.getSearchHistory();
-  }
+  Future<List<SearchRequest>> getSearchHistory() async =>
+      dbRepository.getSearchHistory();
 
   /// Очищает историю поиска.
   Future<void> clearSearchHistory() => dbRepository.clearSearchHistory();
@@ -72,7 +70,7 @@ class PlaceInteractor {
   /// Добавляет новое место.
   Future<Place> addNewPlace(PlaceBase place) async {
     final id = await placeRepository.create(place);
-    return await getPlace(id);
+    return getPlace(id);
   }
 
   /// Обновляет место.
@@ -158,18 +156,19 @@ class PlaceInteractor {
   /// Возвращает список мест по списку пользовательской информации.
   Future<List<Place>> _getPlacesByUserInfo(Map<int, PlaceUserInfo> map) async {
     final list = <Place>[];
-    final coord = locationRepository.location;
+    final coord = await locationRepository.getLocation();
 
     await Future.forEach<MapEntry<int, PlaceUserInfo>>(map.entries, (e) async {
       try {
-        final place = (await _getPlace(e.key)).copyWith(calDistanceFrom: coord);
+        final place =
+            (await _getPlace(e.key)).copyWith(calcDistanceFrom: coord);
         list.add(Place.from(place, userInfo: e.value));
       } on RepositoryException {
         // пока игнорируем ошибки
       }
     });
 
-    list.sort((a, b) => a.distance.compareTo(b.distance));
+    list.sort();
 
     return list;
   }

@@ -11,7 +11,7 @@ import 'data/repository/db_repository/sqlite_db_repository.dart';
 import 'data/repository/key_value_repository/key_value_repository.dart';
 import 'data/repository/key_value_repository/shared_preferences_repository.dart';
 import 'data/repository/location_repository/location_repository.dart';
-import 'data/repository/location_repository/mock_location_repository.dart';
+import 'data/repository/location_repository/real_location_repository.dart';
 import 'data/repository/place_repository/api_place_mapper.dart';
 import 'data/repository/place_repository/api_place_repository.dart';
 import 'data/repository/place_repository/place_repository.dart';
@@ -40,7 +40,7 @@ class _AppState extends State<App> {
             create: (_) => ApiPlaceRepository(dio, ApiPlaceMapper()),
           ),
           Provider<LocationRepository>(
-            create: (_) => MockLocationRepository(),
+            create: (_) => RealLocationRepository(),
           ),
           ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
               PlaceInteractor>(

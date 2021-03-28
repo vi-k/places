@@ -7,7 +7,7 @@ import 'package:places/utils/string_ext.dart';
 import 'place_type.dart';
 
 /// Описание места (информация, не зависящая от пользователя).
-class PlaceBase extends Equatable {
+class PlaceBase extends Equatable implements Comparable<PlaceBase> {
   PlaceBase({
     this.id = 0,
     required this.name,
@@ -16,11 +16,10 @@ class PlaceBase extends Equatable {
     required List<String> photos,
     required this.description,
     Distance? distance,
-    Coord? calDistanceFrom,
+    Coord? calcDistanceFrom,
   })  : photos = List.unmodifiable(photos),
-        assert(distance == null || calDistanceFrom == null),
-        distance =
-            distance ?? calDistanceFrom?.distance(coord) ?? Distance.zero;
+        assert(distance == null || calcDistanceFrom == null),
+        distance = distance ?? calcDistanceFrom?.distance(coord);
 
   /// Идентификатор.
   final int id;
@@ -45,10 +44,24 @@ class PlaceBase extends Equatable {
   /// Поле, не относящееся к данным - исключительно для хранения рассчитанных
   /// данных. Можно было бы рассчитывать каждый раз заново. Что лучше -
   /// рассчитывать или сохранять - вопрос спорный.
-  final Distance distance;
+  final Distance? distance;
 
   @override
   List<Object?> get props => [id, name, type, coord, photos, description];
+
+  @override
+  int compareTo(PlaceBase other) {
+    final d1 = distance;
+    final d2 = other.distance;
+
+    if (d1 == null) {
+      return d2 == null ? name.compareTo(other.name) : -1;
+    }
+
+    if (d2 == null) return 1;
+
+    return d1.compareTo(d2);
+  }
 
   @override
   String toString({bool short = false, bool withType = true}) {
@@ -72,9 +85,9 @@ class PlaceBase extends Equatable {
     PlaceType? type,
     String? description,
     Distance? distance,
-    Coord? calDistanceFrom,
+    Coord? calcDistanceFrom,
   }) {
-    assert(distance == null || calDistanceFrom == null);
+    assert(distance == null || calcDistanceFrom == null);
     return PlaceBase(
       id: id ?? this.id,
       coord: coord ?? this.coord,
@@ -83,7 +96,7 @@ class PlaceBase extends Equatable {
       type: type ?? this.type,
       description: description ?? this.description,
       distance: distance ??
-          calDistanceFrom?.distance(coord ?? this.coord) ??
+          calcDistanceFrom?.distance(coord ?? this.coord) ??
           this.distance,
     );
   }
