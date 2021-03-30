@@ -13,6 +13,44 @@ final _ellipsoideE =
         _ellipsoideA; // эксцентриситет эллипса (eccentricity)
 final _ellipsoideE2 = _ellipsoideE * _ellipsoideE;
 
+double calcDistance(double lat1, double lon1, double lat2, double lon2) {
+  // Координаты первой точки
+  final sinB1 = sin(lat1 * pi / 180.0);
+  final cosB1 = cos(lat1 * pi / 180.0);
+  final sinL1 = sin(lon1 * pi / 180.0);
+  final cosL1 = cos(lon1 * pi / 180.0);
+
+  // r1, r2 - радиусы кривизны первого вертикала на данной широте
+  final r1 = _ellipsoideA / sqrt(1.0 - _ellipsoideE2 * sinB1 * sinB1);
+
+  final x1 = r1 * cosB1 * cosL1;
+  final y1 = r1 * cosB1 * sinL1;
+  final z1 = (1.0 - _ellipsoideE2) * r1 * sinB1;
+
+  // Координаты второй точки
+  final sinB2 = sin(lat2 * pi / 180.0);
+  final cosB2 = cos(lat2 * pi / 180.0);
+  final sinL2 = sin(lon2 * pi / 180.0);
+  final cosL2 = cos(lon2 * pi / 180.0);
+
+  final r2 = _ellipsoideA / sqrt(1.0 - _ellipsoideE2 * sinB2 * sinB2);
+
+  final x2 = r2 * cosB2 * cosL2;
+  final y2 = r2 * cosB2 * sinL2;
+  final z2 = (1.0 - _ellipsoideE2) * r2 * sinB2;
+
+  // Расстояние между точками (размер хорды)
+  final d = sqrt(
+      (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1));
+
+  // Длина дуги по хорде. Главная проблема - выбрать радиус.
+  // Проблема не решена! Но для местных условий (по краю),
+  // оптимальным оказалось выбрать наименьший радиус
+  // кривизны из двух рассчитанных
+  final r = r1 < r2 ? r1 : r2;
+
+  return 2.0 * r * asin(0.5 * d / r);
+}
 
 /// Координаты.
 class Coord {
@@ -27,44 +65,8 @@ class Coord {
   ///
   /// Не подходит для точных расчётов на уровне планеты, материков и больших
   /// стран. Подходит для расчётов на уровне области/края.
-  Distance distance(Coord to) {
-    // Координаты первой точки
-    final sinB1 = sin(lat * pi / 180.0);
-    final cosB1 = cos(lat * pi / 180.0);
-    final sinL1 = sin(lon * pi / 180.0);
-    final cosL1 = cos(lon * pi / 180.0);
-
-    // r1, r2 - радиусы кривизны первого вертикала на данной широте
-    final r1 = _ellipsoideA / sqrt(1.0 - _ellipsoideE2 * sinB1 * sinB1);
-
-    final x1 = r1 * cosB1 * cosL1;
-    final y1 = r1 * cosB1 * sinL1;
-    final z1 = (1.0 - _ellipsoideE2) * r1 * sinB1;
-
-    // Координаты второй точки
-    final sinB2 = sin(to.lat * pi / 180.0);
-    final cosB2 = cos(to.lat * pi / 180.0);
-    final sinL2 = sin(to.lon * pi / 180.0);
-    final cosL2 = cos(to.lon * pi / 180.0);
-
-    final r2 = _ellipsoideA / sqrt(1.0 - _ellipsoideE2 * sinB2 * sinB2);
-
-    final x2 = r2 * cosB2 * cosL2;
-    final y2 = r2 * cosB2 * sinL2;
-    final z2 = (1.0 - _ellipsoideE2) * r2 * sinB2;
-
-    // Расстояние между точками (размер хорды)
-    final d = sqrt(
-        (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1));
-
-    // Длина дуги по хорде. Главная проблема - выбрать радиус.
-    // Проблема не решена! Но для местных условий (по краю),
-    // оптимальным оказалось выбрать наименьший радиус
-    // кривизны из двух рассчитанных
-    final r = r1 < r2 ? r1 : r2;
-
-    return Distance(2.0 * r * asin(0.5 * d / r));
-  }
+  Distance distance(Coord to) =>
+      Distance(calcDistance(lat, lon, to.lat, to.lon));
 
   @override
   String toString() => '($lat, $lon)';

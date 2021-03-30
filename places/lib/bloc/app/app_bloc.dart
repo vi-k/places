@@ -30,7 +30,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   late Settings _settings;
   Settings get settings => _settings;
 
-  late MyThemeData _theme;
+  late MyThemeData _theme = createLightTheme();
   MyThemeData get theme => _theme;
 
   @override
@@ -40,12 +40,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (event is AppInit) {
       yield await _init();
     } else if (event is AppChangeSettings) {
-      yield await _changeSettings(event);
+      yield* _changeSettings(event);
     }
   }
 
   // Загрузка настроек.
   Future<Settings> _loadSettings() async {
+    await Future<void>.delayed(const Duration(seconds: 2));
     final isDark = await _storeRepository.loadBool(isDarkTag) ?? false;
     final showTutorial =
         await _storeRepository.loadBool(showTutorialTag) ?? true;
@@ -82,7 +83,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Инициализация темы.
     _initTheme(_settings.isDark);
 
-    return AppReady();
+    return const AppReady();
   }
 
   void _initTheme(bool isDark) {
@@ -90,12 +91,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   // Изменение настроек.
-  Future<AppState> _changeSettings(AppChangeSettings event) async {
-    if (event.settings.isDark != _settings.isDark) {
-      _initTheme(event.settings.isDark);
-    }
-    _settings = event.settings;
+  Stream<AppState> _changeSettings(AppChangeSettings event) async* {
+    yield const AppChanging();
 
+    final isDark = event.isDark;
+    if (isDark != null && isDark != _settings.isDark) {
+      _initTheme(isDark);
+    }
+
+    _settings = _settings.copyWith(
+      isDark: event.isDark,
+      showTutorial: event.showTutorial,
+      filter: event.filter,
+    );
+
+    // Сохраняем настройки.
     await Future.wait([
       _storeRepository.saveBool(isDarkTag, _settings.isDark),
       _storeRepository.saveBool(showTutorialTag, _settings.showTutorial),
@@ -107,6 +117,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             _settings.filter.placeTypes!.map((e) => e.name).toList()),
     ]);
 
-    return AppReady();
+    yield const AppReady();
   }
 }

@@ -115,6 +115,7 @@ LazyDatabase _openConnection() => LazyDatabase(
       () async {
         final dbPath = await getApplicationDocumentsDirectory();
         final file = File(join(dbPath.path, 'db.sqlite'));
-        return VmDatabase(file, logStatements: true);
+        return VmDatabase(file);
+        // return VmDatabase(file, logStatements: true);
       },
     );

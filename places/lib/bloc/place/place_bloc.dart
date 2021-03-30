@@ -12,7 +12,13 @@ part 'place_state.dart';
 
 /// BLoC для места.
 class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
-  PlaceBloc(this._placeInteractor, Place place) : super(PlaceReady(place));
+  PlaceBloc(this._placeInteractor, Place place) : super(PlaceReady(place)) {
+    _placeInteractor.stream.listen((changedPlace) {
+      if (changedPlace.id == place.id) {
+        emit(PlaceReady(changedPlace));
+      }
+    });
+  }
 
   final PlaceInteractor _placeInteractor;
 

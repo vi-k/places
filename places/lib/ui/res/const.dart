@@ -56,7 +56,7 @@ const tickChoiceSize = 16.0;
 const plusIconSize = 40.0;
 const clearIconSize = 20.0;
 const clearButtonSize = 24.0;
-const cardAspectRatio = 3 / 2;
+const cardAspectRatio = 4 / 2;
 const deafultIconSize = 24.0;
 const bottomSheetThumbWidth = 40.0;
 const bottomSheetThumbHeight = 4.0;
@@ -69,10 +69,10 @@ const commonPaddingLTR = EdgeInsets.only(left: 16, top: 16, right: 16);
 const commonPaddingTB = EdgeInsets.only(top: 16, bottom: 16);
 const commonPadding1_2 = EdgeInsets.all(8);
 const appBarPadding = EdgeInsets.only(left: 16, top: 40, right: 16, bottom: 16);
-const cardSignaturesPadding = EdgeInsets.only(top: 8, left: 8, right: 8);
+const cardSignaturesPadding = EdgeInsets.only(top: 8, right: 8);
 const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
 
 /// Анимация.
-const standartAnimationDuration =
-    Duration(milliseconds: kReleaseMode ? 300 : 1000);
+const standartAnimationDuration = Duration(milliseconds: 300);
+// Duration(milliseconds: kReleaseMode ? 300 : 1000);

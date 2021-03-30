@@ -195,199 +195,201 @@ const _baseInputDecorationTheme = InputDecorationTheme(
 );
 
 MyThemeData createLightTheme() => MyThemeData(
-  app: ThemeData(
-    fontFamily: 'Roboto',
-    brightness: Brightness.light,
-    primarySwatch: MaterialColor(accentColor50.value, {
-      50: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.9)),
-      100: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.8)),
-      200: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.6)),
-      300: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.4)),
-      400: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.2)),
-      500: accentColor50,
-      600: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.1)),
-      700: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.2)),
-      800: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.3)),
-      900: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.4)),
-    }),
-    accentColor: accentColor50,
-    backgroundColor: mainColor100,
-    scaffoldBackgroundColor: mainColor100,
-    canvasColor: mainColor90,
-    highlightColor: highlightColorDark,
-    splashColor: splashColorDark,
-    buttonTheme: _baseButtonTheme,
-    textButtonTheme: _baseTextButtonTheme,
-    elevatedButtonTheme: _baseElevatedButtonTheme,
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: mainColor100,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: mainColor100,
-      selectedItemColor: mainColor50,
-      unselectedItemColor: mainColor50,
-    ),
-    cardTheme: _baseCardTheme.copyWith(
-      color: mainColor90,
-    ),
-    textSelectionTheme: const TextSelectionThemeData(
-      selectionColor: accentColor50a40,
-      selectionHandleColor: accentColor50,
-      cursorColor: accentColor50,
-    ),
-    inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-      hintStyle: const TextStyle(
-          color: mainColor70a56), // Размеры установятся как у базового
-      errorStyle: const TextStyle(color: attentionColor50),
-      helperStyle: const TextStyle(color: mainColor70),
-      enabledBorder: _border(accentColor50a40),
-      focusedBorder: _border(accentColor50a40, focused: true),
-      errorBorder: _border(attentionColor50a40),
-      focusedErrorBorder: _border(attentionColor50a40, focused: true),
-    ),
-    sliderTheme: _baseSliderTheme.copyWith(
-      activeTrackColor: accentColor50,
-      overlayColor: accentColor50a16,
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.all<Color>(mainColor100),
-      trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
-          states.contains(MaterialState.selected)
-              ? accentColor50
-              : mainColor70a56),
-      overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
-    ),
-    textTheme: TextTheme(
-      // Стиль для TextField
-      subtitle1: _textRegular16.withColor(mainColor40), // = textRegular16Main2
-    ),
-    cupertinoOverrideTheme: CupertinoThemeData(
-      brightness: Brightness.light,
-      textTheme: CupertinoTextThemeData(
-        dateTimePickerTextStyle: _textRegular16.withColor(mainColor50),
+      app: ThemeData(
+        fontFamily: 'Roboto',
+        brightness: Brightness.light,
+        primarySwatch: MaterialColor(accentColor50.value, {
+          50: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.9)),
+          100: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.8)),
+          200: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.6)),
+          300: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.4)),
+          400: Color.alphaBlend(accentColor50, Colors.white.withOpacity(0.2)),
+          500: accentColor50,
+          600: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.1)),
+          700: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.2)),
+          800: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.3)),
+          900: Color.alphaBlend(accentColor50, Colors.black.withOpacity(0.4)),
+        }),
+        accentColor: accentColor50,
+        backgroundColor: mainColor100,
+        scaffoldBackgroundColor: mainColor100,
+        canvasColor: mainColor90,
+        highlightColor: highlightColorDark,
+        splashColor: splashColorDark,
+        buttonTheme: _baseButtonTheme,
+        textButtonTheme: _baseTextButtonTheme,
+        elevatedButtonTheme: _baseElevatedButtonTheme,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          foregroundColor: mainColor100,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: mainColor100,
+          selectedItemColor: mainColor50,
+          unselectedItemColor: mainColor50,
+        ),
+        cardTheme: _baseCardTheme.copyWith(
+          color: mainColor90,
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          selectionColor: accentColor50a40,
+          selectionHandleColor: accentColor50,
+          cursorColor: accentColor50,
+        ),
+        inputDecorationTheme: _baseInputDecorationTheme.copyWith(
+          hintStyle: const TextStyle(
+              color: mainColor70a56), // Размеры установятся как у базового
+          errorStyle: const TextStyle(color: attentionColor50),
+          helperStyle: const TextStyle(color: mainColor70),
+          enabledBorder: _border(accentColor50a40),
+          focusedBorder: _border(accentColor50a40, focused: true),
+          errorBorder: _border(attentionColor50a40),
+          focusedErrorBorder: _border(attentionColor50a40, focused: true),
+        ),
+        sliderTheme: _baseSliderTheme.copyWith(
+          activeTrackColor: accentColor50,
+          overlayColor: accentColor50a16,
+        ),
+        switchTheme: SwitchThemeData(
+          thumbColor: MaterialStateProperty.all<Color>(mainColor100),
+          trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
+              states.contains(MaterialState.selected)
+                  ? accentColor50
+                  : mainColor70a56),
+          overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
+        ),
+        textTheme: TextTheme(
+          // Стиль для TextField
+          subtitle1:
+              _textRegular16.withColor(mainColor40), // = textRegular16Main2
+        ),
+        cupertinoOverrideTheme: CupertinoThemeData(
+          brightness: Brightness.light,
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: _textRegular16.withColor(mainColor50),
+          ),
+        ),
       ),
-    ),
-  ),
-  accentColor: accentColor50,
-  accentColor16: accentColor50a16,
-  accentColor40: accentColor50a40,
-  attentionColor: attentionColor50,
-  attentionColor16: attentionColor50a16,
-  attentionColor40: attentionColor50a40,
-  mainTextColor: mainColor50,
-  mainTextColor2: mainColor40,
-  inverseTextColor: mainColor100,
-  lightTextColor: mainColor70,
-  lightTextColor56: mainColor70a56,
-  backgroundFirst: mainColor100,
-  backgroundSecond: mainColor90,
-  specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
-    hintStyle: const TextStyle(
-        color: mainColor70a56), // Размеры установятся как у базового
-    errorStyle: const TextStyle(color: attentionColor50),
-    helperStyle: const TextStyle(color: mainColor70),
-    enabledBorder: _border(null),
-    focusedBorder: _border(null, focused: true),
-    errorBorder: _border(null),
-    focusedErrorBorder: _border(null, focused: true),
-  ),
-);
+      accentColor: accentColor50,
+      accentColor16: accentColor50a16,
+      accentColor40: accentColor50a40,
+      attentionColor: attentionColor50,
+      attentionColor16: attentionColor50a16,
+      attentionColor40: attentionColor50a40,
+      mainTextColor: mainColor50,
+      mainTextColor2: mainColor40,
+      inverseTextColor: mainColor100,
+      lightTextColor: mainColor70,
+      lightTextColor56: mainColor70a56,
+      backgroundFirst: mainColor100,
+      backgroundSecond: mainColor90,
+      specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
+        hintStyle: const TextStyle(
+            color: mainColor70a56), // Размеры установятся как у базового
+        errorStyle: const TextStyle(color: attentionColor50),
+        helperStyle: const TextStyle(color: mainColor70),
+        enabledBorder: _border(null),
+        focusedBorder: _border(null, focused: true),
+        errorBorder: _border(null),
+        focusedErrorBorder: _border(null, focused: true),
+      ),
+    );
 
 MyThemeData createDarkTheme() => MyThemeData(
-  app: ThemeData(
-    fontFamily: 'Roboto',
-    brightness: Brightness.dark,
-    primarySwatch: MaterialColor(accentColor70.value, {
-      50: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.9)),
-      100: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.8)),
-      200: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.6)),
-      300: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.4)),
-      400: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.2)),
-      500: accentColor70,
-      600: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.1)),
-      700: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.2)),
-      800: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.3)),
-      900: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.4)),
-    }),
-    accentColor: accentColor70,
-    backgroundColor: mainColor30,
-    scaffoldBackgroundColor: mainColor30,
-    canvasColor: mainColor20,
-    highlightColor: highlightColorLight,
-    splashColor: splashColorLight,
-    buttonTheme: _baseButtonTheme,
-    textButtonTheme: _baseTextButtonTheme,
-    elevatedButtonTheme: _baseElevatedButtonTheme,
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      foregroundColor: mainColor100,
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: mainColor30,
-      selectedItemColor: mainColor100,
-      unselectedItemColor: mainColor100,
-    ),
-    cardTheme: _baseCardTheme.copyWith(
-      color: mainColor20,
-    ),
-    textSelectionTheme: const TextSelectionThemeData(
-      selectionColor: accentColor70a40,
-      selectionHandleColor: accentColor70,
-      cursorColor: accentColor70,
-    ),
-    inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-      hintStyle: const TextStyle(
-          color: mainColor70a56), // Размеры установятся как у базового
-      errorStyle: const TextStyle(color: attentionColor70),
-      helperStyle: const TextStyle(color: mainColor70),
-      enabledBorder: _border(accentColor70a40),
-      focusedBorder: _border(accentColor70a40, focused: true),
-      errorBorder: _border(attentionColor70a40),
-      focusedErrorBorder: _border(attentionColor70a40, focused: true),
-    ),
-    sliderTheme: _baseSliderTheme.copyWith(
-      activeTrackColor: accentColor70,
-      overlayColor: accentColor70a16,
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.all<Color>(mainColor100),
-      trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
-          states.contains(MaterialState.selected)
-              ? accentColor70
-              : mainColor70a56),
-      overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
-    ),
-    textTheme: TextTheme(
-      // Стиль для TextField
-      subtitle1: _textRegular16.withColor(mainColor100), // = textRegular16Main
-    ),
-    cupertinoOverrideTheme: CupertinoThemeData(
-      brightness: Brightness.dark,
-      textTheme: CupertinoTextThemeData(
-        dateTimePickerTextStyle: _textRegular16.withColor(mainColor100),
+      app: ThemeData(
+        fontFamily: 'Roboto',
+        brightness: Brightness.dark,
+        primarySwatch: MaterialColor(accentColor70.value, {
+          50: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.9)),
+          100: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.8)),
+          200: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.6)),
+          300: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.4)),
+          400: Color.alphaBlend(accentColor70, Colors.white.withOpacity(0.2)),
+          500: accentColor70,
+          600: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.1)),
+          700: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.2)),
+          800: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.3)),
+          900: Color.alphaBlend(accentColor70, Colors.black.withOpacity(0.4)),
+        }),
+        accentColor: accentColor70,
+        backgroundColor: mainColor30,
+        scaffoldBackgroundColor: mainColor30,
+        canvasColor: mainColor20,
+        highlightColor: highlightColorLight,
+        splashColor: splashColorLight,
+        buttonTheme: _baseButtonTheme,
+        textButtonTheme: _baseTextButtonTheme,
+        elevatedButtonTheme: _baseElevatedButtonTheme,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          foregroundColor: mainColor100,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: mainColor30,
+          selectedItemColor: mainColor100,
+          unselectedItemColor: mainColor100,
+        ),
+        cardTheme: _baseCardTheme.copyWith(
+          color: mainColor20,
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+          selectionColor: accentColor70a40,
+          selectionHandleColor: accentColor70,
+          cursorColor: accentColor70,
+        ),
+        inputDecorationTheme: _baseInputDecorationTheme.copyWith(
+          hintStyle: const TextStyle(
+              color: mainColor70a56), // Размеры установятся как у базового
+          errorStyle: const TextStyle(color: attentionColor70),
+          helperStyle: const TextStyle(color: mainColor70),
+          enabledBorder: _border(accentColor70a40),
+          focusedBorder: _border(accentColor70a40, focused: true),
+          errorBorder: _border(attentionColor70a40),
+          focusedErrorBorder: _border(attentionColor70a40, focused: true),
+        ),
+        sliderTheme: _baseSliderTheme.copyWith(
+          activeTrackColor: accentColor70,
+          overlayColor: accentColor70a16,
+        ),
+        switchTheme: SwitchThemeData(
+          thumbColor: MaterialStateProperty.all<Color>(mainColor100),
+          trackColor: MaterialStateProperty.resolveWith<Color>((states) =>
+              states.contains(MaterialState.selected)
+                  ? accentColor70
+                  : mainColor70a56),
+          overlayColor: MaterialStateProperty.all<Color>(accentColor50a16),
+        ),
+        textTheme: TextTheme(
+          // Стиль для TextField
+          subtitle1:
+              _textRegular16.withColor(mainColor100), // = textRegular16Main
+        ),
+        cupertinoOverrideTheme: CupertinoThemeData(
+          brightness: Brightness.dark,
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: _textRegular16.withColor(mainColor100),
+          ),
+        ),
       ),
-    ),
-  ),
-  accentColor: accentColor70,
-  accentColor16: accentColor70a16,
-  accentColor40: accentColor70a40,
-  attentionColor: attentionColor70,
-  attentionColor16: attentionColor70a16,
-  attentionColor40: attentionColor70a40,
-  mainTextColor: mainColor100,
-  mainTextColor2: mainColor100,
-  inverseTextColor: mainColor50,
-  lightTextColor: mainColor70,
-  lightTextColor56: mainColor70a56,
-  backgroundFirst: mainColor30,
-  backgroundSecond: mainColor20,
-  specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
-    hintStyle: const TextStyle(
-        color: mainColor70a56), // Размеры установятся как у базового
-    errorStyle: const TextStyle(color: attentionColor70),
-    helperStyle: const TextStyle(color: mainColor70),
-    enabledBorder: _border(null),
-    focusedBorder: _border(null, focused: true),
-    errorBorder: _border(null),
-    focusedErrorBorder: _border(null, focused: true),
-  ),
-);
+      accentColor: accentColor70,
+      accentColor16: accentColor70a16,
+      accentColor40: accentColor70a40,
+      attentionColor: attentionColor70,
+      attentionColor16: attentionColor70a16,
+      attentionColor40: attentionColor70a40,
+      mainTextColor: mainColor100,
+      mainTextColor2: mainColor100,
+      inverseTextColor: mainColor50,
+      lightTextColor: mainColor70,
+      lightTextColor56: mainColor70a56,
+      backgroundFirst: mainColor30,
+      backgroundSecond: mainColor20,
+      specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
+        hintStyle: const TextStyle(
+            color: mainColor70a56), // Размеры установятся как у базового
+        errorStyle: const TextStyle(color: attentionColor70),
+        helperStyle: const TextStyle(color: mainColor70),
+        enabledBorder: _border(null),
+        focusedBorder: _border(null, focused: true),
+        errorBorder: _border(null),
+        focusedErrorBorder: _border(null, focused: true),
+      ),
+    );

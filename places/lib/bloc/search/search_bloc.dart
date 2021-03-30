@@ -12,7 +12,18 @@ part 'search_state.dart';
 
 /// BLoC для поиска.
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  SearchBloc(this._placeInteractor) : super(const SearchLoading());
+  SearchBloc(this._placeInteractor) : super(const SearchLoading()) {
+    _placeInteractor.stream.listen((place) {
+      final currentState = state;
+      if (currentState is SearchReady) {
+        final index = currentState.places.indexWhere((e) => e.id == place.id);
+        if (index != -1) {
+          currentState.places[index] = place;
+          emit(SearchReady(currentState.places));
+        }
+      }
+    });
+  }
 
   final PlaceInteractor _placeInteractor;
 

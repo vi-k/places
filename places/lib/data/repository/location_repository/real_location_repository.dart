@@ -5,6 +5,11 @@ import 'location_repository.dart';
 
 /// Получение координат (в будущем).
 class RealLocationRepository implements LocationRepository {
+  Coord? _lastLocation;
+
+  @override
+  Coord? get lastLocation => _lastLocation;
+
   Future<Position?> getCurrentPosition() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return null;
@@ -22,6 +27,7 @@ class RealLocationRepository implements LocationRepository {
   @override
   Future<Coord?> getLocation() async {
     final pos = await getCurrentPosition();
-    return pos == null ? null : Coord(pos.latitude, pos.longitude);
+    return _lastLocation =
+        pos == null ? null : Coord(pos.latitude, pos.longitude);
   }
 }

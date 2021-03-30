@@ -14,10 +14,16 @@ class AppInit extends AppEvent {
 
 /// Изменить настройки.
 class AppChangeSettings extends AppEvent {
-  const AppChangeSettings(this.settings);
+  const AppChangeSettings({
+    this.isDark,
+    this.showTutorial,
+    this.filter,
+  });
 
-  final Settings settings;
+  final bool? isDark;
+  final bool? showTutorial;
+  final Filter? filter;
 
   @override
-  List<Object?> get props => [settings];
+  List<Object?> get props => [isDark, showTutorial, filter];
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -8,7 +8,6 @@ import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/widget/page_view_selector.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
-import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 import 'place_list_screen.dart';
@@ -73,9 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       Navigator.pop(context);
     } else {
       // Если это первый экран, то запускаем основной экран
-      context.read<AppBloc>().let((it) {
-        it.add(AppChangeSettings(it.settings.copyWith(showTutorial: false)));
-      });
+      context.read<AppBloc>().add(const AppChangeSettings(showTutorial: false));
       Navigator.pushReplacement<void, void>(
         context,
         MaterialPageRoute(

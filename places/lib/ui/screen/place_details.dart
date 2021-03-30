@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
-import 'package:places/bloc/place_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
+import 'package:places/bloc/place/place_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
@@ -21,9 +21,9 @@ import 'place_edit_screen.dart';
 
 /// Экран детализации места.
 class PlaceDetails extends StatefulWidget {
-  const PlaceDetails({
+  const PlaceDetails(
+    this.place, {
     Key? key,
-    required this.place,
   }) : super(key: key);
 
   /// Идентификатор места.
@@ -31,36 +31,6 @@ class PlaceDetails extends StatefulWidget {
 
   @override
   _PlaceDetailsState createState() => _PlaceDetailsState();
-
-  static Future<Place?> showAsModalBottomSheet(
-      BuildContext context, Place place,
-      [AnimationController? animationController]) async {
-    // Внутри showModalBottomSheet
-    // MediaQuery.of(context).padding.top возвращает 0.
-    // Поэтому рассчитываем здесь.
-    final maxHeight = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        appBarPadding.top;
-    final newPlace = await showModalBottomSheet<Place>(
-      context: context,
-      clipBehavior: Clip.antiAlias,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16),
-        ),
-      ),
-      isScrollControlled: true,
-      transitionAnimationController: animationController,
-      builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: maxHeight,
-        ),
-        child: PlaceDetails(place: place),
-      ),
-    );
-
-    return newPlace;
-  }
 }
 
 class _PlaceDetailsState extends State<PlaceDetails> {
@@ -68,7 +38,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
 
-    // Перехватываем `pop`, чтобы передать значение.
     return BlocProvider<PlaceBloc>(
       create: (_) => PlaceBloc(context.read<PlaceInteractor>(), widget.place),
       child: BlocBuilder<PlaceBloc, PlaceState>(
@@ -217,13 +186,8 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         const SizedBox(height: commonSpacing3_2),
       ];
 
-  Future<void> _gotoEditScreen(BuildContext context, Place place) async {
-    final newPlace = await standartNavigatorPush<Place>(
-        context, () => PlaceEditScreen(place: place));
-
-    if (newPlace != null) {
-      context.read<PlaceBloc>().add(PlaceChanged(newPlace));
-    }
+  void _gotoEditScreen(BuildContext context, Place place) {
+    standartNavigatorPush<Place>(context, () => PlaceEditScreen(place));
   }
 }
 

@@ -37,6 +37,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
 
   Stream<EditPlaceState> _update(EditPlaceUpdate event) async* {
     yield const EditPlaceLoading();
+    await Future<void>.delayed(const Duration(seconds: 2));
     await _placeInteractor.updatePlace(event.place);
     yield EditPlaceSaved(event.place);
   }

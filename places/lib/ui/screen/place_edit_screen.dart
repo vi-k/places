@@ -1,18 +1,17 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pedantic/pedantic.dart';
-import 'package:places/bloc/app_bloc.dart';
-import 'package:places/bloc/edit_place_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
+import 'package:places/bloc/edit_place/edit_place_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/repository/location_repository/location_repository.dart';
-import 'package:places/main.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -36,9 +35,9 @@ import 'place_type_select_screen.dart';
 
 /// Экран добавления места.
 class PlaceEditScreen extends StatefulWidget {
-  const PlaceEditScreen({
+  const PlaceEditScreen(
+    this.place, {
     Key? key,
-    this.place,
   }) : super(key: key);
 
   /// Идентификатор места.
@@ -67,7 +66,9 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     super.initState();
 
     final place = _place;
-    if (place != null) {
+    if (place == null) {
+      _getCurrentLocation();
+    } else {
       _placeType = PlaceTypeUi(place.type);
       _photos.addAll(place.photos.map((e) => GetImageResult(url: e)));
       _nameController.text = place.name;
@@ -139,18 +140,21 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
                 setState(() {
                   _photos.add(result);
-                  print('image_picker: ${result.path}');
                 });
 
                 final path = result.path;
                 if (path != null) {
-                  unawaited(uploadPhoto(dio, File(path)).then((url) {
-                    if (url == null) return;
-                    final index = _photos.indexWhere((e) => e.path == path);
-                    setState(() {
-                      _photos[index] = GetImageResult(url: url);
-                    });
-                  }));
+                  final url =
+                      await uploadPhoto(context.read<Dio>(), File(path));
+                  if (url == null) return;
+
+                  final index = _photos.indexWhere((e) => e.path == path);
+                  // Пока загружали картинку, пользователь мог её удалить.
+                  if (index == -1) return;
+
+                  setState(() {
+                    _photos[index] = GetImageResult(url: url);
+                  });
                 }
               },
             ),
@@ -337,7 +341,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         child: BlocConsumer<EditPlaceBloc, EditPlaceState>(
           listener: (context, state) {
             if (state is EditPlaceSaved) {
-              Navigator.pop(context, state.place);
+              Navigator.pop(context);
             }
           },
           builder: (context, state) => state is EditPlaceLoading
@@ -453,5 +457,13 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     context
         .read<EditPlaceBloc>()
         .add(place.isNew ? EditPlaceAdd(place) : EditPlaceUpdate(place));
+  }
+
+  Future<void> _getCurrentLocation() async {
+    final location = await context.read<LocationRepository>().getLocation();
+    if (location != null) {
+      _latController.text = location.lat.toStringAsFixed(6);
+      _lonController.text = location.lon.toStringAsFixed(6);
+    }
   }
 }

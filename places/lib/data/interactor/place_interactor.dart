@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
@@ -21,6 +23,14 @@ class PlaceInteractor {
   final LocationRepository locationRepository;
 
   String _lastSearchRequest = '';
+
+  final _controller = StreamController<Place>.broadcast();
+
+  Stream<Place> get stream => _controller.stream;
+
+  void close() {
+    _controller.close();
+  }
 
   /// Загружает список мест, соответствующих фильтру.
   Future<List<Place>> getPlaces(Filter filter) async {
@@ -74,7 +84,10 @@ class PlaceInteractor {
   }
 
   /// Обновляет место.
-  Future<void> updatePlace(PlaceBase place) => placeRepository.update(place);
+  Future<void> updatePlace(Place place) async {
+    await placeRepository.update(place);
+    _notify(place);
+  }
 
   /// Удаляет место.
   Future<void> removePlace(int id) => placeRepository.delete(id);
@@ -117,15 +130,28 @@ class PlaceInteractor {
 
   Future<Place> updateUserInfo(PlaceBase place, PlaceUserInfo userInfo) async {
     await dbRepository.updatePlaceUserInfo(place.id, userInfo);
-    return Place.from(place, userInfo: userInfo);
+    return _createPlace(place, userInfo);
+  }
+
+  /// Оповещает об изменениях.
+  void _notify(Place place) {
+    print('Changed: ${place.toString(short: true)}');
+    if (!_controller.isClosed) _controller.add(place);
+  }
+
+  /// Создаёт место из PlaceBase и PlaceUserInfo и оповещает об изменении.
+  Place _createPlace(PlaceBase place, PlaceUserInfo userInfo) {
+    final newPlace = Place.from(place, userInfo: userInfo);
+    _notify(newPlace);
+    return newPlace;
   }
 
   /// Загружает пользовательскую информацию о месте.
-  Future<Place> _loadUserInfo(PlaceBase place) async => Place.from(
-        place,
-        userInfo: await dbRepository.loadPlaceUserInfo(place.id) ??
-            PlaceUserInfo.zero,
-      );
+  Future<Place> _loadUserInfo(PlaceBase place) async {
+    final userInfo =
+        await dbRepository.loadPlaceUserInfo(place.id) ?? PlaceUserInfo.zero;
+    return _createPlace(place, userInfo);
+  }
 
   /// Загружает пользовательскую информацию для списка.
   ///
@@ -162,7 +188,7 @@ class PlaceInteractor {
       try {
         final place =
             (await _getPlace(e.key)).copyWith(calcDistanceFrom: coord);
-        list.add(Place.from(place, userInfo: e.value));
+        list.add(_createPlace(place, e.value));
       } on RepositoryException {
         // пока игнорируем ошибки
       }
@@ -177,7 +203,7 @@ class PlaceInteractor {
   Future<Place> _addToFavorite(Place place, Favorite favorite) async {
     final newUserInfo = place.userInfo.copyWith(favorite: favorite);
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return Place.from(place, userInfo: newUserInfo);
+    return _createPlace(place, newUserInfo);
   }
 
   /// Удаляет из избранного.
@@ -188,7 +214,7 @@ class PlaceInteractor {
   Future<Place> _removeFromFavorite(Place place, Favorite favorite) async {
     final newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return Place.from(place, userInfo: newUserInfo);
+    return _createPlace(place, newUserInfo);
   }
 
   /// Переключает в избранное и обратно.
@@ -200,6 +226,6 @@ class PlaceInteractor {
       newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
     }
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return Place.from(place, userInfo: newUserInfo);
+    return _createPlace(place, newUserInfo);
   }
 }

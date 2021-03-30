@@ -4,4 +4,5 @@ import 'package:places/utils/coord.dart';
 // ignore: one_member_abstracts
 abstract class LocationRepository {
   Future<Coord?> getLocation();
+  Coord? get lastLocation;
 }

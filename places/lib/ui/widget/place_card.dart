@@ -5,10 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
-import 'package:places/bloc/place_bloc.dart';
-import 'package:places/bloc/places_bloc.dart';
-import 'package:places/bloc/wishlist_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
+import 'package:places/bloc/place/place_bloc.dart';
+import 'package:places/bloc/favorite/favorite_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
@@ -22,7 +21,6 @@ import 'package:places/utils/date.dart';
 
 import 'cupertino_date_select.dart';
 import 'loadable_image.dart';
-import 'small_button.dart';
 import 'svg_button.dart';
 
 /// Карточка места.
@@ -32,6 +30,7 @@ class PlaceCard extends StatefulWidget {
     required this.place,
     required this.cardType,
     this.onLongPress,
+    required this.onClose,
   }) : super(key: key);
 
   /// Информация о месте.
@@ -42,6 +41,9 @@ class PlaceCard extends StatefulWidget {
 
   /// Обратный вызов для реализации перемещения карточек.
   final void Function()? onLongPress;
+
+  /// Обрытный выхов для закрытия карточки.
+  final void Function()? onClose;
 
   @override
   _PlaceCardState createState() => _PlaceCardState();
@@ -69,13 +71,13 @@ class _PlaceCardState extends State<PlaceCard>
                           if (widget.cardType == Favorite.wishlist) {
                             context.read<WishlistBloc>().add(
                                 direction == DismissDirection.startToEnd
-                                    ? WishlistMoveToAdjacentList(state.place)
-                                    : WishlistRemove(state.place));
+                                    ? FavoriteMoveToAdjacentList(state.place)
+                                    : FavoriteRemove(state.place));
                           } else {
-                            context.read<WishlistBloc>().add(
+                            context.read<VisitedBloc>().add(
                                 direction == DismissDirection.startToEnd
-                                    ? WishlistRemove(state.place)
-                                    : WishlistMoveToAdjacentList(state.place));
+                                    ? FavoriteRemove(state.place)
+                                    : FavoriteMoveToAdjacentList(state.place));
                           }
                         },
                         background: widget.cardType == Favorite.wishlist
@@ -137,6 +139,7 @@ class _PlaceCardState extends State<PlaceCard>
     final url = place.photos.isEmpty ? null : place.photos[0];
 
     return Expanded(
+      flex: 3,
       child: Hero(
         tag: url ?? '',
         child: Stack(
@@ -162,55 +165,37 @@ class _PlaceCardState extends State<PlaceCard>
 
     final signatures = <Widget>[];
     if (widget.cardType == Favorite.no) {
-      signatures
-        ..add(
-          _buildSignatureButton(
-            place.userInfo.favorite == Favorite.wishlist ||
-                    place.userInfo.favorite == Favorite.visited
-                ? Svg24.heartFull
-                : Svg24.heart,
-            color,
-            () => context.read<PlaceBloc>().add(const PlaceToggleWishlist()),
-          ),
-        )
-        ..add(
-          _buildSignatureButton(
-              Svg24.close, color, () => _deletePlace(context, place)),
-        );
+      signatures.add(
+        _buildSignatureButton(
+          place.userInfo.favorite == Favorite.wishlist ||
+                  place.userInfo.favorite == Favorite.visited
+              ? Svg24.heartFull
+              : Svg24.heart,
+          color,
+          () => context.read<PlaceBloc>().add(const PlaceToggleWishlist()),
+        ),
+      );
     } else if (widget.cardType == Favorite.wishlist) {
-      signatures
-        ..add(
-          _buildSignatureButton(
-            Svg24.calendar,
-            place.userInfo.planToVisit == null ? color : theme.accentColor,
-            () => _setDate(context, place),
-          ),
-        )
-        ..add(
-          _buildSignatureButton(
-            Svg24.close,
-            color,
-            () => context.read<WishlistBloc>().add(WishlistRemove(place)),
-          ),
-        );
+      signatures.add(
+        _buildSignatureButton(
+          Svg24.calendar,
+          place.userInfo.planToVisit == null ? color : theme.accentColor,
+          () => _setDate(context, place),
+        ),
+      );
     } else if (widget.cardType == Favorite.visited) {
+      signatures.add(
+        _buildSignatureButton(
+          Svg24.share,
+          color,
+          () => print('Share'),
+        ),
+      );
+    }
+
+    if (widget.onClose != null) {
       signatures
-        ..add(
-          _buildSignatureButton(
-            Svg24.share,
-            color,
-            () => print('Share'),
-          ),
-        )
-        ..add(
-          _buildSignatureButton(
-            Svg24.close,
-            color,
-            () => context
-                .read<WishlistBloc>()
-                .add(WishlistMoveToAdjacentList(place)),
-          ),
-        );
+          .add(_buildSignatureButton(Svg24.close, color, widget.onClose!));
     }
 
     return Container(
@@ -259,24 +244,50 @@ class _PlaceCardState extends State<PlaceCard>
       );
 
   Widget _buildCardBottom(MyThemeData theme, Place place) => Expanded(
-        child: Container(
+        flex: 2,
+        child: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[Colors.white, Color(0xFF808080), Colors.black],
+            stops: [0.0, 0.6, 1.0],
+          ).createShader(Rect.fromLTRB(
+            bounds.left,
+            bounds.bottom - commonSpacing * 2,
+            bounds.right,
+            bounds.bottom,
+          )),
+          child: Padding(
             padding: commonPadding,
-            child: RichText(
-              overflow: TextOverflow.fade,
-              maxLines: null,
-              text: TextSpan(
-                text: '${place.name}\n',
-                style: theme.textMiddle16Main,
-                children: [
-                  TextSpan(
-                    text:
-                        '${place.distance ?? '<сервис геолокации отключен>'}\n'
-                        '${place.description}',
-                    style: theme.textRegular14Light,
-                  ),
-                ],
-              ),
-            )),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        place.name,
+                        style: theme.textMiddle16Main,
+                      ),
+                    ),
+                    const SizedBox(width: commonSpacing1_2),
+                    Text(
+                      '${place.distance ?? '-'}',
+                      style: theme.textRegular14Light,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: commonSpacing1_4),
+                Text(
+                  place.description,
+                  style: theme.textRegular14Light,
+                ),
+              ],
+            ),
+          ),
+        ),
       );
 
   Widget _buildBackground(
@@ -325,45 +336,14 @@ class _PlaceCardState extends State<PlaceCard>
     );
   }
 
-  Future<void> _gotoPlaceDetails(BuildContext context, Place place) async {
-    final newPlace = await standartNavigatorPush<Place>(
-        context, () => PlaceDetails(place: place));
-
-    if (newPlace != null && newPlace != place) {
-      context.read<PlaceBloc>().add(PlaceChanged(newPlace));
-    }
-  }
-
-  Future<void> _deletePlace(BuildContext context, Place place) async {
-    final doDelete = await showDialog<bool>(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text(stringDoDelete),
-            actions: [
-              SmallButton(
-                label: stringCancel,
-                onPressed: () => Navigator.pop(context, false),
-              ),
-              SmallButton(
-                label: stringYes,
-                onPressed: () => Navigator.pop(context, true),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-
-    if (doDelete) {
-      context.read<PlacesBloc>().add(PlacesRemove(place));
-    }
+  void _gotoPlaceDetails(BuildContext context, Place place) {
+    standartNavigatorPush<Place>(context, () => PlaceDetails(place));
   }
 
   Future<void> _setDate(BuildContext context, Place place) async {
     final today = Date.today();
     final yesterday = Date.yesterday();
     var date = place.userInfo.planToVisit;
-    print('today: $today');
-    print('yesterday: $yesterday');
 
     date = Platform.isIOS
         ? await showCupertinoDatePicker(

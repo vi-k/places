@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/wishlist_bloc.dart';
+import 'package:places/bloc/favorite/favorite_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
@@ -30,7 +30,6 @@ class _FavoriteScreenState extends State<FavoriteScreen>
   @override
   void dispose() {
     _tabController.dispose();
-
     super.dispose();
   }
 
@@ -52,52 +51,86 @@ class _FavoriteScreenState extends State<FavoriteScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildTab(placeInteractor, Favorite.wishlist),
-          _buildTab(placeInteractor, Favorite.visited),
+          _buildWishlistTab(placeInteractor),
+          _buildVisitedTab(placeInteractor),
         ],
       ),
       bottomNavigationBar: const AppNavigationBar(index: 2),
     );
   }
 
-  Widget _buildTab(PlaceInteractor placeInteractor, Favorite listType) => Tab(
-        child: BlocProvider<WishlistBloc>(
-          create: (_) =>
-              WishlistBloc(placeInteractor, listType)..add(WishlistLoad()),
-          child: BlocBuilder<WishlistBloc, WishlistState>(
-            builder: (context, state) {
-              if (state is WishlistLoading) {
+  Widget _buildWishlistTab(PlaceInteractor placeInteractor) => Tab(
+        child: BlocBuilder<WishlistBloc, FavoriteState>(
+          builder: (context, state) {
+            if (state is FavoriteLoading || state is FavoriteUnstable) {
+              if (state is FavoriteUnstable) {
+                context.read<WishlistBloc>().add(const FavoriteLoad());
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: Text('test'),
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is FavoriteReady) {
+              if (state.places.isEmpty) {
+                return const Failed(
+                  svg: Svg64.card,
+                  title: stringEmpty,
+                  message: stringWishlistMessage,
                 );
               }
 
-              if (state is WishlistReady) {
-                if (state.places.isEmpty) {
-                  return listType == Favorite.wishlist
-                      ? const Failed(
-                          svg: Svg64.card,
-                          title: stringEmpty,
-                          message: stringWishlistMessage,
-                        )
-                      : const Failed(
-                          svg: Svg64.go,
-                          title: stringEmpty,
-                          message: stringVisitedMessage,
-                        );
-                }
+              return PlaceCardGrid(
+                cardType: Favorite.wishlist,
+                places: state.places,
+                onCardClose: (place) =>
+                    context.read<WishlistBloc>().add(FavoriteRemove(place)),
+              );
+            }
 
-                return PlaceCardGrid(
-                  cardType: listType,
-                  places: state.places,
+            return const Failed(message: stringUnknownState);
+          },
+        ),
+      );
+
+  Widget _buildVisitedTab(PlaceInteractor placeInteractor) => Tab(
+        child: BlocBuilder<VisitedBloc, FavoriteState>(
+          builder: (context, state) {
+            if (state is FavoriteLoading || state is FavoriteUnstable) {
+              if (state is FavoriteUnstable) {
+                context.read<VisitedBloc>().add(const FavoriteLoad());
+                return const Center(
+                  child: Text('test'),
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is FavoriteReady) {
+              if (state.places.isEmpty) {
+                return const Failed(
+                  svg: Svg64.go,
+                  title: stringEmpty,
+                  message: stringVisitedMessage,
                 );
               }
 
-              // Оставляю WishlistInitial, чтобы не забывать отправлять
-              // первое событие.
-              return const Failed(message: stringUnknownState);
-            },
-          ),
+              return PlaceCardGrid(
+                cardType: Favorite.visited,
+                places: state.places,
+                onCardClose: (place) => context
+                    .read<VisitedBloc>()
+                    .add(FavoriteMoveToAdjacentList(place)),
+              );
+            }
+
+            return const Failed(message: stringUnknownState);
+          },
         ),
       );
 }

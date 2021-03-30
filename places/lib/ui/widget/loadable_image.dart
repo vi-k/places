@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
-
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
 
@@ -34,16 +33,16 @@ class LoadableImage extends StatelessWidget {
           errorBuilder: _errorBuilder,
         )
       : Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(1),
-        child: Image.file(
+          color: Colors.white,
+          padding: const EdgeInsets.all(1),
+          child: Image.file(
             File(path!),
             filterQuality: FilterQuality.high,
             fit: BoxFit.cover,
             frameBuilder: _frameBuilder,
             errorBuilder: _errorBuilder,
           ),
-      );
+        );
 
   Widget _frameBuilder(
     BuildContext context,
@@ -103,6 +102,7 @@ class LoadableImage extends StatelessWidget {
     StackTrace? stackTrace,
   ) {
     final theme = context.watch<AppBloc>().theme;
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(

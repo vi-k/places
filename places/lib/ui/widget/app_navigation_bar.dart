@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/screen/map_screen.dart';
 import 'package:places/ui/screen/place_list_screen.dart';
 import 'package:places/ui/screen/settings_screen.dart';
 import 'package:places/ui/screen/favorite_screen.dart';
@@ -20,6 +21,15 @@ class AppNavigationBar extends StatelessWidget {
   /// Текущая позиция.
   final int index;
 
+  void _goto(BuildContext context, Widget Function() page) {
+    Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => page(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
@@ -33,36 +43,22 @@ class AppNavigationBar extends StatelessWidget {
         switch (index) {
           case 0:
             // Список интересных мест.
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PlaceListScreen(),
-              ),
-            );
+            _goto(context, () => PlaceListScreen());
             break;
 
           case 1:
             // Карта.
+            _goto(context, () => MapScreen());
             break;
 
           case 2:
             // Хочу посетить/Посетил.
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FavoriteScreen(),
-              ),
-            );
+            _goto(context, () => FavoriteScreen());
             break;
 
           case 3:
             // Настройки.
-            Navigator.pushReplacement<void, void>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SettingsScreen(),
-              ),
-            );
+            _goto(context, () => SettingsScreen());
             break;
         }
       },
@@ -79,7 +75,7 @@ class AppNavigationBar extends StatelessWidget {
             index == 1 ? Svg24.mapFull : Svg24.map,
             color: _itemColor(theme, index == 1),
           ),
-          label: 'Map', // Временно
+          label: stringMap,
         ),
         BottomNavigationBarItem(
           icon: SvgPicture.asset(
