@@ -47,6 +47,7 @@ class SvgButton extends StatelessWidget {
 
     return IconButton(
       padding: EdgeInsets.zero,
+      color: Colors.blue,
       constraints: BoxConstraints.tightFor(width: width, height: height),
       highlightColor: highlightColor ?? theme.app.highlightColor,
       splashColor: splashColor ?? theme.app.splashColor,

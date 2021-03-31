@@ -43,6 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
       create: (_) => SearchBloc(context.read<PlaceInteractor>())
         ..add(const SearchLoadHistory()),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: SmallAppBar(
           title: stringPlaceList,
           bottom: Padding(

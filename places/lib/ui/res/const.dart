@@ -44,6 +44,7 @@ const filtersPlaceTypeSize = 64.0;
 const standartButtonHeight = 48.0;
 const smallButtonHeight = 40.0;
 const verySmallButtonHeight = 32.0;
+const standartButtonRadius = 12.0;
 const smallButtonRadius = 40.0;
 const textFieldBorderWidth = 1.0;
 const textFieldFocusedBorderWidth = 2.0;
@@ -60,6 +61,7 @@ const cardAspectRatio = 4 / 2;
 const deafultIconSize = 24.0;
 const bottomSheetThumbWidth = 40.0;
 const bottomSheetThumbHeight = 4.0;
+const mapIconSize = 48.0;
 
 /// Отступы.
 const commonPadding = EdgeInsets.all(16);

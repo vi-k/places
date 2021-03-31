@@ -46,7 +46,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   // Загрузка настроек.
   Future<Settings> _loadSettings() async {
-    await Future<void>.delayed(const Duration(seconds: 2));
     final isDark = await _storeRepository.loadBool(isDarkTag) ?? false;
     final showTutorial =
         await _storeRepository.loadBool(showTutorialTag) ?? true;

@@ -17,6 +17,7 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/map.dart';
 import 'package:places/utils/date.dart';
 
 import 'cupertino_date_select.dart';
@@ -30,7 +31,8 @@ class PlaceCard extends StatefulWidget {
     required this.place,
     required this.cardType,
     this.onLongPress,
-    required this.onClose,
+    this.onClose,
+    this.go,
   }) : super(key: key);
 
   /// Информация о месте.
@@ -44,6 +46,9 @@ class PlaceCard extends StatefulWidget {
 
   /// Обрытный выхов для закрытия карточки.
   final void Function()? onClose;
+
+  /// Дополнительная кнопка для навигации.
+  final void Function()? go;
 
   @override
   _PlaceCardState createState() => _PlaceCardState();
@@ -131,7 +136,28 @@ class _PlaceCardState extends State<PlaceCard>
               onPressed: () => _gotoPlaceDetails(context, place),
               child: _buildSignatures(context, theme, place),
             ),
+            if (widget.go != null) _buildGo(theme),
           ],
+        ),
+      );
+
+  Positioned _buildGo(MyThemeData theme) => Positioned(
+        right: commonSpacing1_2,
+        bottom: commonSpacing1_2,
+        child: MaterialButton(
+          elevation: 0,
+          minWidth: standartButtonHeight,
+          height: standartButtonHeight,
+          padding: EdgeInsets.zero,
+          color: theme.accentColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(standartButtonRadius),
+          ),
+          onPressed: widget.go,
+          child: SvgPicture.asset(
+            Svg24.go,
+            color: theme.textBold14White.color,
+          ),
         ),
       );
 
@@ -253,12 +279,17 @@ class _PlaceCardState extends State<PlaceCard>
             stops: [0.0, 0.6, 1.0],
           ).createShader(Rect.fromLTRB(
             bounds.left,
-            bounds.bottom - commonSpacing * 2,
+            bounds.bottom - commonSpacing * 3,
             bounds.right,
             bounds.bottom,
           )),
           child: Padding(
-            padding: commonPadding,
+            padding: EdgeInsets.fromLTRB(
+              commonSpacing,
+              commonSpacing1_2,
+              commonSpacing + (widget.go == null ? 0 : standartButtonHeight),
+              commonSpacing1_2,
+            ),
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
@@ -279,7 +310,7 @@ class _PlaceCardState extends State<PlaceCard>
                     ),
                   ],
                 ),
-                const SizedBox(height: commonSpacing1_4),
+                const SizedBox(height: commonSpacing1_2),
                 Text(
                   place.description,
                   style: theme.textRegular14Light,

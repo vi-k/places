@@ -144,10 +144,12 @@ final _baseTextButtonTheme = TextButtonThemeData(
 
 final _baseElevatedButtonTheme = ElevatedButtonThemeData(
   style: ButtonStyle(
+    minimumSize: MaterialStateProperty.all(Size.zero),
+    // padding: MaterialStateProperty.all(EdgeInsets.zero),
     shape: MaterialStateProperty.all(
       const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
-          Radius.circular(12),
+          Radius.circular(standartButtonRadius),
         ),
       ),
     ),

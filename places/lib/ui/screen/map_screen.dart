@@ -12,6 +12,7 @@ import 'package:places/data/repository/location_repository/location_repository.d
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/map.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/place_card.dart';
 import 'package:places/ui/widget/search_bar.dart';
@@ -48,6 +49,7 @@ class _MapScreenState extends State<MapScreen>
   Widget build(BuildContext context) {
     final initialLocation = context.read<LocationRepository>().lastLocation ??
         const Coord(52.5442, 31.8089); // Новое место
+    final lastPlace = _lastPlace;
 
     return BlocBuilder<PlacesBloc, PlacesState>(
       builder: (context, state) => Scaffold(
@@ -110,13 +112,14 @@ class _MapScreenState extends State<MapScreen>
                             scale: _placeAnimation.value, child: child),
                         child: AspectRatio(
                           aspectRatio: cardAspectRatio,
-                          child: _lastPlace == null
+                          child: lastPlace == null
                               ? const SizedBox()
                               : PlaceCard(
-                                  key: ValueKey(_lastPlace!.id),
-                                  place: _lastPlace!,
+                                  key: ValueKey(lastPlace.id),
+                                  place: lastPlace,
                                   cardType: Favorite.no,
                                   onClose: _hidePlaceCard,
+                                  go: () => gotoPlace(context, lastPlace),
                                 ),
                         ),
                       ),
