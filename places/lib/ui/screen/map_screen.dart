@@ -205,10 +205,9 @@ class _MapScreenState extends State<MapScreen>
           ),
         ),
       );
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException catch (_) {
       // Если переключить на другой экран, не дождавшись завершения, то получаем
       // исключение 'No implementation found for method ...'.
-      return;
     }
   }
 

@@ -32,17 +32,18 @@ class LoadableImage extends StatelessWidget {
           loadingBuilder: _loadingBuilder,
           errorBuilder: _errorBuilder,
         )
-      : Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(1),
-          child: Image.file(
+      : Stack(children: [
+          Image.file(
             File(path!),
             filterQuality: FilterQuality.high,
             fit: BoxFit.cover,
             frameBuilder: _frameBuilder,
             errorBuilder: _errorBuilder,
           ),
-        );
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ]);
 
   Widget _frameBuilder(
     BuildContext context,

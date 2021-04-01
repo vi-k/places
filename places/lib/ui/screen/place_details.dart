@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +11,7 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
+import 'package:places/ui/utils/map.dart';
 import 'package:places/ui/widget/loadable_image.dart';
 import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
@@ -96,26 +95,6 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         ),
       );
 
-  Widget _buildClose(MyThemeData theme, Place place) => Center(
-        child: SizedBox(
-          width: smallButtonHeight,
-          height: smallButtonHeight,
-          child: MaterialButton(
-            elevation: 0,
-            padding: EdgeInsets.zero,
-            color: theme.backgroundFirst,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(smallButtonHeight),
-            ),
-            onPressed: () => Navigator.pop(context, place),
-            child: SvgPicture.asset(
-              Svg24.close,
-              color: theme.mainTextColor2,
-            ),
-          ),
-        ),
-      );
-
   List<Widget> _buildText(MyThemeData theme, Place place) => [
         const SizedBox(height: commonSpacing3_2),
         Text(
@@ -148,9 +127,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         StandartButton(
           svg: Svg24.go,
           label: stringBuildRoute,
-          onPressed: () {
-            print('Строим маршрут');
-          },
+          onPressed: () => gotoPlace(context, place),
         ),
         const SizedBox(height: commonSpacing3_2),
         const Divider(height: dividerHeight),

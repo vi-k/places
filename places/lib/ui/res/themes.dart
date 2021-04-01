@@ -165,7 +165,7 @@ const _baseCardTheme = CardTheme(
           commonSpacing), // не использую BorderRadius.circular ради const
     ),
   ),
-  elevation: 2,
+  elevation: 4,
 );
 
 const _baseSliderTheme = SliderThemeData(

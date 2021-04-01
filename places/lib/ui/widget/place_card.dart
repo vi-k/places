@@ -17,7 +17,6 @@ import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/screen/place_details.dart';
 import 'package:places/ui/utils/animation.dart';
-import 'package:places/ui/utils/map.dart';
 import 'package:places/utils/date.dart';
 
 import 'cupertino_date_select.dart';
@@ -271,25 +270,26 @@ class _PlaceCardState extends State<PlaceCard>
 
   Widget _buildCardBottom(MyThemeData theme, Place place) => Expanded(
         flex: 2,
-        child: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[Colors.white, Color(0xFF808080), Colors.black],
-            stops: [0.0, 0.6, 1.0],
-          ).createShader(Rect.fromLTRB(
-            bounds.left,
-            bounds.bottom - commonSpacing * 3,
-            bounds.right,
-            bounds.bottom,
-          )),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              commonSpacing,
-              commonSpacing1_2,
-              commonSpacing + (widget.go == null ? 0 : standartButtonHeight),
-              commonSpacing1_2,
-            ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            commonSpacing,
+            commonSpacing1_2,
+            commonSpacing + (widget.go == null ? 0 : standartButtonHeight),
+            commonSpacing1_2,
+          ),
+          child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (bounds) => const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFFFFFFF), Color(0x00FFFFFF)],
+              stops: [0.0, 1.0],
+            ).createShader(Rect.fromLTRB(
+              bounds.left,
+              bounds.bottom - commonSpacing,
+              bounds.right,
+              bounds.bottom,
+            )),
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
@@ -310,7 +310,7 @@ class _PlaceCardState extends State<PlaceCard>
                     ),
                   ],
                 ),
-                const SizedBox(height: commonSpacing1_2),
+                const SizedBox(height: commonSpacing1_4),
                 Text(
                   place.description,
                   style: theme.textRegular14Light,

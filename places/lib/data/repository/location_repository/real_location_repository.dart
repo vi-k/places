@@ -21,7 +21,7 @@ class RealLocationRepository implements LocationRepository {
           permission == LocationPermission.denied) return null;
     }
 
-    return await Geolocator.getCurrentPosition();
+    return Geolocator.getCurrentPosition();
   }
 
   @override
