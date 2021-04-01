@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
@@ -22,8 +22,6 @@ class PlaceSmallCard extends StatefulWidget {
 }
 
 class _PlaceSmallCardState extends State<PlaceSmallCard> {
-  late Place _place = widget.place;
-
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
@@ -40,11 +38,11 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
               SizedBox(
                 width: photoCardSize,
                 height: photoCardSize,
-                child: _place.photos.isEmpty
+                child: widget.place.photos.isEmpty
                     ? null
                     : Hero(
-                        tag: 'Place#${_place.id}',
-                        child: PhotoCard(url: _place.photos[0]),
+                        tag: widget.place.photos[0],
+                        child: PhotoCard(url: widget.place.photos[0]),
                       ),
               ),
               const SizedBox(width: commonSpacing),
@@ -54,13 +52,13 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _place.name,
+                      widget.place.name,
                       maxLines: 1,
                       style: theme.textRegular14Main,
                     ),
                     const SizedBox(height: commonSpacing1_2),
                     Text(
-                      '${PlaceTypeUi(_place.type).name}, ${_place.distance}',
+                      '${PlaceTypeUi(widget.place.type).name}, ${widget.place.distance}',
                       maxLines: 1,
                       style: theme.textRegular14Light,
                     ),
@@ -75,14 +73,9 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
             padding: EdgeInsets.zero,
             highlightColor: theme.app.highlightColor,
             splashColor: theme.app.splashColor,
-            onPressed: () async {
-              final newPlace = await standartNavigatorPush<Place>(
-                  context, () => PlaceDetails(place: _place));
-
-              if (newPlace != null) {
-                _place = newPlace;
-                setState(() {});
-              }
+            onPressed: () {
+              standartNavigatorPush<Place>(
+                  context, () => PlaceDetails(widget.place));
             },
           ),
         ),

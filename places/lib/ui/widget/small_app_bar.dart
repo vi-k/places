@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
-import 'package:places/utils/let_and_also.dart';
 
 import 'small_button.dart';
 import 'svg_button.dart';
@@ -82,16 +81,17 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               // Выводим кнопку возврата, если можно вернуться.
               if (Navigator.canPop(context))
-                back?.let((it) => SmallButton(
-                          label: it,
-                          style: theme.textMiddle16Light,
-                          onPressed: () => Navigator.pop(context),
-                        )) ??
-                    SvgButton(
-                      Svg24.back,
-                      onPressed: () => Navigator.pop(context),
-                      color: theme.mainTextColor2,
-                    )
+                back == null
+                    ? SvgButton(
+                        Svg24.back,
+                        onPressed: () => Navigator.maybePop(context),
+                        color: theme.mainTextColor2,
+                      )
+                    : SmallButton(
+                        label: back!,
+                        style: theme.textMiddle16Light,
+                        onPressed: () => Navigator.maybePop(context),
+                      )
               else
                 const SizedBox.shrink(),
               if (button != null)

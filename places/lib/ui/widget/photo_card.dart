@@ -10,44 +10,51 @@ import 'svg_button.dart';
 class PhotoCard extends StatelessWidget {
   const PhotoCard({
     Key? key,
-    required this.url,
+    this.url,
+    this.path,
     this.onClose,
-  }) : super(key: key);
+  })  : assert(url != null && path == null || url == null && path != null),
+        super(key: key);
 
   /// Url фотографии.
-  final String url;
+  final String? url;
+
+  /// Путь к фотографии.
+  final String? path;
 
   /// Обратный вызов при закрытии/удалении фотокарточки.
   final void Function()? onClose;
 
   @override
   Widget build(BuildContext context) => Material(
-    type: MaterialType.transparency,
-    borderRadius: BorderRadius.circular(textFieldRadius),
-    clipBehavior: Clip.antiAlias,
-    child: Stack(
-      children: [
-        LoadableImage(url: url),
-        if (onClose != null)
-          Positioned.fill(
-            child: Material(
-              type: MaterialType.transparency,
-              child: Align(
-                alignment: Alignment.topRight,
-                child: SvgButton(
-                  Svg24.clear,
-                  iconSize: clearIconSize,
-                  width: clearButtonSize,
-                  height: clearButtonSize,
-                  color: mainColor100,
-                  highlightColor: highlightColorDark2,
-                  splashColor: splashColorDark2,
-                  onPressed: onClose,
+        type: MaterialType.transparency,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(textFieldRadius),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            LoadableImage(url: url, path: path),
+            if (onClose != null)
+              Positioned.fill(
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: SvgButton(
+                      Svg24.clear,
+                      iconSize: clearIconSize,
+                      width: clearButtonSize,
+                      height: clearButtonSize,
+                      color: mainColor100,
+                      highlightColor: highlightColorDark2,
+                      splashColor: splashColorDark2,
+                      onPressed: onClose,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-      ],
-    ),
-  );
+          ],
+        ),
+      );
 }

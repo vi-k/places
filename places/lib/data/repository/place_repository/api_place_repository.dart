@@ -176,14 +176,7 @@ class ApiPlaceRepository extends PlaceRepository {
       filter.placeTypes
           ?.also((it) => tmp = tmp.where((e) => it.contains(e.type)));
 
-      final result = tmp.toList();
-
-      // Сортировка по расстоянию.
-      if (coord != null) {
-        result.sort((a, b) => a.distance.compareTo(b.distance));
-      }
-
-      return result;
+      return tmp.toList()..sort((a, b) => a.compareTo(b));
     } on DioError catch (error) {
       throw createExceptionFromDio(error);
     }
@@ -203,9 +196,7 @@ class ApiPlaceRepository extends PlaceRepository {
           .toList();
 
       // Сортировка по расстоянию.
-      if (coord != null) {
-        result.sort((a, b) => a.distance.compareTo(b.distance));
-      }
+      if (coord != null) result.sort();
 
       return result;
     } on DioError catch (error) {

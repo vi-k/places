@@ -4,6 +4,7 @@ import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repository/place_repository/place_repository.dart';
 import 'package:places/data/repository/place_repository/repository_exception.dart';
 import 'package:places/utils/coord.dart';
+import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
 import 'package:places/utils/sort.dart';
 
@@ -209,22 +210,17 @@ class MockPlaceRepository extends PlaceRepository {
       tmp = tmp.where((e) => it.contains(e.type));
     });
 
-    // tmp = tmp.where(
-    //     (e) => e.name.toLowerCase().contains(filter.nameFilter.toLowerCase()));
-
     // Расчёт расстояния, если задана точка отсчёта, и фильтрация по расстоянию.
     if (coord != null) {
       tmp = tmp
-          .map((e) => e.copyWith(calDistanceFrom: coord))
-          .where((e) => e.distance <= filter.radius);
+          .map((e) => e.copyWith(calcDistanceFrom: coord))
+          .where((e) => (e.distance ?? Distance.zero) <= filter.radius);
     }
 
     final result = tmp.toList();
 
     // Сортировка по расстоянию.
-    if (coord != null) {
-      result.sort((a, b) => a.distance.compareTo(b.distance));
-    }
+    if (coord != null) result.sort();
 
     return result;
   }
@@ -239,16 +235,13 @@ class MockPlaceRepository extends PlaceRepository {
 
     // Расчёт расстояния, если задана точка отсчёта.
     if (coord != null) {
-      tmp = tmp
-          .map((e) => e.copyWith(calDistanceFrom: coord));
+      tmp = tmp.map((e) => e.copyWith(calcDistanceFrom: coord));
     }
 
     final result = tmp.toList();
 
     // Сортировка по расстоянию.
-    if (coord != null) {
-      result.sort((a, b) => a.distance.compareTo(b.distance));
-    }
+    if (coord != null) result.sort();
 
     return result;
   }

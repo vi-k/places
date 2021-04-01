@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/themes.dart';
@@ -14,6 +14,7 @@ class PlaceCardGrid extends StatefulWidget {
     required this.places,
     required this.cardType,
     this.asSliver = false,
+    required this.onCardClose,
   }) : super(key: key);
 
   /// Список мест.
@@ -24,6 +25,8 @@ class PlaceCardGrid extends StatefulWidget {
 
   /// Встроить в CustomView как sliver.
   final bool asSliver;
+
+  final void Function(Place place)? onCardClose;
 
   @override
   _PlaceCardGridState createState() => _PlaceCardGridState();
@@ -37,11 +40,7 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
     final theme = context.watch<AppBloc>().theme;
     final places = widget.places;
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
-    final columnsCount = aspectRatio <= 4 / 5
-        ? 1
-        : aspectRatio <= 5 / 4
-            ? 2
-            : 3;
+    final columnsCount = aspectRatio <= 4 / 5 ? 1 : 2;
 
     return widget.asSliver
         ? _buildSliverGrid(theme, columnsCount, places)
@@ -56,7 +55,7 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
           MyThemeData theme, int columnsCount, List<Place>? places) =>
       SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          childAspectRatio: 3 / 2,
+          childAspectRatio: cardAspectRatio,
           crossAxisCount: columnsCount,
         ),
         delegate: SliverChildBuilderDelegate(
@@ -65,9 +64,13 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
             return Padding(
                 padding: commonPaddingLBR,
                 child: PlaceCard(
-                    key: ValueKey(place.id),
-                    place: place,
-                    cardType: widget.cardType));
+                  key: ValueKey(place.id),
+                  place: place,
+                  cardType: widget.cardType,
+                  onClose: widget.onCardClose == null
+                      ? null
+                      : () => widget.onCardClose!(place),
+                ));
           },
           childCount: places?.length ?? 0,
         ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
-import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 import 'onboarding_screen.dart';
@@ -27,39 +26,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: stringSettings,
       ),
       body: BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) => state is! AppReady
-            ? const SizedBox()
-            : ListView(
-                children: [
-                  SwitchListTile(
-                    title: Text(
-                      stringIsDark,
-                      style: theme.textRegular14Main,
-                    ),
-                    value: context.watch<AppBloc>().settings.isDark,
-                    onChanged: (value) {
-                      context.read<AppBloc>().let((it) {
-                        it.add(AppChangeSettings(
-                            it.settings.copyWith(isDark: value)));
-                      });
-                    },
-                  ),
-                  const _ListDivider(),
-                  ListTile(
-                    title: Text(
-                      stringWatchTutorial,
-                      style: theme.textRegular14Main,
-                    ),
-                    trailing: Icon(
-                      Icons.info_outline,
-                      color: theme.accentColor,
-                    ),
-                    onTap: () => standartNavigatorPush<void>(
-                        context, () => OnboardingScreen()),
-                  ),
-                  const _ListDivider(),
-                ],
+        builder: (context, state) => ListView(
+          children: [
+            SwitchListTile(
+              title: Text(
+                stringIsDark,
+                style: theme.textRegular14Main,
               ),
+              value: context.watch<AppBloc>().settings.isDark,
+              onChanged: (value) {
+                context.read<AppBloc>().add(AppChangeSettings(isDark: value));
+              },
+            ),
+            const _ListDivider(),
+            ListTile(
+              title: Text(
+                stringWatchTutorial,
+                style: theme.textRegular14Main,
+              ),
+              trailing: Icon(
+                Icons.info_outline,
+                color: theme.accentColor,
+              ),
+              onTap: () => standartNavigatorPush<void>(
+                  context, () => OnboardingScreen()),
+            ),
+            const _ListDivider(),
+          ],
+        ),
       ),
       bottomNavigationBar: const AppNavigationBar(index: 3),
     );

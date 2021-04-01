@@ -57,5 +57,4 @@ class SvgTutorial {
 
 class SvgAny {
  static const splash = 'res/any/splash.svg';
- static const progress = 'res/any/progress.svg';
 }

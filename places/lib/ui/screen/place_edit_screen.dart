@@ -1,9 +1,12 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
-import 'package:places/bloc/edit_place_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
+import 'package:places/bloc/edit_place/edit_place_bloc.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
@@ -15,7 +18,6 @@ import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
-import 'package:places/ui/utils/hero_tags.dart';
 import 'package:places/ui/widget/add_photo_card.dart';
 import 'package:places/ui/widget/get_image.dart';
 import 'package:places/ui/widget/photo_card.dart';
@@ -25,15 +27,17 @@ import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/focus.dart';
+import 'package:places/utils/upload_image.dart';
+import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 import 'place_type_select_screen.dart';
 
 /// Экран добавления места.
 class PlaceEditScreen extends StatefulWidget {
-  const PlaceEditScreen({
+  const PlaceEditScreen(
+    this.place, {
     Key? key,
-    this.place,
   }) : super(key: key);
 
   /// Идентификатор места.
@@ -49,7 +53,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   final _formKey = GlobalKey<FormState>();
   late final Place? _place = widget.place;
   PlaceTypeUi? _placeType;
-  final _photos = <String>[];
+  final _photos = <GetImageResult>[];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lonController = TextEditingController();
@@ -62,9 +66,11 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     super.initState();
 
     final place = _place;
-    if (place != null) {
+    if (place == null) {
+      _getCurrentLocation();
+    } else {
       _placeType = PlaceTypeUi(place.type);
-      _photos.addAll(place.photos);
+      _photos.addAll(place.photos.map((e) => GetImageResult(url: e)));
       _nameController.text = place.name;
       _latController.text = place.coord.lat.toStringAsFixed(6);
       _lonController.text = place.coord.lon.toStringAsFixed(6);
@@ -101,7 +107,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             child: Expanded(
               child: ListView(
                 children: [
-                  _buildPhotoGallery(context),
+                  _buildPhotoGallery(context, theme),
                   _buildPlaceType(theme),
                   _buildName(),
                   ..._buildCoord(theme),
@@ -115,38 +121,55 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       );
 
   // Фотографии мест.
-  Widget _buildPhotoGallery(BuildContext context) => SingleChildScrollView(
+  Widget _buildPhotoGallery(BuildContext context, MyThemeData theme) =>
+      SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             const SizedBox(width: commonSpacing),
             AddPhotoCard(
               onPressed: () async {
-                final url = await showModalBottomSheet<String>(
+                final result = await showModalBottomSheet<GetImageResult>(
                   context: context,
                   clipBehavior: Clip.antiAlias,
                   backgroundColor: Colors.transparent,
                   builder: (context) => GetImage(),
                 );
 
-                if (url == null) return;
+                if (result == null) return;
+
                 setState(() {
-                  _photos.add(url);
+                  _photos.add(result);
                 });
+
+                final path = result.path;
+                if (path != null) {
+                  final url =
+                      await uploadPhoto(context.read<Dio>(), File(path));
+                  if (url == null) return;
+
+                  final index = _photos.indexWhere((e) => e.path == path);
+                  // Пока загружали картинку, пользователь мог её удалить.
+                  if (index == -1) return;
+
+                  setState(() {
+                    _photos[index] = GetImageResult(url: url);
+                  });
+                }
               },
             ),
-            for (final photo in _photos) ...[
+            for (final e in _photos.asMap().entries) ...[
               const SizedBox(width: commonSpacing),
               SizedBox(
                 width: photoCardSize,
                 height: photoCardSize,
-                child: _place != null && photo == _photos[0]
+                child: _place != null && e.value.url != null
                     ? Hero(
-                        tag: heroPlaceTag(_place!),
+                        tag: e.value.url ?? '',
                         flightShuttleBuilder: standartFlightShuttleBuilder,
-                        child: _buildPhoto(photo),
+                        child: _buildPhoto(theme, e.value),
                       )
-                    : _buildPhoto(photo),
+                    : _buildPhoto(theme, e.value),
               ),
             ],
             const SizedBox(width: commonSpacing),
@@ -154,19 +177,20 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         ),
       );
 
-  Dismissible _buildPhoto(String photo) => Dismissible(
-        key: ValueKey(photo),
+  Widget _buildPhoto(MyThemeData theme, GetImageResult photo) => Dismissible(
+        key: ValueKey(photo.url.hashCode ^ photo.path.hashCode),
         direction: DismissDirection.up,
         onDismissed: (_) {
           setState(() {
-            _photos.remove(photo);
+            _photos.removeWhere((e) => e == photo);
           });
         },
         child: PhotoCard(
-          url: photo,
+          url: photo.url,
+          path: photo.path,
           onClose: () {
             setState(() {
-              _photos.remove(photo);
+              _photos.removeWhere((e) => e == photo);
             });
           },
         ),
@@ -317,7 +341,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         child: BlocConsumer<EditPlaceBloc, EditPlaceState>(
           listener: (context, state) {
             if (state is EditPlaceSaved) {
-              Navigator.pop(context, state.place);
+              Navigator.pop(context);
             }
           },
           builder: (context, state) => state is EditPlaceLoading
@@ -326,20 +350,22 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                   label: isNew ? stringCreate : stringSave,
                   onPressed: () {
                     // Проверяем данные.
-                    if (!_validate()) return;
+                    if (!_maybeSave() || !_validate()) return;
+
                     // Сохраняем.
-                    if (_needSave(forced: true)) _save(context);
+                    _formKey.currentState!.save();
+                    _save(context);
                   },
                 ),
         ),
       );
 
-  bool _cmpLists(List<String> a, List<String> b) {
+  bool _cmpPhotos(List<String> a, List<GetImageResult> b) {
     if (a.length != b.length) return false;
     final bi = b.iterator;
     for (final va in a) {
       bi.moveNext();
-      if (va != bi.current) return false;
+      if (va != bi.current.url) return false;
     }
 
     return true;
@@ -347,55 +373,31 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
   // Калбэк для WillPopScope
   Future<bool> _onWillPop(BuildContext context) async {
-    // Если есть ошибки в данных, диалог: Выйти без сохранения?
-    if (!_validate()) {
-      return await showDialog<bool>(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text(stringDoCancel),
-              actions: [
-                SmallButton(
-                  label: stringCancel,
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                SmallButton(
-                  label: stringYes,
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ),
-          ) ??
-          false;
-    }
+    if (!_maybeSave()) return false;
 
     // Если нет изменений, выходим сразу.
-    if (!_needSave()) return true;
+    if (_validate()) {
+      _formKey.currentState!.save();
+      if (!_needSave()) return true;
+    }
 
-    // Диалог: Сохранить? (Создать?)
-    await showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(isNew ? stringDoCreate : stringDoSave),
-        actions: [
-          SmallButton(
-            label: stringNo,
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context, null);
-            },
+    return await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text(stringDoCancel),
+            actions: [
+              SmallButton(
+                label: stringCancel,
+                onPressed: () => Navigator.pop(context, false),
+              ),
+              SmallButton(
+                label: stringYes,
+                onPressed: () => Navigator.pop(context, true),
+              ),
+            ],
           ),
-          SmallButton(
-            label: stringYes,
-            onPressed: () {
-              Navigator.pop(context);
-              _save(context);
-            },
-          ),
-        ],
-      ),
-    );
-
-    return false;
+        ) ??
+        false;
   }
 
   // Проверяет данные перед сохранением.
@@ -415,24 +417,29 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     return true;
   }
 
-  // Проверяет, нужно ли сохранять.
-  bool _needSave({bool forced = false}) {
-    _formKey.currentState!.save();
+  // Проверяет, можно ли сохранить.
+  bool _maybeSave() {
+    if (_photos.where((e) => e.url == null).isEmpty) return true;
 
-    final place = _place;
-    if (place == null) return true;
-
-    return forced ||
-        place.name != _nameController.text ||
-        place.type != _placeType?.type ||
-        place.coord.lat != double.parse(_latController.text) ||
-        place.coord.lon != double.parse(_lonController.text) ||
-        place.description != _descriptionController.text ||
-        !_cmpLists(place.photos, _photos);
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(const SnackBar(content: Text(stringNotAllCompleted)));
+    return false;
   }
 
+  // Проверяет, нужно ли сохранять.
+  bool _needSave() =>
+      _place?.let((it) =>
+          it.name != _nameController.text ||
+          it.type != _placeType?.type ||
+          it.coord.lat != double.parse(_latController.text) ||
+          it.coord.lon != double.parse(_lonController.text) ||
+          it.description != _descriptionController.text ||
+          !_cmpPhotos(it.photos, _photos)) ??
+      true;
+
   // Отправляет данные на сохранение.
-  void _save(BuildContext context) {
+  Future<void> _save(BuildContext context) async {
     final place = Place(
       id: _place?.id ?? 0,
       name: _nameController.text,
@@ -440,15 +447,23 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         double.parse(_latController.text),
         double.parse(_lonController.text),
       ),
-      photos: _photos,
+      photos: _photos.map((e) => e.url!).toList(),
       description: _descriptionController.text,
       type: _placeType!.type,
       userInfo: PlaceUserInfo.zero,
-      calDistanceFrom: context.read<LocationRepository>().location,
+      calcDistanceFrom: await context.read<LocationRepository>().getLocation(),
     );
 
     context
         .read<EditPlaceBloc>()
         .add(place.isNew ? EditPlaceAdd(place) : EditPlaceUpdate(place));
+  }
+
+  Future<void> _getCurrentLocation() async {
+    final location = await context.read<LocationRepository>().getLocation();
+    if (location != null) {
+      _latController.text = location.lat.toStringAsFixed(6);
+      _lonController.text = location.lon.toStringAsFixed(6);
+    }
   }
 }

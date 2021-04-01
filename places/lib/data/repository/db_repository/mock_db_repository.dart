@@ -5,7 +5,7 @@ import 'package:places/data/model/search_request.dart';
 import 'db_repository.dart';
 
 /// Имитация базы данных.
-class MockDbRepository with DbRepository {
+class MockDbRepository extends DbRepository {
   MockDbRepository();
 
   final Map<String, SearchRequest> _searchHistory = {};

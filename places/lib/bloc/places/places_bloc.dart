@@ -13,9 +13,26 @@ part 'places_state.dart';
 /// BLoC для списка мест.
 class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   PlacesBloc(this._placeInteractor, Filter filter)
-      : super(PlacesLoading(filter));
+      : super(PlacesLoading(filter)) {
+    _placeInteractor.stream.listen((place) {
+      final currentState = state;
+      if (currentState is PlacesReady) {
+        final index = currentState.places.indexWhere((e) => e.id == place.id);
+        if (index != -1) {
+          currentState.places[index] = place;
+          emit(PlacesReady(currentState.filter, currentState.places));
+        }
+      }
+    });
+  }
 
   final PlaceInteractor _placeInteractor;
+
+  @override
+  Future<void> close() {
+    print('PlacesBloc.close()');
+    return super.close();
+  }
 
   @override
   Stream<PlacesState> mapEventToState(

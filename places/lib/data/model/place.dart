@@ -22,7 +22,7 @@ class Place extends PlaceBase {
     required List<String> photos,
     required String description,
     Distance? distance,
-    Coord? calDistanceFrom,
+    Coord? calcDistanceFrom,
     required this.userInfo,
   }) : super(
           id: id,
@@ -30,7 +30,7 @@ class Place extends PlaceBase {
           type: type,
           coord: coord,
           distance: distance,
-          calDistanceFrom: calDistanceFrom,
+          calcDistanceFrom: calcDistanceFrom,
           photos: photos,
           description: description,
         );
@@ -73,7 +73,7 @@ class Place extends PlaceBase {
     PlaceType? type,
     String? description,
     Distance? distance,
-    Coord? calDistanceFrom,
+    Coord? calcDistanceFrom,
     PlaceUserInfo? userInfo,
   }) =>
       Place(
@@ -84,7 +84,7 @@ class Place extends PlaceBase {
         type: type ?? this.type,
         description: description ?? this.description,
         distance: distance ??
-            calDistanceFrom?.distance(coord ?? this.coord) ??
+            calcDistanceFrom?.distance(coord ?? this.coord) ??
             this.distance,
         userInfo: userInfo ?? this.userInfo,
       );

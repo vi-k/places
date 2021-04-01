@@ -20,6 +20,7 @@ part 'sqlite_db_tables.dart';
     'sqlite_db_indices.moor',
   },
 )
+// ignore: prefer_mixin
 class SqliteDbRepository extends _$SqliteDbRepository with DbRepository {
   SqliteDbRepository() : super(_openConnection());
 
@@ -114,6 +115,7 @@ LazyDatabase _openConnection() => LazyDatabase(
       () async {
         final dbPath = await getApplicationDocumentsDirectory();
         final file = File(join(dbPath.path, 'db.sqlite'));
-        return VmDatabase(file, logStatements: true);
+        return VmDatabase(file);
+        // return VmDatabase(file, logStatements: true);
       },
     );

@@ -11,8 +11,7 @@ class ApiPlaceMapper {
       map(jsonDecode(value) as Map<String, dynamic>);
 
   /// Получает PlaceBase из Map.
-  PlaceBase map(Map<String, dynamic> value,
-          [Coord? calDistanceFrom]) =>
+  PlaceBase map(Map<String, dynamic> value, [Coord? calcDistanceFrom]) =>
       PlaceBase(
         id: value['id'] as int,
         coord: Coord(value['lat'] as double, value['lng'] as double),
@@ -20,7 +19,7 @@ class ApiPlaceMapper {
         photos: (value['urls'] as List<dynamic>).whereType<String>().toList(),
         type: placeTypeByName(value['placeType'] as String),
         description: value['description'] as String,
-        calDistanceFrom: calDistanceFrom,
+        calcDistanceFrom: calcDistanceFrom,
       );
 
   /// Преобразует PlaceBase в строку.

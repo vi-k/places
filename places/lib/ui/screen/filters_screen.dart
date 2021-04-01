@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:places/bloc/app_bloc.dart';
-import 'package:places/data/interactor/place_interactor.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/ui/res/const.dart';
@@ -12,7 +11,6 @@ import 'package:places/ui/widget/place_type_filter.dart';
 import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/distance.dart';
-import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 /// Экран настроек фильтра.
@@ -32,14 +30,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
   static const _maxDistance = Distance.km(100);
   static final _maxValue = distanceToValue(_maxDistance).toDouble() + 1;
   late Filter _filter = widget.filter;
-  int? _cardCount;
-
-  Filter get filter => _filter;
-  set filter(Filter value) {
-    _filter = value;
-    _cardCount = null;
-    _recalcCardCount();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +41,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
         button: stringClear,
         onPressed: () {
           setState(() {
-            filter = Filter();
+            _filter = Filter();
           });
         },
       ),
@@ -71,9 +61,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
           Padding(
             padding: commonPadding,
             child: StandartButton(
-              label:
-                  stringApply + (_cardCount?.let((it) => ' ($it)') ?? ' ...'),
-              onPressed: () => Navigator.pop(context, filter),
+              label: stringApply,
+              onPressed: () => Navigator.pop(context, _filter),
             ),
           ),
         ],
@@ -92,7 +81,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 style: theme.textRegular16Main,
               ),
               Text(
-                filter.radius.toString(),
+                _filter.radius.toString(),
                 style: theme.textRegular16Light,
               ),
             ],
@@ -101,12 +90,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
         Slider(
           min: 1,
           max: _maxValue,
-          value: filter.radius.isInfinite
+          value: _filter.radius.isInfinite
               ? _maxValue
-              : distanceToValue(filter.radius).toDouble(),
+              : distanceToValue(_filter.radius).toDouble(),
           onChanged: (value) {
             setState(() {
-              filter = filter.copyWith(
+              _filter = _filter.copyWith(
                   radius: value.roundToDouble() == _maxValue
                       ? Distance.infinity
                       : valueToDistance(value.round()));
@@ -129,22 +118,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
         for (final placeType in PlaceType.values)
           PlaceTypeFilter(
             placeType: placeType,
-            active: filter.hasPlaceType(placeType),
+            active: _filter.hasPlaceType(placeType),
             onPressed: () {
               setState(() {
-                filter = filter.togglePlaceType(placeType);
+                _filter = _filter.togglePlaceType(placeType);
               });
             },
           ),
       ];
-
-  Future<void> _recalcCardCount() async {
-    final placeInteractor = context.read<PlaceInteractor>();
-    final places = await placeInteractor.getPlaces(_filter);
-    final count = places.length;
-
-    setState(() {
-      _cardCount = count;
-    });
-  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:places/bloc/app_bloc.dart';
+import 'package:places/bloc/app/app_bloc.dart';
 
 import 'package:places/ui/res/const.dart';
 
@@ -47,6 +47,7 @@ class SvgButton extends StatelessWidget {
 
     return IconButton(
       padding: EdgeInsets.zero,
+      color: Colors.blue,
       constraints: BoxConstraints.tightFor(width: width, height: height),
       highlightColor: highlightColor ?? theme.app.highlightColor,
       splashColor: splashColor ?? theme.app.splashColor,
