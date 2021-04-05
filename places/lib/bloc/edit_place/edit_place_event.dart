@@ -2,20 +2,65 @@ part of 'edit_place_bloc.dart';
 
 @immutable
 abstract class EditPlaceEvent extends Equatable {
-  const EditPlaceEvent(this.place);
-
-  final Place place;
+  const EditPlaceEvent();
 
   @override
-  List<Object?> get props => [place];
+  List<Object?> get props => [];
 }
 
-/// Создать место.
-class EditPlaceAdd extends EditPlaceEvent {
-  const EditPlaceAdd(Place place) : super(place);
+/// Установить начальные координаты.
+class EditPlaceSetLocation extends EditPlaceEvent {
+  const EditPlaceSetLocation() : super();
 }
 
-/// Обновить место.
-class EditPlaceUpdate extends EditPlaceEvent {
-  const EditPlaceUpdate(Place place) : super(place);
+/// Загрузить информацию о месте.
+class EditPlaceLoad extends EditPlaceEvent {
+  const EditPlaceLoad() : super();
+}
+
+/// Добавить фотографию.
+class EditPlaceAddPhoto extends EditPlaceEvent {
+  const EditPlaceAddPhoto(this.photo);
+
+  final Photo photo;
+
+  @override
+  List<Object?> get props => [photo];
+}
+
+/// Удалить фотографию.
+class EditPlaceRemovePhoto extends EditPlaceEvent {
+  const EditPlaceRemovePhoto(this.photo);
+
+  final Photo photo;
+
+  @override
+  List<Object?> get props => [photo];
+}
+
+/// Установить значения полей.
+class EditPlaceSetValues extends EditPlaceEvent {
+  const EditPlaceSetValues({
+    this.name,
+    this.type,
+    this.coord,
+    this.lat,
+    this.lon,
+    this.description,
+  });
+
+  final String? name;
+  final PlaceType? type;
+  final Coord? coord;
+  final String? lat;
+  final String? lon;
+  final String? description;
+
+  @override
+  List<Object?> get props => [name, type, coord, lat, lon, description];
+}
+
+/// Сохранить результат.
+class EditPlaceSave extends EditPlaceEvent {
+  const EditPlaceSave();
 }

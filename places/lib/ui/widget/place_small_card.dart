@@ -71,8 +71,6 @@ class _PlaceSmallCardState extends State<PlaceSmallCard> {
         Positioned.fill(
           child: MaterialButton(
             padding: EdgeInsets.zero,
-            highlightColor: theme.app.highlightColor,
-            splashColor: theme.app.splashColor,
             onPressed: () {
               standartNavigatorPush<Place>(
                   context, () => PlaceDetails(widget.place));

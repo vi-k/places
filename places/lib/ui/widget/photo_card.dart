@@ -29,7 +29,7 @@ class PhotoCard extends StatelessWidget {
   Widget build(BuildContext context) => Material(
         type: MaterialType.transparency,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(textFieldRadius),
+          borderRadius: BorderRadius.circular(photoCardRadius),
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(

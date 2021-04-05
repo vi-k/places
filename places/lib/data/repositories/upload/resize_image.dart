@@ -1,11 +1,31 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:image/image.dart';
-import 'package:path/path.dart';
+
+/// Изменяет размер и качество фотографии под заданный размер (в байтах).
+Future<List<int>?> resizePhotoOnIsolate(
+  File file, {
+  int maxWidth = 1000,
+  int maxHeight = 1000,
+  int maxSizeInBytes = 1000000,
+}) async {
+  final receivePort = ReceivePort();
+
+  await Isolate.spawn(
+    _resizePhoto,
+    _ResizeParam(
+      file: file,
+      sendPort: receivePort.sendPort,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      maxSizeInBytes: maxSizeInBytes,
+    ),
+  );
+
+  return await receivePort.first as List<int>?;
+}
 
 class _ResizeParam {
   _ResizeParam({
@@ -25,53 +45,7 @@ class _ResizeParam {
   final int maxQuality;
 }
 
-/// Загрузка фотографий на сервер.
-Future<String?> uploadPhoto(Dio dio, File file) async {
-  final sw = Stopwatch()..start();
-
-  final receivePort = ReceivePort();
-
-  await Isolate.spawn(
-    _resizePhotoOnIsolate,
-    _ResizeParam(
-      file: file,
-      sendPort: receivePort.sendPort,
-      maxWidth: 1000,
-      maxHeight: 1000,
-      maxSizeInBytes: 1000000,
-    ),
-  );
-
-  final jpeg = await receivePort.first as List<int>?;
-  if (jpeg == null) return null;
-
-  sw.stop();
-  debugPrint('uploadImage.resizeOnIsolate: ${sw.elapsed}');
-
-  sw..reset()..start();
-
-  final formData = FormData.fromMap(<String, Object>{
-    'files': MultipartFile.fromBytes(
-      jpeg,
-      contentType: MediaType('image', 'jpeg'),
-    )
-  });
-
-  final response = await dio.post<String>('/upload_file', data: formData);
-  final location = response.headers.value('location');
-
-  sw.stop();
-  debugPrint('uploadImage.post: ${sw.elapsed} (location: $location)');
-
-  if (location == null) return null;
-
-  final url = join(dio.options.baseUrl, location);
-
-  return url;
-}
-
-/// Меняем размер фотографии.
-void _resizePhotoOnIsolate(_ResizeParam param) {
+void _resizePhoto(_ResizeParam param) {
   var image = decodeImage(param.file.readAsBytesSync());
   if (image == null) return;
 
@@ -108,8 +82,7 @@ void _resizePhotoOnIsolate(_ResizeParam param) {
 
   debugPrint('new image: ${image.width}x${image.height}');
 
-  // Сжимаем до тех пор, пока размер картники не станет подходящим
-  // (ограничения по размеру картинки ~1Мб).
+  // Сжимаем до тех пор, пока размер картники не станет подходящим.
   List<int> jpeg;
   var quality = param.maxQuality;
 
@@ -119,5 +92,6 @@ void _resizePhotoOnIsolate(_ResizeParam param) {
     quality--;
   } while (param.maxSizeInBytes != null && jpeg.length > param.maxSizeInBytes!);
 
+  print(jpeg.runtimeType);
   param.sendPort.send(jpeg);
 }

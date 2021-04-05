@@ -73,12 +73,12 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: columnsCount == 2
             ? FloatingActionButton(
-                onPressed: () => _newPlace(context),
+                onPressed: () => PlaceEditScreen.start(context),
                 child: const Icon(Icons.add),
               )
             : FloatingActionButton.extended(
                 isExtended: true,
-                onPressed: () => _newPlace(context),
+                onPressed: () => PlaceEditScreen.start(context),
                 icon: const Icon(Icons.add),
                 label: Text(stringNewPlace.toUpperCase()),
               ),
@@ -107,10 +107,6 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         ),
         bottomHeight: smallButtonHeight,
       );
-
-  void _newPlace(BuildContext context) {
-    standartNavigatorPush<Place>(context, () => const PlaceEditScreen(null));
-  }
 
   Future<void> _deletePlace(BuildContext context, Place place) async {
     final doDelete = await showDialog<bool>(

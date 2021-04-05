@@ -6,7 +6,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/model/settings.dart';
 import 'package:places/data/model/filter.dart';
-import 'package:places/data/repository/key_value_repository/key_value_repository.dart';
+import 'package:places/data/repositories/key_value/key_value_repository.dart';
 import 'package:places/ui/res/themes.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';

@@ -8,6 +8,10 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/svg.dart';
 
 /// Виджет загружаемой из сети картинки с индикатором прогресса внизу виджета.
+///
+/// Если картинка ещё не загружена, путь к ней передаётся в [path]. Если
+/// загружена - в [url]. Для моковых картинок [url] должен начинаться
+/// с 'file://'.
 class LoadableImage extends StatelessWidget {
   const LoadableImage({
     Key? key,
@@ -23,16 +27,8 @@ class LoadableImage extends StatelessWidget {
   final String? path;
 
   @override
-  Widget build(BuildContext context) => url != null
-      ? Image.network(
-          url!,
-          filterQuality: FilterQuality.high,
-          fit: BoxFit.cover,
-          frameBuilder: _frameBuilder,
-          loadingBuilder: _loadingBuilder,
-          errorBuilder: _errorBuilder,
-        )
-      : Stack(children: [
+  Widget build(BuildContext context) => url == null
+      ? Stack(children: [
           Image.file(
             File(path!),
             filterQuality: FilterQuality.high,
@@ -43,7 +39,23 @@ class LoadableImage extends StatelessWidget {
           const Center(
             child: CircularProgressIndicator(),
           ),
-        ]);
+        ])
+      : url!.startsWith('file://')
+          ? Image.file(
+              File(url!.substring(6)),
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.cover,
+              frameBuilder: _frameBuilder,
+              errorBuilder: _errorBuilder,
+            )
+          : Image.network(
+              url!,
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.cover,
+              frameBuilder: _frameBuilder,
+              loadingBuilder: _loadingBuilder,
+              errorBuilder: _errorBuilder,
+            );
 
   Widget _frameBuilder(
     BuildContext context,

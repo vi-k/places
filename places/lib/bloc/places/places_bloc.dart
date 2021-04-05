@@ -49,7 +49,6 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
 
   Stream<PlacesState> _reload(Filter filter) async* {
     yield PlacesLoading(filter);
-    // await Future<void>.delayed(const Duration(seconds: 2));
     final places = await _placeInteractor.getPlaces(filter);
     yield PlacesReady(filter, places);
   }

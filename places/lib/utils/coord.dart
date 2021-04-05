@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:equatable/equatable.dart';
+
 import 'distance.dart';
 
 /// Утилиты для работы с картографией.
@@ -53,11 +55,14 @@ double calcDistance(double lat1, double lon1, double lat2, double lon2) {
 }
 
 /// Координаты.
-class Coord {
+class Coord extends Equatable {
   const Coord(this.lat, this.lon);
 
   final double lat;
   final double lon;
+
+  @override
+  List<Object?> get props => [lat, lon];
 
   /// Рассчитывает расстояние между точками по методу хорды.
   ///

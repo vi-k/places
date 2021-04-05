@@ -8,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/bloc/places/places_bloc.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repositories/location/location_repository.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/utils/animation.dart';
@@ -48,7 +48,7 @@ class _MapScreenState extends State<MapScreen>
   @override
   Widget build(BuildContext context) {
     final initialLocation = context.read<LocationRepository>().lastLocation ??
-        const Coord(52.5442, 31.8089); // Новое место
+        initialPlace; // Новое место
     final lastPlace = _lastPlace;
 
     return BlocBuilder<PlacesBloc, PlacesState>(
@@ -59,7 +59,7 @@ class _MapScreenState extends State<MapScreen>
                   children: [
                     Positioned.fill(
                       child: GoogleMap(
-                        // mapType: MapType.hybrid,
+                        mapType: MapType.hybrid,
                         initialCameraPosition: CameraPosition(
                           target:
                               LatLng(initialLocation.lat, initialLocation.lon),
@@ -131,7 +131,7 @@ class _MapScreenState extends State<MapScreen>
                 _placeAnimationController.value == 0.0
             ? FloatingActionButton.extended(
                 isExtended: true,
-                onPressed: () => _newPlace(context),
+                onPressed: () => PlaceEditScreen.start(context),
                 icon: const Icon(Icons.add),
                 label: Text(stringNewPlace.toUpperCase()),
               )
@@ -209,10 +209,6 @@ class _MapScreenState extends State<MapScreen>
       // Если переключить на другой экран, не дождавшись завершения, то получаем
       // исключение 'No implementation found for method ...'.
     }
-  }
-
-  void _newPlace(BuildContext context) {
-    standartNavigatorPush<Place>(context, () => const PlaceEditScreen(null));
   }
 
   void _hidePlaceCard() {

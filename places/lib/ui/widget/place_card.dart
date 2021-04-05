@@ -129,8 +129,6 @@ class _PlaceCardState extends State<PlaceCard>
             // Поверх карточки невидимая кнопка
             MaterialButton(
               padding: EdgeInsets.zero,
-              highlightColor: theme.app.highlightColor,
-              splashColor: theme.app.splashColor,
               onLongPress: widget.onLongPress,
               onPressed: () => _gotoPlaceDetails(context, place),
               child: _buildSignatures(context, theme, place),
