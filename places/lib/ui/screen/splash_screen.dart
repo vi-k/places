@@ -6,7 +6,9 @@ import 'package:places/ui/res/svg.dart';
 
 /// Сплэш-скрин.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  SplashScreen({Key? key}) : super(key: key) {
+    debugPrint('${DateTime.now()}: SplashScreen()');
+  }
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -26,6 +28,12 @@ class _SplashScreenState extends State<SplashScreen>
   ));
 
   @override
+  void initState() {
+    super.initState();
+    debugPrint('${DateTime.now()}: SplashScreen.initState()');
+  }
+
+  @override
   void dispose() {
     _animController.dispose();
 
@@ -33,19 +41,19 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFFFCDD3D),
-                Color(0xFF4CAF50),
-              ],
+  Widget build(BuildContext context) {
+    debugPrint('${DateTime.now()}: SplashScreen.build()');
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'res/splash_background.png',
+              fit: BoxFit.fill,
+              colorBlendMode: BlendMode.multiply,
             ),
           ),
-          child: Center(
+          Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -66,6 +74,8 @@ class _SplashScreenState extends State<SplashScreen>
               ],
             ),
           ),
-        ),
-      );
+        ],
+      ),
+    );
+  }
 }

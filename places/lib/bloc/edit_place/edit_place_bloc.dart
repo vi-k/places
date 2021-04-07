@@ -88,7 +88,6 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   Stream<EditPlaceState> _load() async* {
     yield EditPlaceLoading(state);
     try {
-      await Future<void>.delayed(const Duration(seconds: 4));
       final place = await _placeInteractor.getPlace(_id);
       yield state.copyWith(
         name: FormValue.valid(place.name),

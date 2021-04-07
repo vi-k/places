@@ -57,7 +57,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => MultiProvider(
+  Widget build(BuildContext context) {
+    debugPrint('${DateTime.now()}: App.build()');
+    return MultiProvider(
         providers: [
           Provider<Dio>(
             create: (context) => createDio(createDioOptions()),
@@ -108,14 +110,13 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             BlocProvider<AppBloc>(
               create: (context) => AppBloc(
                 context.read<KeyValueRepository>(),
-                context.read<PlaceInteractor>(),
               )..add(const AppInit()),
             ),
             BlocProvider<PlacesBloc>(
               create: (context) => PlacesBloc(
+                context.read<KeyValueRepository>(),
                 context.read<PlaceInteractor>(),
-                context.read<AppBloc>().settings.filter,
-              )..add(const PlacesReload()),
+              ),
             ),
             BlocProvider<WishlistBloc>(
               create: (context) => WishlistBloc(
@@ -129,25 +130,29 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             ),
           ],
           child: BlocBuilder<AppBloc, AppState>(
-            builder: (context, state) => MaterialApp(
-              key: ValueKey(state is! AppIniting),
-              title: 'Places',
-              theme: context.watch<AppBloc>().theme.app,
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('ru'),
-              ],
-              home: state is AppIniting
-                  ? const SplashScreen()
-                  : context.watch<AppBloc>().settings.showTutorial
-                      ? OnboardingScreen()
-                      : PlaceListScreen(),
-            ),
+            builder: (context, state) {
+              debugPrint('${DateTime.now()}: $state');
+              return MaterialApp(
+                key: ValueKey(state is! AppIniting),
+                title: 'Places',
+                theme: context.watch<AppBloc>().theme.app,
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('ru'),
+                ],
+                home: state is AppIniting
+                    ? SplashScreen()
+                    : context.watch<AppBloc>().settings.showTutorial
+                        ? OnboardingScreen()
+                        : PlaceListScreen(),
+              );
+            },
           ),
         ),
       );
+  }
 }

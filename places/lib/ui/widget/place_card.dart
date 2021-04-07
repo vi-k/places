@@ -59,6 +59,8 @@ class _PlaceCardState extends State<PlaceCard>
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
 
+    print('Place on screen: ${widget.place.id}');
+
     return BlocProvider<PlaceBloc>(
       create: (_) => PlaceBloc(context.read<PlaceInteractor>(), widget.place),
       child: BlocBuilder<PlaceBloc, PlaceState>(

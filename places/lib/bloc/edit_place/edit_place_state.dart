@@ -84,6 +84,9 @@ class EditPlaceLoadingFailed extends EditPlaceState {
   EditPlaceLoadingFailed(EditPlaceState state, this.error) : super.from(state);
 
   final Exception error;
+
+  @override
+  List<Object?> get props => [values, error];
 }
 
 /// Ошибка сохранения.
@@ -91,6 +94,9 @@ class EditPlaceSavingFailed extends EditPlaceState {
   EditPlaceSavingFailed(EditPlaceState state, this.error) : super.from(state);
 
   final Exception error;
+
+  @override
+  List<Object?> get props => [values, error];
 }
 
 /// Информация сохранена.

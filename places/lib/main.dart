@@ -7,6 +7,7 @@ import 'bloc_observer.dart';
 
 Future<void> main() async {
   // await moveFromMockToRepository();
+  debugPrint('${DateTime.now()}: main()');
 
   Bloc.observer = MyBlocObserver();
 

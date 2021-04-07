@@ -1,6 +1,12 @@
+import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:places/ui/res/strings.dart';
 
 import 'num_ext.dart';
+
+part 'distance.g.dart';
 
 /// Единицы измерения для расстояния.
 ///
@@ -24,7 +30,8 @@ extension DistanceUnitsExt on DistanceUnits {
 ///
 /// Расстояние это обычный `double`. Цель создания отдельного класса - сделать
 /// удобное преобразование в строку с переводом в различные единицы измерения.
-class Distance implements Comparable<Distance> {
+@JsonSerializable()
+class Distance extends Equatable implements Comparable<Distance> {
   const Distance(this.value);
   const Distance.km(double value) : value = value * 1000;
 
@@ -40,6 +47,9 @@ class Distance implements Comparable<Distance> {
 
   DistanceUnits get optimalUnits =>
       value.round() < 1000 ? DistanceUnits.meters : DistanceUnits.kilometers;
+
+  @override
+  List<Object?> get props => [value];
 
   @override
   String toString({
@@ -70,4 +80,12 @@ class Distance implements Comparable<Distance> {
   bool operator >=(Distance other) => value >= other.value;
   bool operator <(Distance other) => value < other.value;
   bool operator <=(Distance other) => value <= other.value;
+
+  factory Distance.fromJson(Map<String, dynamic> json) =>
+      _$DistanceFromJson(json);
+  Map<String, dynamic> toJson() => _$DistanceToJson(this);
+
+  factory Distance.parseJson(String json) =>
+      Distance.fromJson(jsonDecode(json) as Map<String, dynamic>);
+  String jsonStringify() => jsonEncode(toJson());
 }
