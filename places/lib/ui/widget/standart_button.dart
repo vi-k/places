@@ -17,7 +17,7 @@ class StandartButton extends StatelessWidget {
     this.svg,
     required this.label,
     this.style,
-    required this.onPressed,
+    this.onPressed,
   }) : super(key: key);
 
   /// Цвет кнопки.
@@ -33,7 +33,7 @@ class StandartButton extends StatelessWidget {
   final TextStyle? style;
 
   /// Обратный вызов при нажатии.
-  final void Function() onPressed;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {

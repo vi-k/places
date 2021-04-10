@@ -158,14 +158,10 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         const SizedBox(height: commonSpacing3_2),
         StandartButton(
           label: stringEdit,
-          onPressed: () => _gotoEditScreen(context, place),
+          onPressed: () => PlaceEditScreen.start(context, place.id),
         ),
         const SizedBox(height: commonSpacing3_2),
       ];
-
-  void _gotoEditScreen(BuildContext context, Place place) {
-    standartNavigatorPush<Place>(context, () => PlaceEditScreen(place));
-  }
 }
 
 class _Gallery extends StatefulWidget {

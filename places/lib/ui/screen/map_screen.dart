@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/bloc/places/places_bloc.dart';
+import 'package:places/data/model/map_settings.dart';
 import 'package:places/data/model/place.dart';
-import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repositories/location/location_repository.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
+import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/utils/map.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
@@ -23,6 +24,7 @@ import 'package:places/utils/distance.dart';
 import 'place_edit_screen.dart';
 import 'search_screen.dart';
 
+/// Карта мест.
 class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -31,7 +33,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen>
     with SingleTickerProviderStateMixin {
   final Completer<GoogleMapController> _googleMapController = Completer();
-  Place? _lastPlace;
   late final AnimationController _placeAnimationController =
       AnimationController(
     vsync: this,
@@ -45,38 +46,85 @@ class _MapScreenState extends State<MapScreen>
     parent: _placeAnimationController,
   ));
 
+  Place? _lastPlace;
+  CameraPosition? _lastPosition;
+  BitmapDescriptor? _marker;
+
+  PlacesBloc get bloc => context.read<PlacesBloc>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initMap();
+    BitmapDescriptor.fromAssetImage(const ImageConfiguration(), SvgAny.location)
+        .then((value) {
+          print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+          return _marker = value;
+        });
+  }
+
+  Future<void> _initMap() async {
+    await bloc.inited.future;
+    debugPrint('bloc inited');
+    final state = bloc.state;
+    if (state.mapSettings != null) {
+      await _goto(state.mapSettings!);
+    } else if (state.filter != null) {
+      await _gotoCurrentLocation(state.filter!.radius);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final initialLocation = context.read<LocationRepository>().lastLocation ??
-        const Coord(52.5442, 31.8089); // Новое место
+    final initialLocation =
+        context.read<LocationRepository>().lastLocation ?? initialPlace;
     final lastPlace = _lastPlace;
 
     return BlocBuilder<PlacesBloc, PlacesState>(
-      builder: (context, state) => Scaffold(
-        appBar: _buildAppBar(context, state),
-        body: Builder(
-            builder: (context) => Stack(
-                  children: [
-                    Positioned.fill(
-                      child: GoogleMap(
-                        // mapType: MapType.hybrid,
+      builder: (_, state) {
+        debugPrint('$state');
+        return Scaffold(
+          appBar: _buildAppBar(state),
+          body: Builder(
+              builder: (context) => Stack(
+                    children: [
+                      GoogleMap(
+                        mapType: MapType.hybrid,
                         initialCameraPosition: CameraPosition(
-                          target:
-                              LatLng(initialLocation.lat, initialLocation.lon),
+                          target: LatLng(
+                            initialLocation.lat,
+                            initialLocation.lon,
+                          ),
                           zoom: 12,
                         ),
-                        onMapCreated: (controller) {
-                          _googleMapController.complete(controller);
-                          _gotoCurrentLocation(context, state.filter.radius);
+                        onMapCreated: _googleMapController.complete,
+                        onCameraMove: (position) {
+                          _lastPosition = position;
+                        },
+                        onCameraIdle: () {
+                          if (_lastPosition != null) {
+                            bloc.add(PlacesSaveMapSettings(
+                                mapSettings: MapSettings(
+                              location: Coord(
+                                _lastPosition!.target.latitude,
+                                _lastPosition!.target.longitude,
+                              ),
+                              zoom: _lastPosition!.zoom,
+                              bearing: _lastPosition!.bearing,
+                              tilt: _lastPosition!.tilt,
+                            )));
+                          }
                         },
                         mapToolbarEnabled: false,
                         myLocationEnabled: true,
                         onTap: (_) => _hidePlaceCard(),
                         markers: {
-                          if (state is PlacesReady)
-                            for (final place in state.places)
+                          if (state.places != null)
+                            for (final place in state.places!)
                               Marker(
                                 markerId: MarkerId('${place.id}'),
+                                icon: _marker ?? BitmapDescriptor.defaultMarker,
                                 position:
                                     LatLng(place.coord.lat, place.coord.lon),
                                 onDragEnd: (value) {},
@@ -84,11 +132,11 @@ class _MapScreenState extends State<MapScreen>
                               ),
                         },
                         circles: {
-                          if (state is PlacesReady &&
-                              state.filter.radius.isFinite)
+                          if (state.filter != null &&
+                              state.filter!.radius.isFinite)
                             Circle(
                               circleId: const CircleId('main'),
-                              radius: state.filter.radius.value,
+                              radius: state.filter!.radius.value,
                               center: LatLng(
                                   initialLocation.lat, initialLocation.lon),
                               strokeWidth: 2,
@@ -97,79 +145,114 @@ class _MapScreenState extends State<MapScreen>
                             ),
                         },
                       ),
-                    ),
-                    if (state is PlacesLoading)
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    Positioned(
-                      bottom: commonSpacing,
-                      left: 12,
-                      right: 62,
-                      child: AnimatedBuilder(
-                        animation: _placeAnimation,
-                        builder: (context, child) => Transform.scale(
-                            scale: _placeAnimation.value, child: child),
-                        child: AspectRatio(
-                          aspectRatio: cardAspectRatio,
-                          child: lastPlace == null
-                              ? const SizedBox()
-                              : PlaceCard(
-                                  key: ValueKey(lastPlace.id),
-                                  place: lastPlace,
-                                  cardType: Favorite.no,
-                                  onClose: _hidePlaceCard,
-                                  go: () => gotoPlace(context, lastPlace),
-                                ),
+                      if (state is PlacesLoading)
+                        const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      Positioned(
+                        bottom: commonSpacing,
+                        left: 12,
+                        right: 62,
+                        child: AnimatedBuilder(
+                          animation: _placeAnimation,
+                          builder: (context, child) => Transform.scale(
+                              scale: _placeAnimation.value, child: child),
+                          child: AspectRatio(
+                            aspectRatio: cardAspectRatio,
+                            child: lastPlace == null
+                                ? const SizedBox()
+                                : PlaceCard(
+                                    key: ValueKey(lastPlace.id),
+                                    place: lastPlace,
+                                    cardType: Favorite.no,
+                                    onClose: _hidePlaceCard,
+                                    go: () => gotoPlace(context, lastPlace),
+                                  ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                )),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: _placeAnimationController.isDismissed &&
-                _placeAnimationController.value == 0.0
-            ? FloatingActionButton.extended(
-                isExtended: true,
-                onPressed: () => _newPlace(context),
-                icon: const Icon(Icons.add),
-                label: Text(stringNewPlace.toUpperCase()),
-              )
-            : null,
-        bottomNavigationBar: const AppNavigationBar(index: 1),
-      ),
+                    ],
+                  )),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: _placeAnimationController.isDismissed &&
+                  _placeAnimationController.value == 0.0
+              ? FloatingActionButton.extended(
+                  isExtended: true,
+                  onPressed: () => PlaceEditScreen.start(context),
+                  icon: const Icon(Icons.add),
+                  label: Text(stringNewPlace.toUpperCase()),
+                )
+              : null,
+          bottomNavigationBar: const AppNavigationBar(index: 1),
+        );
+      },
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, PlacesState state) =>
-      SmallAppBar(
+  PreferredSizeWidget _buildAppBar(PlacesState state) => SmallAppBar(
         title: stringMap,
         button: stringRefresh,
-        onPressed: () {
-          context.read<PlacesBloc>().add(const PlacesReload());
-          _gotoCurrentLocation(context, state.filter.radius);
-        },
+        onPressed: () => bloc.add(const PlacesReload()),
         bottom: Padding(
           padding: commonPaddingLBR,
-          child: SearchBar(
-            onTap: () => standartNavigatorPush<String>(
-                context, () => const SearchScreen()),
-            filter: state.filter,
-            onFilterChanged: (filter) {
-              context.read<PlacesBloc>().add(PlacesLoad(filter));
-              context.read<AppBloc>().add(AppChangeSettings(filter: filter));
-              _gotoCurrentLocation(context, filter.radius);
-            },
-          ),
+          child: state.filter == null
+              ? const SizedBox()
+              : SearchBar(
+                  onTap: () => standartNavigatorPush<String>(
+                      context, () => const SearchScreen()),
+                  filter: state.filter!,
+                  onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
+                ),
         ),
       );
 
-  Future<void> _gotoCurrentLocation(
-      BuildContext context, Distance radius) async {
+  // Перемещает карту в заданную позицию.
+  Future<void> _goto(MapSettings mapSettings) async {
     try {
-      final location = await context.read<LocationRepository>().getLocation();
-      if (location == null) return;
+      final controller = await _googleMapController.future;
 
+      debugPrint('goto $mapSettings');
+
+      return controller.moveCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(
+              mapSettings.location.lat,
+              mapSettings.location.lon,
+            ),
+            zoom: mapSettings.zoom,
+            bearing: mapSettings.bearing,
+            tilt: mapSettings.tilt,
+          ),
+        ),
+      );
+    } on MissingPluginException catch (_) {
+      // Если переключить на другой экран, не дождавшись завершения, то получаем
+      // исключение 'No implementation found for method ...'.
+    }
+  }
+
+  // Перемещает карту в текущую позицию.
+  //
+  // Т.к. процесс получения текущих координат затяжной, пытаемся сначала
+  // переместится в последнюю известную позицию. А за время анимации, может
+  // уже и получим координаты.
+  Future<void> _gotoCurrentLocation(Distance radius) async {
+    final currentLocationFuture =
+        context.read<LocationRepository>().getLocation();
+
+    final lastLocation = context.read<LocationRepository>().lastLocation;
+    if (lastLocation != null) await _gotoAutoZoom(lastLocation, radius);
+
+    final currentLocation = await currentLocationFuture;
+    if (currentLocation != null) await _gotoAutoZoom(currentLocation, radius);
+  }
+
+  // Перемещает карту в заданную позицию с автоматическим рассчётом масштаба,
+  // чтобы поместился весь радиус.
+  Future<void> _gotoAutoZoom(Coord location, Distance radius) async {
+    try {
       final controller = await _googleMapController.future;
       var zoom = await controller.getZoomLevel();
 
@@ -197,6 +280,7 @@ class _MapScreenState extends State<MapScreen>
         }
       }
 
+      debugPrint('goto $location');
       return controller.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -209,10 +293,6 @@ class _MapScreenState extends State<MapScreen>
       // Если переключить на другой экран, не дождавшись завершения, то получаем
       // исключение 'No implementation found for method ...'.
     }
-  }
-
-  void _newPlace(BuildContext context) {
-    standartNavigatorPush<Place>(context, () => const PlaceEditScreen(null));
   }
 
   void _hidePlaceCard() {

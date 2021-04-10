@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/bloc/places/places_bloc.dart';
-import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
-import 'package:places/ui/res/themes.dart';
 import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/failed.dart';
@@ -28,9 +25,10 @@ class PlaceListScreen extends StatefulWidget {
 }
 
 class _PlaceListScreenState extends State<PlaceListScreen> {
+  PlacesBloc get bloc => context.read<PlacesBloc>();
+
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<AppBloc>().theme;
     final aspectRatio = MediaQuery.of(context).size.aspectRatio;
     final columnsCount = aspectRatio <= 4 / 5
         ? 1
@@ -38,79 +36,82 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             ? 2
             : 3;
 
-    return BlocBuilder<PlacesBloc, PlacesState>(
-      builder: (context, state) => Scaffold(
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxScrolled) => [
-            _buildHeader(context, theme, columnsCount, state.filter),
-          ],
-          body: state is PlacesReady
-              ? RefreshIndicator(
-                  onRefresh: () async =>
-                      context.read<PlacesBloc>().add(const PlacesReload()),
-                  child: state.places.isEmpty
-                      ? const Failed(
-                          svg: Svg64.search,
-                          title: stringNothingFound,
-                          message: stringNothingFoundMessage,
-                        )
-                      : CustomScrollView(
-                          slivers: [
-                            PlaceCardGrid(
-                              cardType: Favorite.no,
-                              places: state.places,
-                              asSliver: true,
-                              onCardClose: (place) =>
-                                  _deletePlace(context, place),
-                            ),
-                          ],
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          _buildHeader(columnsCount),
+        ],
+        body: BlocBuilder<PlacesBloc, PlacesState>(
+          builder: (context, state) {
+            if (state is PlacesLoadingFailed) {
+              return Failed(
+                svg: Svg64.delete,
+                title: stringError,
+                message: state.error.toString(),
+                onRepeat: () => bloc.add(const PlacesReload()),
+              );
+            }
+
+            if (state.places == null || state is PlacesLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async => bloc.add(const PlacesReload()),
+              child: state.places!.isEmpty
+                  ? const Failed(
+                      svg: Svg64.search,
+                      title: stringNothingFound,
+                      message: stringNothingFoundMessage,
+                    )
+                  : CustomScrollView(
+                      slivers: [
+                        PlaceCardGrid(
+                          cardType: Favorite.no,
+                          places: state.places,
+                          asSliver: true,
+                          onCardClose: (place) => _deletePlace(context, place),
                         ),
-                )
-              : const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                      ],
+                    ),
+            );
+          },
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: columnsCount == 2
-            ? FloatingActionButton(
-                onPressed: () => _newPlace(context),
-                child: const Icon(Icons.add),
-              )
-            : FloatingActionButton.extended(
-                isExtended: true,
-                onPressed: () => _newPlace(context),
-                icon: const Icon(Icons.add),
-                label: Text(stringNewPlace.toUpperCase()),
-              ),
-        bottomNavigationBar: const AppNavigationBar(index: 0),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: columnsCount == 2
+          ? FloatingActionButton(
+              onPressed: () => PlaceEditScreen.start(context),
+              child: const Icon(Icons.add),
+            )
+          : FloatingActionButton.extended(
+              isExtended: true,
+              onPressed: () => PlaceEditScreen.start(context),
+              icon: const Icon(Icons.add),
+              label: Text(stringNewPlace.toUpperCase()),
+            ),
+      bottomNavigationBar: const AppNavigationBar(index: 0),
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    MyThemeData theme,
-    int columnsCount,
-    Filter filter,
-  ) =>
-      SliverFloatingHeader(
-        key: ValueKey(filter),
+  Widget _buildHeader(int columnsCount) => SliverFloatingHeader(
         title: stringPlaceList,
-        bottom: SearchBar(
-          onTap: () => standartNavigatorPush<String>(
-              context, () => const SearchScreen()),
-          filter: filter,
-          onFilterChanged: (filter) {
-            context.read<PlacesBloc>().add(PlacesLoad(filter));
-            context.read<AppBloc>().add(AppChangeSettings(filter: filter));
-          },
+        bottom: BlocBuilder<PlacesBloc, PlacesState>(
+          buildWhen: (previous, current) => previous.filter != current.filter,
+          builder: (_, state) => state.filter == null
+              ? const SizedBox()
+              : SearchBar(
+                  key: ValueKey(state.filter),
+                  onTap: () => standartNavigatorPush<String>(
+                      context, () => const SearchScreen()),
+                  filter: state.filter!,
+                  onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
+                ),
         ),
         bottomHeight: smallButtonHeight,
       );
-
-  void _newPlace(BuildContext context) {
-    standartNavigatorPush<Place>(context, () => const PlaceEditScreen(null));
-  }
 
   Future<void> _deletePlace(BuildContext context, Place place) async {
     final doDelete = await showDialog<bool>(
@@ -132,7 +133,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         false;
 
     if (doDelete) {
-      context.read<PlacesBloc>().add(PlacesRemove(place));
+      bloc.add(PlacesRemove(place));
     }
   }
 }

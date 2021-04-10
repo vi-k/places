@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:places/bloc/app/app_bloc.dart';
+import 'package:places/data/model/photo.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -10,14 +11,6 @@ import 'package:places/utils/let_and_also.dart';
 
 import 'edit_dialog.dart';
 import 'standart_button.dart';
-
-class GetImageResult {
-  GetImageResult({this.url, this.path})
-      : assert(url != null && path == null || url == null && path != null);
-
-  final String? url;
-  final String? path;
-}
 
 /// Выбора источника фотографии места: камера, галерея, файл.
 class GetImage extends StatelessWidget {
@@ -97,7 +90,7 @@ class GetImage extends StatelessWidget {
   Future<void> _getImage(BuildContext context, ImageSource source) async {
     final pickedFile = await ImagePicker().getImage(source: source);
     Navigator.pop(
-        context, pickedFile?.let((it) => GetImageResult(path: it.path)));
+        context, pickedFile?.let((it) => Photo(path: it.path)));
   }
 
   Future<void> _getUrl(BuildContext context) async {
@@ -114,6 +107,6 @@ class GetImage extends StatelessWidget {
       ),
     );
 
-    Navigator.pop(context, url?.let((it) => GetImageResult(url: it)));
+    Navigator.pop(context, url?.let((it) => Photo(url: it)));
   }
 }

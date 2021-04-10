@@ -57,4 +57,5 @@ class SvgTutorial {
 
 class SvgAny {
  static const splash = 'res/any/splash.svg';
+ static const location = 'res/any/location.svg';
 }

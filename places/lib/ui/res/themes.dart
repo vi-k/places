@@ -51,6 +51,8 @@ class MyThemeData {
   }) {
     textRegular12Main = _textRegular12.withColor(mainTextColor);
     textRegular12Light56 = _textRegular12.withColor(lightTextColor56);
+    textRegular12Attention = _textRegular12.withColor(attentionColor);
+
     textMiddle12White = _textMiddle12.withColor(mainColor100);
 
     textRegular14Main = _textRegular14.withColor(mainTextColor);
@@ -97,6 +99,8 @@ class MyThemeData {
 
   late final TextStyle textRegular12Main;
   late final TextStyle textRegular12Light56;
+  late final TextStyle textRegular12Attention;
+
   late final TextStyle textMiddle12White;
 
   late final TextStyle textRegular14Main;

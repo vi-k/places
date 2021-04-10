@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:places/utils/coord.dart';
 
 /// Цвета.
 const mainColor20 = Color(0xFF1A1A20);
@@ -52,6 +54,7 @@ const searchFieldRadius = 12.0;
 const tabsSwitchRadius = 40.0;
 const sectionTop = 24.0;
 const photoCardSize = 72.0;
+const photoCardRadius = 8.0;
 const tickChoiceSize = 16.0;
 const plusIconSize = 40.0;
 const clearIconSize = 20.0;
@@ -75,5 +78,10 @@ const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
 
 /// Анимация.
-const standartAnimationDuration = Duration(milliseconds: 300);
-// Duration(milliseconds: kReleaseMode ? 300 : 1000);
+const standartAnimationDuration =
+    Duration(milliseconds: kReleaseMode ? 300 : 600);
+// Duration(milliseconds: 300);
+
+/// Картография
+const initialPlace = Coord(52.5442, 31.8089); // Новое место
+const markerSize = 32.0;

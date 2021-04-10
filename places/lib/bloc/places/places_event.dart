@@ -8,13 +8,9 @@ abstract class PlacesEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-abstract class PlacesEventWithPlace extends PlacesEvent {
-  const PlacesEventWithPlace(this.place);
-
-  final Place place;
-
-  @override
-  List<Object?> get props => [place];
+/// Событие: инициализация.
+class PlacesInit extends PlacesEvent {
+  const PlacesInit();
 }
 
 /// Событие: загрузить список мест.
@@ -33,6 +29,23 @@ class PlacesReload extends PlacesEvent {
 }
 
 /// Событие: удалить карточку.
-class PlacesRemove extends PlacesEventWithPlace {
-  const PlacesRemove(Place place) : super(place);
+class PlacesRemove extends PlacesEvent {
+  const PlacesRemove(this.place) : super();
+
+  final Place place;
+
+  @override
+  List<Object?> get props => [place];
+}
+
+/// Событие: инициализация.
+class PlacesSaveMapSettings extends PlacesEvent {
+  const PlacesSaveMapSettings({
+    required this.mapSettings,
+  });
+
+  final MapSettings mapSettings;
+
+  @override
+  List<Object?> get props => [mapSettings];
 }

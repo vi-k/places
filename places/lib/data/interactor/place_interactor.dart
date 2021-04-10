@@ -5,10 +5,10 @@ import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/model/search_request.dart';
-import 'package:places/data/repository/db_repository/db_repository.dart';
-import 'package:places/data/repository/location_repository/location_repository.dart';
-import 'package:places/data/repository/place_repository/place_repository.dart';
-import 'package:places/data/repository/place_repository/repository_exception.dart';
+import 'package:places/data/repositories/db/db_repository.dart';
+import 'package:places/data/repositories/location/location_repository.dart';
+import 'package:places/data/repositories/place/place_repository.dart';
+import 'package:places/data/repositories/place/repository_exception.dart';
 
 /// Интерактор для доступа к местам.
 class PlaceInteractor {

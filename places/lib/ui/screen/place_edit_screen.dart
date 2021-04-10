@@ -1,17 +1,19 @@
-import 'dart:io';
+import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:places/bloc/app/app_bloc.dart';
 import 'package:places/bloc/edit_place/edit_place_bloc.dart';
+import 'package:places/data/model/photo.dart';
 import 'package:places/data/interactor/place_interactor.dart';
-import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/data/model/place_user_info.dart';
-import 'package:places/data/repository/location_repository/location_repository.dart';
+import 'package:places/data/repositories/location/location_repository.dart';
+import 'package:places/data/repositories/upload/upload_repository.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -27,359 +29,508 @@ import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/focus.dart';
-import 'package:places/utils/upload_image.dart';
-import 'package:places/utils/let_and_also.dart';
 import 'package:provider/provider.dart';
 
 import 'place_type_select_screen.dart';
 
 /// Экран добавления места.
+///
+/// Запуск:
+/// ```
+/// PlaceEditScreen.start(context, placeId);
+/// ```
 class PlaceEditScreen extends StatefulWidget {
-  const PlaceEditScreen(
-    this.place, {
+  const PlaceEditScreen._({
     Key? key,
   }) : super(key: key);
 
-  /// Идентификатор места.
-  ///
-  /// Если передан `null`, то новое место.
-  final Place? place;
-
   @override
   _PlaceEditScreenState createState() => _PlaceEditScreenState();
+
+  /// Помещаем блок выше экрана, чтобы из контекста стейта сразу можно было
+  /// обращаться к блоку.
+  static void start(BuildContext context, [int placeId = 0]) {
+    standartNavigatorPush<void>(
+        context,
+        () => BlocProvider<EditPlaceBloc>(
+            create: (_) => EditPlaceBloc(
+                  context.read<PlaceInteractor>(),
+                  context.read<UploadRepository>(),
+                  context.read<LocationRepository>(),
+                  placeId,
+                ),
+            child: const PlaceEditScreen._()));
+  }
 }
 
 class _PlaceEditScreenState extends State<PlaceEditScreen> {
-  final _formKey = GlobalKey<FormState>();
-  late final Place? _place = widget.place;
-  PlaceTypeUi? _placeType;
-  final _photos = <GetImageResult>[];
-  final TextEditingController _nameController = TextEditingController();
+  // Контроллер GoogleMap через Future.
+  final Completer<GoogleMapController> _googleMapController = Completer();
+
+  // Обновляем поля с координатами в соответствии с имзенениями на карте.
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lonController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
 
-  bool get isNew => _place == null;
+  // При перемещении карты пользователем, сохраняем координаты в onCameraMove.
+  // Устанавливать их будет только в конце перемещения в onCameraIdle.
+  Coord? _moveCoord;
+
+  // Надо отличать установку координат через контроллер, и перемещения карты
+  // пользователем.
+  bool _updateMapController = false;
+
+  // Чтобы не передавать каждый раз тему в функции, выношу в отдельную
+  // переменную, которая будет обновляться при каждом билде.
+  late MyThemeData _theme;
+
+  // Благодаря выносу блока наверх, всегда имеем доступ к нему.
+  EditPlaceBloc get bloc => context.read<EditPlaceBloc>();
 
   @override
-  void initState() {
-    super.initState();
-
-    final place = _place;
-    if (place == null) {
-      _getCurrentLocation();
-    } else {
-      _placeType = PlaceTypeUi(place.type);
-      _photos.addAll(place.photos.map((e) => GetImageResult(url: e)));
-      _nameController.text = place.name;
-      _latController.text = place.coord.lat.toStringAsFixed(6);
-      _lonController.text = place.coord.lon.toStringAsFixed(6);
-      _descriptionController.text = place.description;
-    }
+  void dispose() {
+    _latController.dispose();
+    _lonController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<AppBloc>().theme;
+    _theme = context.watch<AppBloc>().theme;
 
-    return BlocProvider<EditPlaceBloc>(
-      create: (_) => EditPlaceBloc(context.read<PlaceInteractor>()),
-      child: Builder(
-          builder: (context) => Scaffold(
-                appBar: SmallAppBar(
-                  title: isNew ? stringNewPlace : stringEdit,
-                  back: stringCancel,
+    return BlocConsumer<EditPlaceBloc, EditPlaceState>(
+      listener: (context, state) {
+        debugPrint('$state');
+        // Выходим после сохранения.
+        if (state is EditPlaceSaved) {
+          Navigator.pop(context);
+        }
+      },
+      // Обновляем, когда начинается или заканчивается загрузка или сохранение.
+      buildWhen: (previous, current) =>
+          previous is EditPlaceLoading && current is! EditPlaceLoading ||
+          previous is! EditPlaceLoading && current is EditPlaceLoading,
+      builder: (context, state) => Scaffold(
+        appBar: SmallAppBar(
+          title: bloc.isNew ? stringNewPlace : stringEdit,
+          back: stringCancel,
+        ),
+        body: WillPopScope(
+          onWillPop: _onWillPop,
+          child: AbsorbPointer(
+            absorbing: state is EditPlaceLoading,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      ListView(
+                        children: [
+                          _buildPhotoGallery(),
+                          _buildPlaceType(),
+                          _buildName(),
+                          _buildCoord(),
+                          _buildDescription(),
+                        ],
+                      ),
+                      if (state is EditPlaceLoading)
+                        const Center(child: CircularProgressIndicator()),
+                    ],
+                  ),
                 ),
-                body: WillPopScope(
-                  onWillPop: () => _onWillPop(context),
-                  child: _buildBody(context, _formKey, theme),
-                ),
-              )),
+                _buildDone(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  // Содержимое экрана.
-  Widget _buildBody(BuildContext context, Key? key, MyThemeData theme) =>
-      Column(
-        children: [
-          Form(
-            key: key,
-            child: Expanded(
-              child: ListView(
+  // Фотографии мест.
+  Widget _buildPhotoGallery() => BlocBuilder<EditPlaceBloc, EditPlaceState>(
+        buildWhen: (previous, current) => previous.photos != current.photos,
+        builder: (context, state) {
+          debugPrint('builder photos');
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
                 children: [
-                  _buildPhotoGallery(context, theme),
-                  _buildPlaceType(theme),
-                  _buildName(),
-                  ..._buildCoord(theme),
-                  _buildDetails(),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: commonSpacing + photoCardSize - photoCardRadius,
+                        height: photoCardSize,
+                      ),
+                      Expanded(
+                        child: ShaderMask(
+                          blendMode: BlendMode.dstIn,
+                          shaderCallback: (bounds) => const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [Color(0x00FFFFFF), Color(0xFFFFFFFF)],
+                            stops: [0.0, 1.0],
+                          ).createShader(Rect.fromLTRB(
+                            bounds.left,
+                            bounds.top,
+                            bounds.left + commonSpacing + photoCardRadius,
+                            bounds.bottom,
+                          )),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
+                              builder: (context, state) => Row(
+                                children: [
+                                  const SizedBox(
+                                    width: commonSpacing - photoCardRadius,
+                                  ),
+                                  for (final photo in state.photos.value
+                                      .asMap()
+                                      .entries) ...[
+                                    const SizedBox(width: commonSpacing),
+                                    SizedBox(
+                                      width: photoCardSize,
+                                      height: photoCardSize,
+                                      child: photo.value.isLoaded
+                                          ? Hero(
+                                              tag: photo.value.url!,
+                                              flightShuttleBuilder:
+                                                  standartFlightShuttleBuilder,
+                                              child: _buildPhoto(photo.value),
+                                            )
+                                          : _buildPhoto(photo.value),
+                                    ),
+                                  ],
+                                  const SizedBox(width: commonSpacing),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    left: commonSpacing,
+                    child: AddPhotoCard(onPressed: _addPhoto),
+                  ),
                 ],
               ),
-            ),
-          ),
-          _buildDone(context),
-        ],
-      );
-
-  // Фотографии мест.
-  Widget _buildPhotoGallery(BuildContext context, MyThemeData theme) =>
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            const SizedBox(width: commonSpacing),
-            AddPhotoCard(
-              onPressed: () async {
-                final result = await showModalBottomSheet<GetImageResult>(
-                  context: context,
-                  clipBehavior: Clip.antiAlias,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => GetImage(),
-                );
-
-                if (result == null) return;
-
-                setState(() {
-                  _photos.add(result);
-                });
-
-                final path = result.path;
-                if (path != null) {
-                  final url =
-                      await uploadPhoto(context.read<Dio>(), File(path));
-                  if (url == null) return;
-
-                  final index = _photos.indexWhere((e) => e.path == path);
-                  // Пока загружали картинку, пользователь мог её удалить.
-                  if (index == -1) return;
-
-                  setState(() {
-                    _photos[index] = GetImageResult(url: url);
-                  });
-                }
-              },
-            ),
-            for (final e in _photos.asMap().entries) ...[
-              const SizedBox(width: commonSpacing),
-              SizedBox(
-                width: photoCardSize,
-                height: photoCardSize,
-                child: _place != null && e.value.url != null
-                    ? Hero(
-                        tag: e.value.url ?? '',
-                        flightShuttleBuilder: standartFlightShuttleBuilder,
-                        child: _buildPhoto(theme, e.value),
-                      )
-                    : _buildPhoto(theme, e.value),
-              ),
+              if (state.photos.isInvalid)
+                Padding(
+                  padding: commonPadding,
+                  child: Text(
+                    state.photos.error!,
+                    style: _theme.textRegular12Attention,
+                  ),
+                ),
             ],
-            const SizedBox(width: commonSpacing),
-          ],
-        ),
+          );
+        },
       );
 
-  Widget _buildPhoto(MyThemeData theme, GetImageResult photo) => Dismissible(
-        key: ValueKey(photo.url.hashCode ^ photo.path.hashCode),
+  Widget _buildPhoto(Photo photo) => Dismissible(
+        key: ValueKey(photo.hashCode),
         direction: DismissDirection.up,
-        onDismissed: (_) {
-          setState(() {
-            _photos.removeWhere((e) => e == photo);
-          });
-        },
+        onDismissed: (_) => bloc.add(EditPlaceRemovePhoto(photo)),
         child: PhotoCard(
           url: photo.url,
           path: photo.path,
-          onClose: () {
-            setState(() {
-              _photos.removeWhere((e) => e == photo);
-            });
-          },
+          onClose: () => bloc.add(EditPlaceRemovePhoto(photo)),
         ),
       );
 
   // Тип места.
-  Widget _buildPlaceType(MyThemeData theme) => Section(
+  Widget _buildPlaceType() => Section(
         stringPlaceType,
         spacing: 0,
         applyPaddingToChild: false,
-        child: ListTile(
-          title: Text(
-            _placeType?.name ?? stringUnselected,
-            style: theme.textRegular16Light,
-          ),
-          trailing: SvgPicture.asset(
-            Svg24.view,
-            color: theme.mainTextColor2,
-          ),
-          onTap: _getPlaceType,
+        child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
+          buildWhen: (previous, current) => previous.type != current.type,
+          builder: (context, state) {
+            debugPrint('builder type');
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  title: Text(
+                    state.type.value == null
+                        ? stringUnselected
+                        : PlaceTypeUi(state.type.value!).name,
+                    style: _theme.textRegular16Light,
+                  ),
+                  trailing: SvgPicture.asset(
+                    Svg24.view,
+                    color: _theme.mainTextColor2,
+                  ),
+                  onTap: () => _getPlaceType(state.type.value),
+                ),
+                if (state.type.error != null)
+                  Padding(
+                    padding: commonPaddingLBR,
+                    child: Text(
+                      state.type.error!,
+                      style: _theme.textRegular12Attention,
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       );
-
-  // Получение типа места.
-  Future<void> _getPlaceType() async {
-    final placeType = await standartNavigatorPush<PlaceType>(
-        context, () => PlaceTypeSelectScreen(placeType: _placeType?.type));
-
-    if (placeType != null) {
-      setState(() {
-        _placeType = PlaceTypeUi(placeType);
-      });
-    }
-  }
 
   // Название.
   Widget _buildName() => Section(
         stringName,
-        child: TextFormField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            hintText: isNew ? stringNewPlaceFakeName : '',
-          ),
-          textInputAction: TextInputAction.next,
-          onEditingComplete: () {
-            FocusScope.of(context).nextEditableTextFocus();
+        child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
+          buildWhen: (previous, current) => previous.name != current.name,
+          builder: (context, state) {
+            debugPrint('builder name');
+            return TextFormField(
+              key: ValueKey(state.name.isUndefined),
+              initialValue: state.name.value,
+              decoration: InputDecoration(
+                hintText: bloc.isNew ? stringNewPlaceFakeName : '',
+                errorText: state.name.error,
+              ),
+              textInputAction: TextInputAction.next,
+              onChanged: (value) => bloc.add(EditPlaceSetValues(name: value)),
+              onEditingComplete: () =>
+                  FocusScope.of(context).nextEditableTextFocus(),
+            );
           },
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) => value!.isEmpty ? stringRequiredField : null,
         ),
       );
 
   // Координаты.
-  List<Widget> _buildCoord(MyThemeData theme) => [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Section(
-                stringLatitude,
-                right: 0,
-                child: TextFormField(
-                  controller: _latController,
-                  decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLatitude : '',
+  Widget _buildCoord() => BlocConsumer<EditPlaceBloc, EditPlaceState>(
+        listenWhen: (previous, current) =>
+            previous.lat != current.lat || previous.lon != current.lon,
+        listener: (context, state) {
+          // Если координаты изменились, меняем значения в полях.
+          _textControllerSetValue(_latController, state.lat.value);
+          _textControllerSetValue(_lonController, state.lon.value);
+          // И перемещаем карту.
+          if (state.lat.isValid && state.lon.isValid) {
+            _goto(Coord(
+              double.parse(state.lat.value),
+              double.parse(state.lon.value),
+            ));
+          }
+        },
+        buildWhen: (previous, current) =>
+            previous is EditPlaceLoading && current is! EditPlaceLoading ||
+            previous is! EditPlaceLoading && current is EditPlaceLoading ||
+            previous.lat != current.lat ||
+            previous.lon != current.lon,
+        builder: (context, state) {
+          debugPrint('builder coord');
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Section(
+                      stringLatitude,
+                      right: 0,
+                      child: TextFormField(
+                        controller: _latController,
+                        decoration: InputDecoration(
+                          hintText:
+                              bloc.isNew ? stringNewPlaceFakeLatitude : '',
+                          errorText: state.lat.error,
+                        ),
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        onChanged: (value) =>
+                            bloc.add(EditPlaceSetValues(lat: value)),
+                        onEditingComplete: () {
+                          FocusScope.of(context).nextEditableTextFocus();
+                        },
+                      ),
+                    ),
                   ),
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () {
-                    FocusScope.of(context).nextEditableTextFocus();
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return stringRequiredField;
-                    }
-
-                    final lat = double.tryParse(value);
-                    if (lat == null || lat < -90 || lat > 90) {
-                      return stringInvalidValue;
-                    }
-
-                    return null;
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(width: commonSpacing),
-            Expanded(
-              child: Section(
-                stringLongitude,
-                left: 0,
-                child: TextFormField(
-                  controller: _lonController,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: InputDecoration(
-                    hintText: isNew ? stringNewPlaceFakeLongitude : '',
+                  const SizedBox(width: commonSpacing),
+                  Expanded(
+                    child: Section(
+                      stringLongitude,
+                      left: 0,
+                      child: TextFormField(
+                        controller: _lonController,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          hintText:
+                              bloc.isNew ? stringNewPlaceFakeLongitude : '',
+                          errorText: state.lon.error,
+                        ),
+                        onChanged: (value) =>
+                            bloc.add(EditPlaceSetValues(lon: value)),
+                        onEditingComplete: () {
+                          FocusScope.of(context).nextEditableTextFocus();
+                        },
+                      ),
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return stringRequiredField;
-                    }
-
-                    final lon = double.tryParse(value);
-                    if (lon == null || lon < -180 || lon > 180) {
-                      return stringInvalidValue;
-                    }
-
-                    return null;
-                  },
-                  onEditingComplete: () {
-                    FocusScope.of(context).nextEditableTextFocus();
-                  },
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
-        Container(
-          alignment: Alignment.topLeft,
-          child: SmallButton(
-            label: stringLocateOnTheMap,
-            style: theme.textMiddle16Accent,
-            onPressed: () {
-              print('Указать на карте');
-            },
-          ),
-        ),
-      ];
+              Padding(
+                padding: commonPaddingLTR,
+                child: SizedBox(
+                  height: 200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(textFieldRadius),
+                    clipBehavior: Clip.antiAlias,
+                    child: Container(
+                      color: _theme.backgroundSecond,
+                      child: Stack(
+                        children: [
+                          // Прячем карту, если координаты не валидны.
+                          AnimatedOpacity(
+                            duration: standartAnimationDuration,
+                            opacity:
+                                state.lat.isValid && state.lon.isValid ? 1 : 0,
+                            child: GoogleMap(
+                              mapType: MapType.hybrid,
+                              gestureRecognizers: {
+                                Factory<OneSequenceGestureRecognizer>(
+                                  () => EagerGestureRecognizer(),
+                                ),
+                                // Factory<PanGestureRecognizer>(
+                                //   () => PanGestureRecognizer(),
+                                // ),
+                              },
+                              initialCameraPosition: CameraPosition(
+                                target: LatLng(
+                                  initialPlace.lat,
+                                  initialPlace.lon,
+                                ),
+                                zoom: 18,
+                              ),
+                              onMapCreated: _googleMapController.complete,
+                              onCameraMoveStarted: () {
+                                debugPrint('onCameraMoveStarted');
+                                _moveCoord = null;
+                              },
+                              onCameraMove: (position) {
+                                debugPrint(
+                                    'onCameraMove _updateMapController: $_updateMapController');
+                                if (!_updateMapController) {
+                                  _moveCoord = Coord(
+                                    position.target.latitude,
+                                    position.target.longitude,
+                                  );
+                                }
+                              },
+                              onCameraIdle: () {
+                                debugPrint('onCameraIdle');
+                                if (_moveCoord != null) {
+                                  bloc.add(
+                                      EditPlaceSetValues(coord: _moveCoord));
+                                  _moveCoord = null;
+                                }
+                              },
+                              mapToolbarEnabled: false,
+                              myLocationEnabled: true,
+                            ),
+                          ),
+                          // Прогресс-индикатор, когда устанавливается текущая
+                          // позиция.
+                          if (state is! EditPlaceLoading &&
+                              state.lat.isUndefined &&
+                              state.lon.isUndefined)
+                            const Positioned.fill(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          // Маркер места - всегда по центру экрна.
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SvgPicture.asset(
+                                  SvgAny.location,
+                                  width: markerSize,
+                                  height: markerSize,
+                                ),
+                                const SizedBox(height: markerSize),
+                              ],
+                            ),
+                          ),
+                          // Кнопка сверху, чтобы нельзя была двигать карту,
+                          // когда она "спрятана", но можно было запустить
+                          // установку карты в текущую позицию.
+                          if (!(state.lat.isValid && state.lon.isValid))
+                            Positioned.fill(
+                              child: MaterialButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: state.lat.isUndefined &&
+                                        state.lon.isUndefined
+                                    ? null
+                                    : () =>
+                                        bloc.add(const EditPlaceSetLocation()),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        },
+      );
 
   // Описание.
-  Widget _buildDetails() => Section(
+  Widget _buildDescription() => Section(
         stringDescription,
-        child: TextFormField(
-          controller: _descriptionController,
-          minLines: 3,
-          maxLines: 10,
-          textInputAction: TextInputAction.done,
+        child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
+          buildWhen: (previous, current) =>
+              previous.description != current.description,
+          builder: (context, state) {
+            debugPrint('builder description');
+            return TextFormField(
+              key: ValueKey(state.description.isUndefined),
+              initialValue: state.description.value,
+              minLines: 3,
+              maxLines: 10,
+              textInputAction: TextInputAction.done,
+              onChanged: (value) =>
+                  bloc.add(EditPlaceSetValues(description: value)),
+            );
+          },
         ),
       );
 
   // Кнопка создания/сохранения
-  Widget _buildDone(BuildContext context) => Container(
+  Widget _buildDone() => Container(
         width: double.infinity,
         padding: commonPadding,
-        child: BlocConsumer<EditPlaceBloc, EditPlaceState>(
-          listener: (context, state) {
-            if (state is EditPlaceSaved) {
-              Navigator.pop(context);
-            }
+        child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
+          buildWhen: (previous, current) =>
+              previous.isModified != current.isModified,
+          builder: (context, state) {
+            debugPrint('build done');
+            return StandartButton(
+              label: bloc.isNew ? stringCreate : stringSave,
+              onPressed: state.isModified
+                  ? () => bloc.add(const EditPlaceSave())
+                  : null,
+            );
           },
-          builder: (context, state) => state is EditPlaceLoading
-              ? const Center(child: CircularProgressIndicator())
-              : StandartButton(
-                  label: isNew ? stringCreate : stringSave,
-                  onPressed: () {
-                    // Проверяем данные.
-                    if (!_maybeSave() || !_validate()) return;
-
-                    // Сохраняем.
-                    _formKey.currentState!.save();
-                    _save(context);
-                  },
-                ),
         ),
       );
 
-  bool _cmpPhotos(List<String> a, List<GetImageResult> b) {
-    if (a.length != b.length) return false;
-    final bi = b.iterator;
-    for (final va in a) {
-      bi.moveNext();
-      if (va != bi.current.url) return false;
-    }
-
-    return true;
-  }
-
-  // Калбэк для WillPopScope
-  Future<bool> _onWillPop(BuildContext context) async {
-    if (!_maybeSave()) return false;
-
-    // Если нет изменений, выходим сразу.
-    if (_validate()) {
-      _formKey.currentState!.save();
-      if (!_needSave()) return true;
-    }
+  // Калбэк для WillPopScope.
+  //
+  // Проверяем, сохранены ли данные.
+  Future<bool> _onWillPop() async {
+    if (!bloc.state.isModified) return true;
 
     return await showDialog<bool>(
           context: context,
@@ -400,70 +551,62 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         false;
   }
 
-  // Проверяет данные перед сохранением.
-  bool _validate() {
-    if (!_formKey.currentState!.validate()) return false;
-
-    // Если не выбран тип места, предупреждаем об этом пользователя
-    // и отправляем его на страницу выбора типа.
-    if (_placeType == null) {
-      ScaffoldMessenger.of(context)
-        ..removeCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text(stringNoPlaceType)));
-      _getPlaceType();
-      return false;
-    }
-
-    return true;
-  }
-
-  // Проверяет, можно ли сохранить.
-  bool _maybeSave() {
-    if (_photos.where((e) => e.url == null).isEmpty) return true;
-
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(const SnackBar(content: Text(stringNotAllCompleted)));
-    return false;
-  }
-
-  // Проверяет, нужно ли сохранять.
-  bool _needSave() =>
-      _place?.let((it) =>
-          it.name != _nameController.text ||
-          it.type != _placeType?.type ||
-          it.coord.lat != double.parse(_latController.text) ||
-          it.coord.lon != double.parse(_lonController.text) ||
-          it.description != _descriptionController.text ||
-          !_cmpPhotos(it.photos, _photos)) ??
-      true;
-
-  // Отправляет данные на сохранение.
-  Future<void> _save(BuildContext context) async {
-    final place = Place(
-      id: _place?.id ?? 0,
-      name: _nameController.text,
-      coord: Coord(
-        double.parse(_latController.text),
-        double.parse(_lonController.text),
-      ),
-      photos: _photos.map((e) => e.url!).toList(),
-      description: _descriptionController.text,
-      type: _placeType!.type,
-      userInfo: PlaceUserInfo.zero,
-      calcDistanceFrom: await context.read<LocationRepository>().getLocation(),
+  // Добавляет фотографию.
+  Future<void> _addPhoto() async {
+    final photo = await showModalBottomSheet<Photo>(
+      context: context,
+      clipBehavior: Clip.antiAlias,
+      backgroundColor: Colors.transparent,
+      builder: (context) => GetImage(),
     );
 
-    context
-        .read<EditPlaceBloc>()
-        .add(place.isNew ? EditPlaceAdd(place) : EditPlaceUpdate(place));
+    if (photo != null) {
+      bloc.add(EditPlaceAddPhoto(photo));
+    }
   }
 
-  Future<void> _getCurrentLocation() async {
-    final location = await context.read<LocationRepository>().getLocation();
-    if (location != null) {
-      _latController.text = location.lat.toStringAsFixed(6);
-      _lonController.text = location.lon.toStringAsFixed(6);
+  // Получает типа места.
+  Future<void> _getPlaceType(PlaceType? type) async {
+    final newType = await standartNavigatorPush<PlaceType>(
+        context, () => PlaceTypeSelectScreen(placeType: type));
+
+    if (newType != null) {
+      bloc.add(EditPlaceSetValues(type: newType));
+    }
+  }
+
+  // Устанавливает карту в заданную позицию.
+  Future<void> _goto(Coord pos) async {
+    try {
+      final controller = await _googleMapController.future;
+      if (!mounted) return;
+
+      debugPrint('goto: $pos');
+
+      _updateMapController = true;
+      print('_updateMapController = true');
+      await controller.moveCamera(
+        CameraUpdate.newLatLng(LatLng(pos.lat, pos.lon)),
+      );
+      // Камера не сразу устанавливается, из-за этого возникают ошибки
+      // с определением - пользователь двигает карту или контроллер. Делаем
+      // задержку, чтобы камера успела установиться.
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      _updateMapController = false;
+      print('_updateMapController = false');
+    } on MissingPluginException catch (_) {
+      // Если переключить на другой экран, не дождавшись завершения, то получаем
+      // исключение 'No implementation found for method ...'.
+    }
+  }
+
+  // Устанавливает значение контроллера, перемещает курсор в конец поля.
+  void _textControllerSetValue(TextEditingController controller, String value) {
+    if (controller.text != value) {
+      controller.value = TextEditingValue(
+        text: value,
+        selection: TextSelection.collapsed(offset: value.length),
+      );
     }
   }
 }

@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'package:places/data/model/place_type.dart';
 import 'package:places/utils/distance.dart';
 import 'package:places/utils/let_and_also.dart';
 
+part 'filter.g.dart';
+
 /// Фильтр по расстоянию до места и типу места.
-@immutable
+@JsonSerializable()
 class Filter extends Equatable {
   Filter({
     this.radius = const Distance(double.infinity),
@@ -24,23 +28,6 @@ class Filter extends Equatable {
 
   @override
   List<Object?> get props => [radius, placeTypes];
-
-  bool hasPlaceType(PlaceType placeType) =>
-      placeTypes?.contains(placeType) ?? true;
-
-  Filter togglePlaceType(PlaceType placeType) {
-    final newPlaceTypes = placeTypes?.toSet() ?? PlaceType.values.toSet();
-
-    if (newPlaceTypes.contains(placeType)) {
-      newPlaceTypes.remove(placeType);
-    } else {
-      newPlaceTypes.add(placeType);
-    }
-
-    return newPlaceTypes.length == PlaceType.values.length
-        ? copyWith(placeTypesReset: true)
-        : copyWith(placeTypes: newPlaceTypes);
-  }
 
   Filter copyWith({
     Set<PlaceType>? placeTypes,
@@ -60,5 +47,29 @@ class Filter extends Equatable {
         ? 'all'
         : '[${placeTypes!.map((e) => e.name).join(', ')}]';
     return 'Filter(radius: $radius, placeTypes: $placeTypesStr)';
+  }
+
+  factory Filter.fromJson(Map<String, dynamic> json) => _$FilterFromJson(json);
+  Map<String, dynamic> toJson() => _$FilterToJson(this);
+
+  factory Filter.parseJson(String json) =>
+      Filter.fromJson(jsonDecode(json) as Map<String, dynamic>);
+  String jsonStringify() => jsonEncode(toJson());
+
+  bool hasPlaceType(PlaceType placeType) =>
+      placeTypes?.contains(placeType) ?? true;
+
+  Filter togglePlaceType(PlaceType placeType) {
+    final newPlaceTypes = placeTypes?.toSet() ?? PlaceType.values.toSet();
+
+    if (newPlaceTypes.contains(placeType)) {
+      newPlaceTypes.remove(placeType);
+    } else {
+      newPlaceTypes.add(placeType);
+    }
+
+    return newPlaceTypes.length == PlaceType.values.length
+        ? copyWith(placeTypesReset: true)
+        : copyWith(placeTypes: newPlaceTypes);
   }
 }

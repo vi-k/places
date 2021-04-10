@@ -19,8 +19,13 @@ Dio createDio(BaseOptions options) => Dio(options)
     },
     onRequest: (options, handler) {
       print('Выполняется запрос: ${options.method} ${options.uri}');
-      if (options.data != null) {
-        print('data: ${options.data}');
+      final dynamic data = options.data;
+      if (data != null) {
+        if (data is FormData) {
+          print(data.fields);
+        } else {
+          print('data: $data');
+        }
       }
       handler.next(options);
     },

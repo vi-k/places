@@ -25,9 +25,11 @@ class AddPhotoCard extends StatelessWidget {
       height: photoCardSize,
       child: MaterialButton(
         padding: EdgeInsets.zero,
+        elevation: 0,
+        color: theme.backgroundFirst,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: theme.accentColor40),
-          borderRadius: BorderRadius.circular(textFieldRadius),
+          borderRadius: BorderRadius.circular(photoCardRadius),
         ),
         onPressed: onPressed,
         child: Center(

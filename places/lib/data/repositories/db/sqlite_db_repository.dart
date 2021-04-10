@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/model/search_request.dart';
-import 'package:places/data/repository/db_repository/db_repository.dart';
+import 'package:places/data/repositories/db/db_repository.dart';
 import 'package:places/utils/let_and_also.dart';
 
 part 'sqlite_db_repository.g.dart';

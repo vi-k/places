@@ -1,6 +1,11 @@
 import 'dart:math';
 
+import 'package:json_annotation/json_annotation.dart';
+import 'package:equatable/equatable.dart';
+
 import 'distance.dart';
+
+part 'coord.g.dart';
 
 /// Утилиты для работы с картографией.
 
@@ -53,11 +58,19 @@ double calcDistance(double lat1, double lon1, double lat2, double lon2) {
 }
 
 /// Координаты.
-class Coord {
+@JsonSerializable()
+class Coord extends Equatable {
   const Coord(this.lat, this.lon);
 
   final double lat;
   final double lon;
+
+  @override
+  List<Object?> get props => [lat, lon];
+
+  factory Coord.fromJson(Map<String, dynamic> json) =>
+      _$CoordFromJson(json);
+  Map<String, dynamic> toJson() => _$CoordToJson(this);
 
   /// Рассчитывает расстояние между точками по методу хорды.
   ///
