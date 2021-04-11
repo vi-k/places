@@ -12,4 +12,5 @@ abstract class DbRepository {
   Future<Map<int, PlaceUserInfo>> getFavorites(Favorite type);
   Future<PlaceUserInfo?> loadPlaceUserInfo(int placeId);
   Future<void> updatePlaceUserInfo(int placeId, PlaceUserInfo userInfo);
+  Future<void> removePlaceUserInfo(int placeId);
 }

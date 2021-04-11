@@ -33,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 stringIsDark,
                 style: theme.textRegular14Main,
               ),
-              value: context.watch<AppBloc>().settings.isDark,
+              value: state.settings.value.isDark,
               onChanged: (value) {
                 context.read<AppBloc>().add(AppChangeSettings(isDark: value));
               },

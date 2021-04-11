@@ -8,10 +8,10 @@ part of 'distance.dart';
 
 Distance _$DistanceFromJson(Map<String, dynamic> json) {
   return Distance(
-    (json['value'] as num).toDouble(),
+    const DoubleConverter().fromJson(json['value'] as Object),
   );
 }
 
 Map<String, dynamic> _$DistanceToJson(Distance instance) => <String, dynamic>{
-      'value': instance.value,
+      'value': const DoubleConverter().toJson(instance.value),
     };

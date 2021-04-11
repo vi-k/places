@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,10 +11,9 @@ import 'package:places/bloc/places/places_bloc.dart';
 import 'package:places/data/model/map_settings.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repositories/location/location_repository.dart';
+import 'package:places/logger.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
-import 'package:places/ui/res/svg.dart';
-import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/utils/map.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/place_card.dart';
@@ -21,7 +22,6 @@ import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/distance.dart';
 
-import 'place_edit_screen.dart';
 import 'search_screen.dart';
 
 /// Карта мест.
@@ -42,7 +42,6 @@ class _MapScreenState extends State<MapScreen>
   late final Animation<double> _placeAnimation =
       Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
     curve: Curves.fastOutSlowIn,
-    // reverseCurve: Curves.linear,
     parent: _placeAnimationController,
   ));
 
@@ -56,23 +55,28 @@ class _MapScreenState extends State<MapScreen>
   void initState() {
     super.initState();
 
-    _initMap();
-    BitmapDescriptor.fromAssetImage(const ImageConfiguration(), SvgAny.location)
-        .then((value) {
-          print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-          return _marker = value;
-        });
+    // Берём данные из MediaQuery (в initState мы не можем использовать
+    // MediaQuery.of, но он нам и не нужен).
+    final devicePixelRatio = context
+        .findAncestorWidgetOfExactType<MediaQuery>()!
+        .data
+        .devicePixelRatio;
+
+    getBytesFromAsset(
+            'res/location.png', (markerSize * devicePixelRatio).round())
+        .then((bytes) {
+      _marker = BitmapDescriptor.fromBytes(bytes);
+    });
   }
 
-  Future<void> _initMap() async {
-    await bloc.inited.future;
-    debugPrint('bloc inited');
-    final state = bloc.state;
-    if (state.mapSettings != null) {
-      await _goto(state.mapSettings!);
-    } else if (state.filter != null) {
-      await _gotoCurrentLocation(state.filter!.radius);
-    }
+  static Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    final data = await rootBundle.load(path);
+    final codec = await instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    final fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   @override
@@ -82,111 +86,117 @@ class _MapScreenState extends State<MapScreen>
     final lastPlace = _lastPlace;
 
     return BlocBuilder<PlacesBloc, PlacesState>(
-      builder: (_, state) {
-        debugPrint('$state');
-        return Scaffold(
-          appBar: _buildAppBar(state),
-          body: Builder(
-              builder: (context) => Stack(
-                    children: [
-                      GoogleMap(
-                        mapType: MapType.hybrid,
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                            initialLocation.lat,
-                            initialLocation.lon,
-                          ),
-                          zoom: 12,
+      builder: (_, state) => Scaffold(
+        appBar: _buildAppBar(state),
+        body: Builder(
+            builder: (context) => Stack(
+                  children: [
+                    GoogleMap(
+                      mapType: MapType.hybrid,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(
+                          initialLocation.lat,
+                          initialLocation.lon,
                         ),
-                        onMapCreated: _googleMapController.complete,
-                        onCameraMove: (position) {
-                          _lastPosition = position;
-                        },
-                        onCameraIdle: () {
-                          if (_lastPosition != null) {
-                            bloc.add(PlacesSaveMapSettings(
-                                mapSettings: MapSettings(
-                              location: Coord(
-                                _lastPosition!.target.latitude,
-                                _lastPosition!.target.longitude,
-                              ),
-                              zoom: _lastPosition!.zoom,
-                              bearing: _lastPosition!.bearing,
-                              tilt: _lastPosition!.tilt,
-                            )));
-                          }
-                        },
-                        mapToolbarEnabled: false,
-                        myLocationEnabled: true,
-                        onTap: (_) => _hidePlaceCard(),
-                        markers: {
-                          if (state.places != null)
-                            for (final place in state.places!)
-                              Marker(
-                                markerId: MarkerId('${place.id}'),
-                                icon: _marker ?? BitmapDescriptor.defaultMarker,
-                                position:
-                                    LatLng(place.coord.lat, place.coord.lon),
-                                onDragEnd: (value) {},
-                                onTap: () => _showPlaceCard(place),
-                              ),
-                        },
-                        circles: {
-                          if (state.filter != null &&
-                              state.filter!.radius.isFinite)
-                            Circle(
-                              circleId: const CircleId('main'),
-                              radius: state.filter!.radius.value,
-                              center: LatLng(
-                                  initialLocation.lat, initialLocation.lon),
-                              strokeWidth: 2,
-                              strokeColor: Colors.blue.withOpacity(0.5),
-                              fillColor: Colors.blue.withOpacity(0.1),
+                        zoom: 12,
+                      ),
+                      onMapCreated: (controller) {
+                        _googleMapController.complete(controller);
+                        _initMap();
+                        setState(() {
+                          // Обновляем, чтобы показать наши маркеры вместо
+                          // дефолтных. Если наши вдруг загрузились позже.
+                        });
+                      },
+                      onCameraMove: (position) {
+                        _lastPosition = position;
+                      },
+                      onCameraIdle: () {
+                        if (_lastPosition != null) {
+                          bloc.add(PlacesSaveMapSettings(
+                              mapSettings: MapSettings(
+                            location: Coord(
+                              _lastPosition!.target.latitude,
+                              _lastPosition!.target.longitude,
                             ),
-                        },
-                      ),
-                      if (state is PlacesLoading)
-                        const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      Positioned(
-                        bottom: commonSpacing,
-                        left: 12,
-                        right: 62,
-                        child: AnimatedBuilder(
-                          animation: _placeAnimation,
-                          builder: (context, child) => Transform.scale(
-                              scale: _placeAnimation.value, child: child),
-                          child: AspectRatio(
-                            aspectRatio: cardAspectRatio,
-                            child: lastPlace == null
-                                ? const SizedBox()
-                                : PlaceCard(
-                                    key: ValueKey(lastPlace.id),
-                                    place: lastPlace,
-                                    cardType: Favorite.no,
-                                    onClose: _hidePlaceCard,
-                                    go: () => gotoPlace(context, lastPlace),
-                                  ),
+                            zoom: _lastPosition!.zoom,
+                            bearing: _lastPosition!.bearing,
+                            tilt: _lastPosition!.tilt,
+                          )));
+                        }
+                      },
+                      mapToolbarEnabled: false,
+                      myLocationEnabled: true,
+                      onTap: (_) => _hidePlaceCard(),
+                      markers: {
+                        if (state.places.isReady)
+                          for (final place in state.places.value)
+                            Marker(
+                              markerId: MarkerId('${place.id}'),
+                              icon: _marker ?? BitmapDescriptor.defaultMarker,
+                              position:
+                                  LatLng(place.coord.lat, place.coord.lon),
+                              onDragEnd: (value) {},
+                              onTap: () => _showPlaceCard(place),
+                            ),
+                      },
+                      circles: {
+                        if (state.filter.isReady &&
+                            state.filter.value.radius.isFinite)
+                          Circle(
+                            circleId: const CircleId('main'),
+                            radius: state.filter.value.radius.value,
+                            center: LatLng(
+                                initialLocation.lat, initialLocation.lon),
+                            strokeWidth: 2,
+                            strokeColor: Colors.blue.withOpacity(0.5),
+                            fillColor: Colors.blue.withOpacity(0.1),
                           ),
+                      },
+                    ),
+                    if (state is PlacesLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    Positioned(
+                      bottom: commonSpacing,
+                      left: 12,
+                      right: 62,
+                      child: AnimatedBuilder(
+                        animation: _placeAnimation,
+                        builder: (context, child) => Transform.scale(
+                            scale: _placeAnimation.value, child: child),
+                        child: AspectRatio(
+                          aspectRatio: cardAspectRatio,
+                          child: lastPlace == null
+                              ? const SizedBox()
+                              : PlaceCard(
+                                  key: ValueKey(lastPlace.id),
+                                  place: lastPlace,
+                                  cardType: Favorite.no,
+                                  onClose: _hidePlaceCard,
+                                  go: () => gotoPlace(context, lastPlace),
+                                ),
                         ),
                       ),
-                    ],
-                  )),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: _placeAnimationController.isDismissed &&
-                  _placeAnimationController.value == 0.0
-              ? FloatingActionButton.extended(
-                  isExtended: true,
-                  onPressed: () => PlaceEditScreen.start(context),
-                  icon: const Icon(Icons.add),
-                  label: Text(stringNewPlace.toUpperCase()),
-                )
-              : null,
-          bottomNavigationBar: const AppNavigationBar(index: 1),
-        );
-      },
+                    ),
+                  ],
+                )),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: _placeAnimationController.isDismissed &&
+                _placeAnimationController.value == 0.0
+            ? FloatingActionButton.extended(
+                isExtended: true,
+                onPressed: () {
+                  setState(() {});
+                  // PlaceEditScreen.start(context);
+                },
+                icon: const Icon(Icons.add),
+                label: Text(stringNewPlace.toUpperCase()),
+              )
+            : null,
+        bottomNavigationBar: const AppNavigationBar(index: 1),
+      ),
     );
   }
 
@@ -196,23 +206,33 @@ class _MapScreenState extends State<MapScreen>
         onPressed: () => bloc.add(const PlacesReload()),
         bottom: Padding(
           padding: commonPaddingLBR,
-          child: state.filter == null
+          child: state.filter.isNotReady
               ? const SizedBox()
               : SearchBar(
-                  onTap: () => standartNavigatorPush<String>(
-                      context, () => const SearchScreen()),
-                  filter: state.filter!,
+                  onTap: () => SearchScreen.start(context),
+                  filter: state.filter.value,
                   onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
                 ),
         ),
       );
+
+  Future<void> _initMap() async {
+    final state = bloc.state;
+    final mapSettings = state.mapSettings.value;
+    if (mapSettings != null) {
+      await _goto(mapSettings);
+    } else if (state.filter.isReady) {
+      final radius = state.filter.value.radius;
+      await _gotoCurrentLocation(radius);
+    }
+  }
 
   // Перемещает карту в заданную позицию.
   Future<void> _goto(MapSettings mapSettings) async {
     try {
       final controller = await _googleMapController.future;
 
-      debugPrint('goto $mapSettings');
+      logger.d('goto $mapSettings');
 
       return controller.moveCamera(
         CameraUpdate.newCameraPosition(
@@ -280,7 +300,7 @@ class _MapScreenState extends State<MapScreen>
         }
       }
 
-      debugPrint('goto $location');
+      logger.d('goto $location');
       return controller.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(

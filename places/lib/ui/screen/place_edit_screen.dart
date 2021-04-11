@@ -14,6 +14,7 @@ import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place_type.dart';
 import 'package:places/data/repositories/location/location_repository.dart';
 import 'package:places/data/repositories/upload/upload_repository.dart';
+import 'package:places/logger.dart';
 import 'package:places/ui/model/place_type_ui.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
@@ -99,7 +100,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
 
     return BlocConsumer<EditPlaceBloc, EditPlaceState>(
       listener: (context, state) {
-        debugPrint('$state');
+        logger.d('$state');
         // Выходим после сохранения.
         if (state is EditPlaceSaved) {
           Navigator.pop(context);
@@ -150,7 +151,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   Widget _buildPhotoGallery() => BlocBuilder<EditPlaceBloc, EditPlaceState>(
         buildWhen: (previous, current) => previous.photos != current.photos,
         builder: (context, state) {
-          debugPrint('builder photos');
+          logger.d('builder photos');
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -248,7 +249,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
           buildWhen: (previous, current) => previous.type != current.type,
           builder: (context, state) {
-            debugPrint('builder type');
+            logger.d('builder type');
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -285,7 +286,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         child: BlocBuilder<EditPlaceBloc, EditPlaceState>(
           buildWhen: (previous, current) => previous.name != current.name,
           builder: (context, state) {
-            debugPrint('builder name');
+            logger.d('builder name');
             return TextFormField(
               key: ValueKey(state.name.isUndefined),
               initialValue: state.name.value,
@@ -324,7 +325,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             previous.lat != current.lat ||
             previous.lon != current.lon,
         builder: (context, state) {
-          debugPrint('builder coord');
+          logger.d('builder coord');
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -412,12 +413,9 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                               ),
                               onMapCreated: _googleMapController.complete,
                               onCameraMoveStarted: () {
-                                debugPrint('onCameraMoveStarted');
                                 _moveCoord = null;
                               },
                               onCameraMove: (position) {
-                                debugPrint(
-                                    'onCameraMove _updateMapController: $_updateMapController');
                                 if (!_updateMapController) {
                                   _moveCoord = Coord(
                                     position.target.latitude,
@@ -426,7 +424,6 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                                 }
                               },
                               onCameraIdle: () {
-                                debugPrint('onCameraIdle');
                                 if (_moveCoord != null) {
                                   bloc.add(
                                       EditPlaceSetValues(coord: _moveCoord));
@@ -493,7 +490,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           buildWhen: (previous, current) =>
               previous.description != current.description,
           builder: (context, state) {
-            debugPrint('builder description');
+            logger.d('builder description');
             return TextFormField(
               key: ValueKey(state.description.isUndefined),
               initialValue: state.description.value,
@@ -515,7 +512,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           buildWhen: (previous, current) =>
               previous.isModified != current.isModified,
           builder: (context, state) {
-            debugPrint('build done');
+            logger.d('build done');
             return StandartButton(
               label: bloc.isNew ? stringCreate : stringSave,
               onPressed: state.isModified
@@ -581,10 +578,9 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       final controller = await _googleMapController.future;
       if (!mounted) return;
 
-      debugPrint('goto: $pos');
+      logger.d('goto: $pos');
 
       _updateMapController = true;
-      print('_updateMapController = true');
       await controller.moveCamera(
         CameraUpdate.newLatLng(LatLng(pos.lat, pos.lon)),
       );

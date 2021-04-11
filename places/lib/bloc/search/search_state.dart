@@ -1,6 +1,5 @@
 part of 'search_bloc.dart';
 
-@immutable
 abstract class SearchState extends Equatable {
   const SearchState();
 
@@ -8,14 +7,14 @@ abstract class SearchState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Состояние: загрузка результатов.
+/// Загрузка результатов.
 class SearchLoading extends SearchState {
   const SearchLoading();
 }
 
-/// Состояние: результат получен.
-class SearchReady extends SearchState {
-  const SearchReady(this.places);
+/// Результаты поиска.
+class SearchResults extends SearchState {
+  const SearchResults(this.places);
 
   final List<Place> places;
 
@@ -23,12 +22,33 @@ class SearchReady extends SearchState {
   List<Object?> get props => [places];
 }
 
-/// Состояние: показ истории.
-class SearchHistoryReady extends SearchState {
-  const SearchHistoryReady(this.history);
+/// Ошибка загрузки результатов поиска.
+class SearchFailed extends SearchState {
+  const SearchFailed(this.text, this.error) : super();
+
+  final String text;
+  final Exception error;
+
+  @override
+  List<Object?> get props => [text, error];
+}
+
+/// История поиска.
+class SearchHistory extends SearchState {
+  const SearchHistory(this.history);
 
   final List<SearchRequest> history;
 
   @override
   List<Object?> get props => [history];
+}
+
+/// Ошибка загрузки истории поиска.
+class SearchHistoryFailed extends SearchState {
+  const SearchHistoryFailed(this.error) : super();
+
+  final Exception error;
+
+  @override
+  List<Object?> get props => [error];
 }

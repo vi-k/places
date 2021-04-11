@@ -1,30 +1,53 @@
 part of 'favorite_bloc.dart';
 
-/// Состояния для WishlistBloc.
-@immutable
-abstract class FavoriteState extends Equatable {
-  const FavoriteState();
+/// Основное состояние для FavoriteBloc.
+class FavoriteState extends Equatable with BlocValues {
+  const FavoriteState({
+    required this.places,
+  });
+
+  const FavoriteState.init()
+      : places = const BlocValue.undefined();
+
+  FavoriteState.from(FavoriteState state)
+      : places = state.places;
+
+  final BlocValue<List<Place>> places;
 
   @override
-  List<Object?> get props => [];
+  List<BlocValue> get values => [places];
+
+  @override
+  List<Object?> get props => [values];
+
+  FavoriteState copyWith({
+    BlocValue<List<Place>>? places,
+  }) =>
+      FavoriteState(
+        places: places ?? this.places,
+      );
+
+  @override
+  // ignore: no_runtimetype_tostring
+  String toString() => '$runtimeType('
+      'places: ${places.isNotReady ? places.state : places.value.length})';
 }
 
-/// Состояние: загрузка данных.
+/// Загрузка данных.
 class FavoriteLoading extends FavoriteState {
-  const FavoriteLoading();
+  FavoriteLoading(FavoriteState state) : super.from(state);
 }
 
-/// Состояние: нестабильное, требуется перезагрузка данных.
-class FavoriteUnstable extends FavoriteState {
-  const FavoriteUnstable();
-}
+/// Ошибка загрузки данных.
+class FavoriteLoadingFailed extends FavoriteState {
+  FavoriteLoadingFailed(FavoriteState state, this.error) : super.from(state);
 
-/// Состояние: данные загружены.
-class FavoriteReady extends FavoriteState {
-  const FavoriteReady(this.places);
-
-  final List<Place> places;
+  final Exception error;
 
   @override
-  List<Object?> get props => [places];
+  List<Object?> get props => [values, error];
+
+  @override
+  // ignore: no_runtimetype_tostring
+  String toString() => 'FavoriteLoadingFailed($error)';
 }

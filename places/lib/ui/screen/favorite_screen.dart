@@ -21,6 +21,9 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen>
     with SingleTickerProviderStateMixin {
+  WishlistBloc get wishlistBloc => context.read<WishlistBloc>();
+  VisitedBloc get visitedBloc => context.read<VisitedBloc>();
+
   static const _tabs = [stringWishlistName, stringVisitedName];
   late final TabController _tabController = TabController(
     length: _tabs.length,
@@ -62,36 +65,33 @@ class _FavoriteScreenState extends State<FavoriteScreen>
   Widget _buildWishlistTab(PlaceInteractor placeInteractor) => Tab(
         child: BlocBuilder<WishlistBloc, FavoriteState>(
           builder: (context, state) {
-            if (state is FavoriteLoading || state is FavoriteUnstable) {
-              if (state is FavoriteUnstable) {
-                context.read<WishlistBloc>().add(const FavoriteLoad());
-                return const Center(
-                  child: Text('test'),
-                );
-              }
+            if (state is FavoriteLoadingFailed) {
+              return Failed(
+                svg: Svg64.delete,
+                title: stringError,
+                message: state.error.toString(),
+                onRepeat: () => wishlistBloc.add(const FavoriteLoad()),
+              );
+            }
+
+            if (state is FavoriteLoading || state.places.isNotReady) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
 
-            if (state is FavoriteReady) {
-              if (state.places.isEmpty) {
-                return const Failed(
-                  svg: Svg64.card,
-                  title: stringEmpty,
-                  message: stringWishlistMessage,
-                );
-              }
-
-              return PlaceCardGrid(
-                cardType: Favorite.wishlist,
-                places: state.places,
-                onCardClose: (place) =>
-                    context.read<WishlistBloc>().add(FavoriteRemove(place)),
-              );
-            }
-
-            return const Failed(message: stringUnknownState);
+            return state.places.value.isEmpty
+                ? const Failed(
+                    svg: Svg64.card,
+                    title: stringEmpty,
+                    message: stringWishlistMessage,
+                  )
+                : PlaceCardGrid(
+                    cardType: Favorite.wishlist,
+                    places: state.places.value,
+                    onCardClose: (place) =>
+                        wishlistBloc.add(FavoriteRemovePlace(place)),
+                  );
           },
         ),
       );
@@ -99,37 +99,33 @@ class _FavoriteScreenState extends State<FavoriteScreen>
   Widget _buildVisitedTab(PlaceInteractor placeInteractor) => Tab(
         child: BlocBuilder<VisitedBloc, FavoriteState>(
           builder: (context, state) {
-            if (state is FavoriteLoading || state is FavoriteUnstable) {
-              if (state is FavoriteUnstable) {
-                context.read<VisitedBloc>().add(const FavoriteLoad());
-                return const Center(
-                  child: Text('test'),
-                );
-              }
+            if (state is FavoriteLoadingFailed) {
+              return Failed(
+                svg: Svg64.delete,
+                title: stringError,
+                message: state.error.toString(),
+                onRepeat: () => visitedBloc.add(const FavoriteLoad()),
+              );
+            }
+
+            if (state is FavoriteLoading || state.places.isNotReady) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
 
-            if (state is FavoriteReady) {
-              if (state.places.isEmpty) {
-                return const Failed(
-                  svg: Svg64.go,
-                  title: stringEmpty,
-                  message: stringVisitedMessage,
-                );
-              }
-
-              return PlaceCardGrid(
-                cardType: Favorite.visited,
-                places: state.places,
-                onCardClose: (place) => context
-                    .read<VisitedBloc>()
-                    .add(FavoriteMoveToAdjacentList(place)),
-              );
-            }
-
-            return const Failed(message: stringUnknownState);
+            return state.places.value.isEmpty
+                ? const Failed(
+                    svg: Svg64.go,
+                    title: stringEmpty,
+                    message: stringVisitedMessage,
+                  )
+                : PlaceCardGrid(
+                    cardType: Favorite.visited,
+                    places: state.places.value,
+                    onCardClose: (place) =>
+                        visitedBloc.add(FavoriteMoveToAdjacentList(place)),
+                  );
           },
         ),
       );

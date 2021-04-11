@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/place_base.dart';
@@ -9,6 +10,8 @@ import 'package:places/data/repositories/db/db_repository.dart';
 import 'package:places/data/repositories/location/location_repository.dart';
 import 'package:places/data/repositories/place/place_repository.dart';
 import 'package:places/data/repositories/place/repository_exception.dart';
+
+part 'place_notification.dart';
 
 /// Интерактор для доступа к местам.
 class PlaceInteractor {
@@ -24,9 +27,9 @@ class PlaceInteractor {
 
   String _lastSearchRequest = '';
 
-  final _controller = StreamController<Place>.broadcast();
+  final _controller = StreamController<PlaceNotification>.broadcast();
 
-  Stream<Place> get stream => _controller.stream;
+  Stream<PlaceNotification> get stream => _controller.stream;
 
   void close() {
     _controller.close();
@@ -80,17 +83,25 @@ class PlaceInteractor {
   /// Добавляет новое место.
   Future<Place> addNewPlace(PlaceBase place) async {
     final id = await placeRepository.create(place);
-    return getPlace(id);
+    final newPlace = await getPlace(id);
+    _notify(PlaceAdded(newPlace));
+    return newPlace;
   }
 
   /// Обновляет место.
-  Future<void> updatePlace(Place place) async {
+  Future<Place> updatePlace(PlaceBase place) async {
     await placeRepository.update(place);
-    _notify(place);
+    final newPlace = await _loadUserInfo(place);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 
   /// Удаляет место.
-  Future<void> removePlace(int id) => placeRepository.delete(id);
+  Future<void> removePlace(int id) {
+    _notify(PlaceRemoved(id));
+
+    return placeRepository.delete(id);
+  }
 
   /// Загружает список "Хочу посетить".
   Future<List<Place>> getWishlist() async {
@@ -130,27 +141,25 @@ class PlaceInteractor {
 
   Future<Place> updateUserInfo(PlaceBase place, PlaceUserInfo userInfo) async {
     await dbRepository.updatePlaceUserInfo(place.id, userInfo);
-    return _createPlace(place, userInfo);
+    final newPlace = Place.from(place, userInfo: userInfo);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 
   /// Оповещает об изменениях.
-  void _notify(Place place) {
-    print('Changed: ${place.toString(short: true)}');
-    if (!_controller.isClosed) _controller.add(place);
-  }
-
-  /// Создаёт место из PlaceBase и PlaceUserInfo и оповещает об изменении.
-  Place _createPlace(PlaceBase place, PlaceUserInfo userInfo) {
-    final newPlace = Place.from(place, userInfo: userInfo);
-    _notify(newPlace);
-    return newPlace;
+  void _notify(PlaceNotification notification) {
+    if (!_controller.isClosed) {
+      _controller.add(notification);
+    }
   }
 
   /// Загружает пользовательскую информацию о месте.
   Future<Place> _loadUserInfo(PlaceBase place) async {
     final userInfo =
         await dbRepository.loadPlaceUserInfo(place.id) ?? PlaceUserInfo.zero;
-    return _createPlace(place, userInfo);
+    final newPlace = Place.from(place, userInfo: userInfo);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 
   /// Загружает пользовательскую информацию для списка.
@@ -160,16 +169,12 @@ class PlaceInteractor {
     // Ассинхронно конвертируем PlaceBase в Place
     var index = -1;
     await Future.forEach<PlaceBase>(places, (place) async {
-      try {
-        index++; // Ассинхронная операция начинается с первой ассинхронной
-        // функции, поэтому спокойно используем счётчик. Главное - обновлять
-        // его до первой ассинхронной операции.
+      index++; // Ассинхронная операция начинается с первой ассинхронной
+      // функции, поэтому спокойно используем счётчик. Главное - обновлять
+      // его до первой ассинхронной операции.
 
-        // Подменяем элементы списка новыми данными.
-        places[index] = await _loadUserInfo(place);
-      } on RepositoryException {
-        // Игнорируем ошибки
-      }
+      // Подменяем элементы списка новыми данными.
+      places[index] = await _loadUserInfo(place);
     });
 
     // Конвертируем List<PlaseBase> в List<Place>.
@@ -185,12 +190,15 @@ class PlaceInteractor {
     final coord = await locationRepository.getLocation();
 
     await Future.forEach<MapEntry<int, PlaceUserInfo>>(map.entries, (e) async {
+      final id = e.key;
       try {
-        final place =
-            (await _getPlace(e.key)).copyWith(calcDistanceFrom: coord);
-        list.add(_createPlace(place, e.value));
-      } on RepositoryException {
-        // пока игнорируем ошибки
+        final place = (await _getPlace(id)).copyWith(calcDistanceFrom: coord);
+        final newPlace = Place.from(place, userInfo: e.value);
+        _notify(PlaceChanged(newPlace));
+        list.add(newPlace);
+      } on RepositoryNotFoundException {
+        // Место было удалено, но осталось в избранном. Удаляем из избранного.
+        await dbRepository.removePlaceUserInfo(id);
       }
     });
 
@@ -203,7 +211,9 @@ class PlaceInteractor {
   Future<Place> _addToFavorite(Place place, Favorite favorite) async {
     final newUserInfo = place.userInfo.copyWith(favorite: favorite);
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return _createPlace(place, newUserInfo);
+    final newPlace = Place.from(place, userInfo: newUserInfo);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 
   /// Удаляет из избранного.
@@ -214,7 +224,9 @@ class PlaceInteractor {
   Future<Place> _removeFromFavorite(Place place, Favorite favorite) async {
     final newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return _createPlace(place, newUserInfo);
+    final newPlace = Place.from(place, userInfo: newUserInfo);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 
   /// Переключает в избранное и обратно.
@@ -226,6 +238,8 @@ class PlaceInteractor {
       newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
     }
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
-    return _createPlace(place, newUserInfo);
+    final newPlace = Place.from(place, userInfo: newUserInfo);
+    _notify(PlaceChanged(newPlace));
+    return newPlace;
   }
 }

@@ -17,7 +17,7 @@ MapSettings _$MapSettingsFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$MapSettingsToJson(MapSettings instance) =>
     <String, dynamic>{
-      'location': instance.location,
+      'location': instance.location.toJson(),
       'zoom': instance.zoom,
       'bearing': instance.bearing,
       'tilt': instance.tilt,

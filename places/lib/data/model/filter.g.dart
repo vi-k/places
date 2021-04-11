@@ -16,7 +16,7 @@ Filter _$FilterFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$FilterToJson(Filter instance) => <String, dynamic>{
-      'radius': instance.radius,
+      'radius': instance.radius.toJson(),
       'placeTypes':
           instance.placeTypes?.map((e) => _$PlaceTypeEnumMap[e]).toList(),
     };

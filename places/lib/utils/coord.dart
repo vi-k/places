@@ -68,8 +68,7 @@ class Coord extends Equatable {
   @override
   List<Object?> get props => [lat, lon];
 
-  factory Coord.fromJson(Map<String, dynamic> json) =>
-      _$CoordFromJson(json);
+  factory Coord.fromJson(Map<String, dynamic> json) => _$CoordFromJson(json);
   Map<String, dynamic> toJson() => _$CoordToJson(this);
 
   /// Рассчитывает расстояние между точками по методу хорды.
@@ -82,5 +81,5 @@ class Coord extends Equatable {
       Distance(calcDistance(lat, lon, to.lat, to.lon));
 
   @override
-  String toString() => '($lat, $lon)';
+  String toString() => '(${lat.toStringAsFixed(6)}, ${lon.toStringAsFixed(6)})';
 }

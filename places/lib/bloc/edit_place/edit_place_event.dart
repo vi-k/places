@@ -1,6 +1,5 @@
 part of 'edit_place_bloc.dart';
 
-@immutable
 abstract class EditPlaceEvent extends Equatable {
   const EditPlaceEvent();
 

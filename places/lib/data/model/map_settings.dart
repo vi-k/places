@@ -25,8 +25,10 @@ class MapSettings extends Equatable {
   List<Object> get props => [location, zoom, bearing, tilt];
 
   @override
-  String toString() =>
-      'MapSettings(location: $location, zoom: $zoom, bearing: $bearing, $tilt)';
+  String toString() => 'MapSettings(location: $location, '
+      'zoom: $zoom, '
+      'bearing: $bearing, '
+      'tilt: $tilt)';
 
   factory MapSettings.fromJson(Map<String, dynamic> json) =>
       _$MapSettingsFromJson(json);

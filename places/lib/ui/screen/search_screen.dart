@@ -9,6 +9,7 @@ import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
 import 'package:places/ui/res/themes.dart';
+import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/place_small_card.dart';
 import 'package:places/ui/widget/search_bar.dart';
@@ -19,12 +20,23 @@ import 'package:places/ui/widget/svg_button.dart';
 
 /// Экран поиска.
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({
+  const SearchScreen._({
     Key? key,
   }) : super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
+
+  /// Помещаем блок выше экрана, чтобы из контекста стейта сразу можно было
+  /// обращаться к блоку.
+  static void start(BuildContext context) {
+    standartNavigatorPush<void>(
+        context,
+        () => BlocProvider<SearchBloc>(
+            create: (_) => SearchBloc(context.read<PlaceInteractor>())
+              ..add(const SearchLoadHistory()),
+            child: const SearchScreen._()));
+  }
 }
 
 class _SearchScreenState extends State<SearchScreen> {
@@ -35,55 +47,78 @@ class _SearchScreenState extends State<SearchScreen> {
   static final _placeCardPadding = commonPaddingLR.copyWith(
       left: commonSpacing + photoCardSize + commonSpacing);
 
+  SearchBloc get bloc => context.read<SearchBloc>();
+
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
 
-    return BlocProvider<SearchBloc>(
-      create: (_) => SearchBloc(context.read<PlaceInteractor>())
-        ..add(const SearchLoadHistory()),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: SmallAppBar(
-          title: stringPlaceList,
-          bottom: Padding(
-            padding: commonPadding,
-            child: BlocBuilder<SearchBloc, SearchState>(
-              builder: (context, state) => SearchBar(
-                initialText: initialText,
-                onTextChanged: (text) {
-                  if (lastQuery != text) {
-                    lastQuery = text;
-                    context.read<SearchBloc>().add(text.isEmpty
-                        ? const SearchLoadHistory()
-                        : Search(text));
-                  }
-                },
-              ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: SmallAppBar(
+        title: stringPlaceList,
+        bottom: Padding(
+          padding: commonPadding,
+          child: BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) => SearchBar(
+              initialText: initialText,
+              onTextChanged: (text) {
+                if (lastQuery != text) {
+                  lastQuery = text;
+                  context.read<SearchBloc>().add(
+                      text.isEmpty ? const SearchLoadHistory() : Search(text));
+                }
+              },
             ),
           ),
         ),
-        body: BlocBuilder<SearchBloc, SearchState>(
-          builder: (context, state) => state is SearchHistoryReady
-              ? _buildHistory(context, theme, state)
-              : state is SearchReady
-                  ? state.places.isEmpty
-                      ? const Failed(
-                          svg: Svg64.search,
-                          title: stringNothingFound,
-                          message: stringNothingFoundMessage,
-                        )
-                      : _buildResults(state.places)
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-        ),
+      ),
+      body: BlocBuilder<SearchBloc, SearchState>(
+        builder: (context, state) {
+          if (state is SearchHistoryFailed) {
+            return Failed(
+              svg: Svg64.delete,
+              title: stringError,
+              message: state.error.toString(),
+              onRepeat: () => bloc.add(const SearchLoadHistory()),
+            );
+          }
+
+          if (state is SearchHistory) {
+            return _buildHistory(context, theme, state);
+          }
+
+          if (state is SearchFailed) {
+            return Failed(
+              svg: Svg64.delete,
+              title: stringError,
+              message: state.error.toString(),
+              onRepeat: () => bloc.add(Search(state.text)),
+            );
+          }
+
+          if (state is SearchResults) {
+            if (state.places.isEmpty) {
+              return const Failed(
+                svg: Svg64.search,
+                title: stringNothingFound,
+                message: stringNothingFoundMessage,
+              );
+            } else {
+              return _buildResults(state.places);
+            }
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
 
   Widget _buildHistory(
-          BuildContext context, MyThemeData theme, SearchHistoryReady state) =>
+          BuildContext context, MyThemeData theme, SearchHistory state) =>
       state.history.isEmpty
           ? const Failed(
               svg: Svg64.search,

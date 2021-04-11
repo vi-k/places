@@ -7,7 +7,6 @@ import 'package:places/data/model/place.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
-import 'package:places/ui/utils/animation.dart';
 import 'package:places/ui/widget/app_navigation_bar.dart';
 import 'package:places/ui/widget/failed.dart';
 import 'package:places/ui/widget/place_card_grid.dart';
@@ -43,6 +42,12 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         ],
         body: BlocBuilder<PlacesBloc, PlacesState>(
           builder: (context, state) {
+            if (state is PlacesLoading || state.places.isNotReady) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
             if (state is PlacesLoadingFailed) {
               return Failed(
                 svg: Svg64.delete,
@@ -52,15 +57,9 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
               );
             }
 
-            if (state.places == null || state is PlacesLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
             return RefreshIndicator(
               onRefresh: () async => bloc.add(const PlacesReload()),
-              child: state.places!.isEmpty
+              child: state.places.value.isEmpty
                   ? const Failed(
                       svg: Svg64.search,
                       title: stringNothingFound,
@@ -70,7 +69,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                       slivers: [
                         PlaceCardGrid(
                           cardType: Favorite.no,
-                          places: state.places,
+                          places: state.places.value,
                           asSliver: true,
                           onCardClose: (place) => _deletePlace(context, place),
                         ),
@@ -100,13 +99,12 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         title: stringPlaceList,
         bottom: BlocBuilder<PlacesBloc, PlacesState>(
           buildWhen: (previous, current) => previous.filter != current.filter,
-          builder: (_, state) => state.filter == null
+          builder: (_, state) => state.filter.isNotReady
               ? const SizedBox()
               : SearchBar(
                   key: ValueKey(state.filter),
-                  onTap: () => standartNavigatorPush<String>(
-                      context, () => const SearchScreen()),
-                  filter: state.filter!,
+                  onTap: () => SearchScreen.start(context),
+                  filter: state.filter.value,
                   onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
                 ),
         ),
@@ -133,7 +131,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         false;
 
     if (doDelete) {
-      bloc.add(PlacesRemove(place));
+      bloc.add(PlacesRemovePlace(place));
     }
   }
 }

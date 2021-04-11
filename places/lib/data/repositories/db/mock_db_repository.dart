@@ -48,4 +48,8 @@ class MockDbRepository extends DbRepository {
       _placesUserInfo[placeId] = userInfo;
     }
   }
+
+  @override
+  Future<void> removePlaceUserInfo(int placeId) async =>
+      _placesUserInfo.removeWhere((key, value) => key == placeId);
 }

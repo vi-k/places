@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
-import 'package:places/bloc/my_bloc.dart';
+import 'package:places/bloc/app/app_settings.dart';
+import 'package:places/bloc/bloc_values.dart';
 import 'package:places/data/model/filter.dart';
-import 'package:places/data/model/settings.dart';
 import 'package:places/data/repositories/key_value/key_value_repository.dart';
 import 'package:places/ui/res/themes.dart';
 
@@ -12,88 +12,76 @@ part 'app_event.dart';
 part 'app_state.dart';
 
 /// BLoC для инициализации приложения.
-class AppBloc extends MyBloc<AppEvent, AppState> {
-  AppBloc(this._keyValueRepository)
-      : super(const AppIniting());
+class AppBloc extends Bloc<AppEvent, AppState> {
+  AppBloc(this._keyValueRepository) : super(const AppState.init());
 
-  static const section = 'App';
-  static const isDarkTag = 'isDark';
-  static const showTutorialTag = 'showTutorial';
+  static const _section = 'App';
+  static const _settingsTag = 'settings';
 
   final KeyValueRepository _keyValueRepository;
 
-  late Settings _settings;
-  Settings get settings => _settings;
-
-  late MyThemeData _theme = createLightTheme();
+  late MyThemeData _theme = createDarkTheme();
   MyThemeData get theme => _theme;
-
-  // Инициализация приложения.
-  @override
-  Future<AppState> initBloc() async {
-    debugPrint('${DateTime.now()}: AppBloc.initBloc()');
-    await Future.wait([
-      // Загрузка настроек.
-      _loadSettings(),
-      // Выжидаем минимум времени.
-      Future<void>.delayed(const Duration(seconds: 4)),
-    ]);
-    debugPrint('${DateTime.now()}: AppBloc.initBloc() 2');
-
-    // Инициализация темы.
-    _initTheme(_settings.isDark);
-
-    debugPrint('${DateTime.now()}: AppBloc.initBloc() 3');
-    return const AppReady();
-  }
 
   @override
   Stream<AppState> mapEventToState(
     AppEvent event,
   ) async* {
-    debugPrint('${DateTime.now()}: AppBloc.mapEventToState() $event');
-    if (event is AppChangeSettings) {
+    if (event is AppRestoreOrInit) {
+      yield* _restoreOrInit();
+    } else if (event is AppChangeSettings) {
       yield* _changeSettings(event);
     }
   }
 
-  // Загрузка настроек.
-  Future<void> _loadSettings() async {
-    final isDark = await _keyValueRepository.loadBool(section, isDarkTag) ?? false;
-    final showTutorial =
-        await _keyValueRepository.loadBool(section, showTutorialTag) ?? true;
+  // Восстанавливает общее состояние приложения.
+  Stream<AppState> _restoreOrInit() async* {
+    AppSettings? settings;
 
-    _settings = Settings(
-      isDark: isDark,
-      showTutorial: showTutorial,
-    );
+    await Future.wait([
+      // Загружаем настройки.
+      _keyValueRepository.loadString(_section, _settingsTag).then((json) {
+        settings = json == null
+            ? const AppSettings.init()
+            : AppSettings.parseJson(json);
+      }),
+      // Выжидаем минимум времени.
+      Future<void>.delayed(const Duration(seconds: 4)),
+    ]);
+
+    // Инициализируем тему.
+    _updateTheme(settings!.isDark);
+
+    yield state.copyWith(settings: BlocValue(settings!));
   }
 
-  void _initTheme(bool isDark) {
+  // Обновляет тему.
+  void _updateTheme(bool isDark) {
     _theme = isDark ? createDarkTheme() : createLightTheme();
   }
 
-  // Изменение настроек.
+  // Изменяет и сохраняет настройки.
   Stream<AppState> _changeSettings(AppChangeSettings event) async* {
-    yield const AppChanging();
-
-    final isDark = event.isDark;
-    if (isDark != null && isDark != _settings.isDark) {
-      _initTheme(isDark);
+    if (state.settings.isNotReady) {
+      throw StateError('AppBloc: The state not initalized. '
+          'Dispatch an [AppRestoreOrInit] event.');
     }
 
-    _settings = _settings.copyWith(
-      isDark: event.isDark,
+    final isDark = event.isDark;
+    if (isDark != null && isDark != state.settings.value.isDark) {
+      _updateTheme(isDark);
+    }
+
+    // Меняем состояние.
+    final newSettings = BlocValue(state.settings.value.copyWith(
+      isDark: isDark,
       showTutorial: event.showTutorial,
-    );
+    ));
+    yield state.copyWith(settings: newSettings);
 
-    // Сохраняем настройки.
-    await Future.wait([
-      _keyValueRepository.saveBool(section, isDarkTag, _settings.isDark),
-      _keyValueRepository.saveBool(
-          section, showTutorialTag, _settings.showTutorial),
-    ]);
-
-    yield const AppReady();
+    // Сохраняем настройки (ради пользователя делаем это после изменения
+    // состояния).
+    final json = newSettings.value.jsonStringify();
+    await _keyValueRepository.saveString(_section, _settingsTag, json);
   }
 }

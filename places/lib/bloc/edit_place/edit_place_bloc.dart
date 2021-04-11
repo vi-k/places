@@ -3,15 +3,13 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:places/bloc/form_value.dart';
 import 'package:places/bloc/form_values.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/photo.dart';
-import 'package:places/data/model/place.dart';
+import 'package:places/data/model/place_base.dart';
 import 'package:places/data/model/place_type.dart';
-import 'package:places/data/model/place_user_info.dart';
 import 'package:places/data/repositories/location/location_repository.dart';
 import 'package:places/data/repositories/place/repository_exception.dart';
 import 'package:places/data/repositories/upload/upload_repository.dart';
@@ -148,7 +146,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
     }
   }
 
-  // Устанавливает тип.
+  // Устанавливает значения полей.
   Stream<EditPlaceState> _setValues(EditPlaceSetValues event) async* {
     try {
       yield state.copyWith(
@@ -181,7 +179,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
     }
   }
 
-  // Загружает данные о месте.
+  // Сохраняет изменения.
   Stream<EditPlaceState> _save() async* {
     final checkedState = state.copyWith(
       name: _validateName(state.name),
@@ -199,7 +197,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
 
     yield EditPlaceLoading(checkedState);
 
-    final place = Place(
+    final place = PlaceBase(
       id: _id,
       name: checkedState.name.value,
       coord: Coord(
@@ -209,7 +207,6 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
       photos: checkedState.photos.value.map((e) => e.url!).toList(),
       description: checkedState.description.value,
       type: checkedState.type.value!,
-      userInfo: PlaceUserInfo.zero,
     );
 
     try {

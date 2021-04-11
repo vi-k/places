@@ -4,12 +4,12 @@ import 'package:intl/intl.dart';
 
 import 'app.dart';
 import 'bloc_observer.dart';
+import 'logger.dart';
 
-Future<void> main() async {
+void main() {
   // await moveFromMockToRepository();
-  debugPrint('${DateTime.now()}: main()');
 
-  Bloc.observer = MyBlocObserver();
+  Bloc.observer = MyBlocObserver(logger);
 
   Intl.defaultLocale = 'ru_RU';
 

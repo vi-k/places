@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 import 'package:places/data/repositories/upload/resize_image.dart';
+import 'package:places/logger.dart';
 
 import 'upload_repository.dart';
 
@@ -24,7 +24,7 @@ class ApiUploadRepository extends UploadRepository {
     if (jpeg == null) return null;
 
     sw.stop();
-    debugPrint('resize photo: ${sw.elapsed}');
+    logger.d('resize photo: ${sw.elapsed}');
 
     // Загружаем на сервер.
     sw
@@ -42,7 +42,7 @@ class ApiUploadRepository extends UploadRepository {
     final location = response.headers.value('location');
 
     sw.stop();
-    debugPrint('upload photo: ${sw.elapsed} (location: $location)');
+    logger.d('upload photo: ${sw.elapsed} (location: $location)');
 
     if (location == null) return null;
 

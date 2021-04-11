@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:places/data/interactor/place_interactor.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/model/search_request.dart';
+import 'package:places/data/repositories/place/repository_exception.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
@@ -13,19 +13,21 @@ part 'search_state.dart';
 /// BLoC для поиска.
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc(this._placeInteractor) : super(const SearchLoading()) {
-    _placeInteractor.stream.listen((place) {
-      final currentState = state;
-      if (currentState is SearchReady) {
-        final index = currentState.places.indexWhere((e) => e.id == place.id);
-        if (index != -1) {
-          currentState.places[index] = place;
-          emit(SearchReady(currentState.places));
-        }
-      }
+    // Подписываемся на уведомления об изменении мест.
+    _placeInteractorSubscription =
+        _placeInteractor.stream.listen((notification) {
+      add(SearchNotifyPlace(notification));
     });
   }
 
   final PlaceInteractor _placeInteractor;
+  late final StreamSubscription<PlaceNotification> _placeInteractorSubscription;
+
+  @override
+  Future<void> close() async {
+    await _placeInteractorSubscription.cancel();
+    return super.close();
+  }
 
   @override
   Stream<SearchState> mapEventToState(
@@ -39,39 +41,97 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       yield* _clearHistory(event);
     } else if (event is SearchRemoveFromHistory) {
       yield* _removeFromHistory(event);
+    } else if (event is SearchNotifyPlace) {
+      yield* _notifyPlace(event);
     }
   }
 
+  // Ищет места в соответствии со строкой поиска.
   Stream<SearchState> _search(Search event) async* {
     yield const SearchLoading();
-    final history = await _placeInteractor.searchPlaces(event.text);
-    yield SearchReady(history);
+
+    try {
+      final results = await _placeInteractor.searchPlaces(event.text);
+      yield SearchResults(results);
+    } on RepositoryException catch (e) {
+      yield SearchFailed(event.text, e);
+    }
   }
 
+  void _checkHistory() {
+    if (state is! SearchHistory) {
+      throw StateError('SearchBloc: The history not loaded. '
+          'Dispatch a [SearchLoadHistory] event.');
+    }
+  }
+
+  // Загружает историю поиска.
   Stream<SearchState> _loadHistory(SearchLoadHistory event) async* {
     yield const SearchLoading();
-    final history = await _placeInteractor.getSearchHistory();
-    yield SearchHistoryReady(history);
+
+    try {
+      final history = await _placeInteractor.getSearchHistory();
+      yield SearchHistory(history);
+    } on RepositoryException catch (e) {
+      yield SearchHistoryFailed(e);
+    }
   }
 
+  // Очищает историю поиска.
   Stream<SearchState> _clearHistory(SearchClearHistory event) async* {
-    assert(state is SearchHistoryReady);
+    _checkHistory();
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
-    yield const SearchReady([]);
-    // TODO: Добавить обработку ошибок.
-    await _placeInteractor.clearSearchHistory();
+    yield const SearchResults([]);
+
+    try {
+      await _placeInteractor.clearSearchHistory();
+    } on RepositoryException catch (e) {
+      yield SearchHistoryFailed(e);
+    }
   }
 
+  // Удаляет из истории поиска.
   Stream<SearchState> _removeFromHistory(SearchRemoveFromHistory event) async* {
-    assert(state is SearchHistoryReady);
-    final currentState = state as SearchHistoryReady;
+    _checkHistory();
+
+    final currentState = state as SearchHistory;
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
     final newHistory = List<SearchRequest>.from(currentState.history)
       ..removeWhere((e) => e.text == event.text);
-    yield SearchHistoryReady(newHistory);
-    // TODO: Добавить обработку ошибок.
-    await _placeInteractor.removeFromSearchHistory(event.text);
+    yield SearchHistory(newHistory);
+
+    try {
+      await _placeInteractor.removeFromSearchHistory(event.text);
+    } on RepositoryException catch (e) {
+      yield SearchHistoryFailed(e);
+    }
+  }
+
+  // Обновляет место.
+  Stream<SearchState> _notifyPlace(SearchNotifyPlace event) async* {
+    final currentState = state;
+    if (currentState is! SearchResults) return;
+
+    final notification = event.notification;
+    if (notification is PlaceNotificationWithPlace) {
+      final place = notification.place;
+      final places = currentState.places;
+      final index = places.indexWhere((e) => e.id == place.id);
+      if (index != -1) {
+        final newPlaces = List<Place>.from(places);
+        newPlaces[index] = place;
+        yield SearchResults(newPlaces);
+      }
+    } else if (notification is PlaceRemoved) {
+      final placeId = notification.placeId;
+      final places = currentState.places;
+      final index = places.indexWhere((e) => e.id == placeId);
+      if (index != -1) {
+        final newPlaces = List<Place>.from(places)..removeAt(index);
+        yield SearchResults(newPlaces);
+      }
+    }
   }
 }

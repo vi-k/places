@@ -1,7 +1,5 @@
 part of 'favorite_bloc.dart';
 
-/// События для [_FavoriteBloc].
-@immutable
 abstract class FavoriteEvent extends Equatable {
   const FavoriteEvent();
 
@@ -9,30 +7,45 @@ abstract class FavoriteEvent extends Equatable {
   List<Object?> get props => [];
 
   @override
-  String toString() => '$runtimeType';
+  String toString() => '$runtimeType()';
 }
 
-/// Событие: загрузить избранное.
+/// Загрузить избранное.
 class FavoriteLoad extends FavoriteEvent {
   const FavoriteLoad();
 }
 
-/// Событие: удалить карточку из избранного.
-class FavoriteRemove extends FavoriteEvent {
-  const FavoriteRemove(this.place);
+abstract class FavoriteEventWithPlace extends FavoriteEvent {
+  const FavoriteEventWithPlace(this.place);
 
   final Place place;
 
   @override
   List<Object?> get props => [place];
+
+  @override
+  String toString() => '$runtimeType(${place.id} ${place.name})';
 }
 
-/// Событие: перенести карточку в соседний список.
-class FavoriteMoveToAdjacentList extends FavoriteEvent {
-  const FavoriteMoveToAdjacentList(this.place);
+/// Удалить карточку из избранного.
+class FavoriteRemovePlace extends FavoriteEventWithPlace {
+  const FavoriteRemovePlace(Place place) : super(place);
+}
 
-  final Place place;
+/// Перенести карточку в соседний список.
+class FavoriteMoveToAdjacentList extends FavoriteEventWithPlace {
+  const FavoriteMoveToAdjacentList(Place place) : super(place);
+}
+
+/// Уведомить об изменении места.
+class FavoriteNotifyPlace extends FavoriteEvent {
+  const FavoriteNotifyPlace(this.notification) : super();
+
+  final PlaceNotification notification;
 
   @override
-  List<Object?> get props => [place];
+  List<Object?> get props => [notification];
+
+  @override
+  String toString() => 'FavoriteNotifyPlace($notification)';
 }

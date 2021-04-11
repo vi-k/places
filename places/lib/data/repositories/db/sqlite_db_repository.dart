@@ -47,26 +47,19 @@ class SqliteDbRepository extends _$SqliteDbRepository with DbRepository {
   }
 
   @override
-  Future<void> saveSearchRequest(SearchRequest request) async {
-    await into(searchHistory)
-        .insertOnConflictUpdate(SearchHistoryCompanion.insert(
-      request: request.text,
-      timestamp: request.timestamp,
-      count: request.count,
-    ));
-  }
+  Future<void> saveSearchRequest(SearchRequest request) =>
+      into(searchHistory).insertOnConflictUpdate(SearchHistoryCompanion.insert(
+        request: request.text,
+        timestamp: request.timestamp,
+        count: request.count,
+      ));
 
   @override
-  Future<void> clearSearchHistory() async {
-    await delete(searchHistory).go();
-  }
+  Future<void> clearSearchHistory() => delete(searchHistory).go();
 
   @override
-  Future<void> deleteSearchRequest(String requestText) async {
-    await (delete(searchHistory)
-          ..where((t) => t.request.equals(requestText)))
-        .go();
-  }
+  Future<void> deleteSearchRequest(String requestText) =>
+      (delete(searchHistory)..where((t) => t.request.equals(requestText))).go();
 
   @override
   Future<Map<int, PlaceUserInfo>> getFavorites(Favorite type) async {
@@ -98,23 +91,26 @@ class SqliteDbRepository extends _$SqliteDbRepository with DbRepository {
   @override
   Future<void> updatePlaceUserInfo(int placeId, PlaceUserInfo userInfo) async {
     if (userInfo.favorite == Favorite.no && userInfo.isEmpty) {
-      await (delete(placesInfo)..where((t) => t.placeId.equals(placeId)))
-          .go();
+      await (delete(placesInfo)..where((t) => t.placeId.equals(placeId))).go();
     } else {
-      await into(placesInfo)
-          .insertOnConflictUpdate(PlacesInfoCompanion.insert(
+      await into(placesInfo).insertOnConflictUpdate(PlacesInfoCompanion.insert(
         placeId: Value(placeId),
         favorite: userInfo.favorite.index,
         planToVisit: Value(userInfo.planToVisit),
       ));
     }
   }
+
+  @override
+  Future<void> removePlaceUserInfo(int placeId) =>
+      (delete(placesInfo)..where((t) => t.placeId.equals(placeId))).go();
 }
 
 LazyDatabase _openConnection() => LazyDatabase(
       () async {
-        final dbPath = await getApplicationDocumentsDirectory();
-        final file = File(join(dbPath.path, 'db.sqlite'));
+        // final dbPath = await getApplicationDocumentsDirectory();
+        final dbPath = await getExternalStorageDirectory();
+        final file = File(join(dbPath!.path, 'db.sqlite'));
         return VmDatabase(file);
         // return VmDatabase(file, logStatements: true);
       },

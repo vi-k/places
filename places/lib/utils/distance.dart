@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:places/ui/res/strings.dart';
 
+import 'json.dart';
 import 'num_ext.dart';
 
 part 'distance.g.dart';
@@ -35,6 +36,7 @@ class Distance extends Equatable implements Comparable<Distance> {
   const Distance(this.value);
   const Distance.km(double value) : value = value * 1000;
 
+  @DoubleConverter()
   final double value;
 
   static const Distance zero = Distance(0);

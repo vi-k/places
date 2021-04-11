@@ -1,28 +1,31 @@
 part of 'app_bloc.dart';
 
-abstract class AppState extends Equatable {
-  const AppState();
+/// Основное состояние приложения.
+class AppState extends Equatable with BlocValues {
+  const AppState._({
+    required this.settings,
+  });
+
+  const AppState.init() : settings = const BlocValue.undefined();
+
+  AppState.from(AppState state) : settings = state.settings;
+
+  final BlocValue<AppSettings> settings;
 
   @override
-  List<Object?> get props => [];
+  List<BlocValue> get values => [settings];
 
   @override
-  bool? get stringify => true;
-}
+  List<Object?> get props => [values];
 
-/// Инициализация приложения.
-class AppIniting extends AppState {
-  const AppIniting();
-}
+  AppState copyWith({
+    BlocValue<AppSettings>? settings,
+  }) =>
+      AppState._(
+        settings: settings ?? this.settings,
+      );
 
-class AppChanging extends AppState {
-  const AppChanging();
-}
-
-/// Приложение готово.
-///
-/// Принципиально без константного конструктора!
-/// При каждом создании должен быть новый объект!
-class AppReady extends AppState {
-  const AppReady();
+  @override
+  // ignore: no_runtimetype_tostring
+  String toString() => '$runtimeType(settings: $settings)';
 }

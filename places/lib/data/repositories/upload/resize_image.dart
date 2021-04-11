@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
+import 'package:places/logger.dart';
 
 /// Изменяет размер и качество фотографии под заданный размер (в байтах).
 Future<List<int>?> resizePhotoOnIsolate(
@@ -61,7 +61,7 @@ void _resizePhoto(_ResizeParam param) {
   }
   final aspectRatio = srcWidth / srcHeight;
 
-  debugPrint('src image: ${srcWidth}x$srcHeight');
+  logger.d('src image: ${srcWidth}x$srcHeight');
 
   // Уменьшаем размер до макисмально возможного.
   var destWidth = param.maxWidth ?? srcWidth;
@@ -80,7 +80,7 @@ void _resizePhoto(_ResizeParam param) {
     interpolation: Interpolation.cubic,
   );
 
-  debugPrint('new image: ${image.width}x${image.height}');
+  logger.d('new image: ${image.width}x${image.height}');
 
   // Сжимаем до тех пор, пока размер картники не станет подходящим.
   List<int> jpeg;
@@ -88,7 +88,7 @@ void _resizePhoto(_ResizeParam param) {
 
   do {
     jpeg = encodeJpg(image, quality: quality);
-    debugPrint('quality: $quality size: ${jpeg.length}');
+    logger.d('quality: $quality size: ${jpeg.length}');
     quality--;
   } while (param.maxSizeInBytes != null && jpeg.length > param.maxSizeInBytes!);
 

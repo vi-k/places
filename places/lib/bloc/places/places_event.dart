@@ -1,19 +1,21 @@
 part of 'places_bloc.dart';
 
-@immutable
 abstract class PlacesEvent extends Equatable {
   const PlacesEvent();
 
   @override
   List<Object?> get props => [];
+
+  @override
+  String toString() => '$runtimeType()';
 }
 
-/// Событие: инициализация.
-class PlacesInit extends PlacesEvent {
-  const PlacesInit();
+/// Восстановить прошлое состояние или инициализировать.
+class PlacesRestoreOrInit extends PlacesEvent {
+  const PlacesRestoreOrInit();
 }
 
-/// Событие: загрузить список мест.
+/// Загрузить список мест.
 class PlacesLoad extends PlacesEvent {
   const PlacesLoad(this.filter);
 
@@ -21,24 +23,34 @@ class PlacesLoad extends PlacesEvent {
 
   @override
   List<Object?> get props => [filter];
+
+  @override
+  String toString() => 'PlacesLoad($filter)';
 }
 
-/// Событие: обновить список мест со старым фильтром.
+/// Обновить список мест со старым фильтром.
 class PlacesReload extends PlacesEvent {
   const PlacesReload();
 }
 
-/// Событие: удалить карточку.
-class PlacesRemove extends PlacesEvent {
-  const PlacesRemove(this.place) : super();
+abstract class PlacesWithPlace extends PlacesEvent {
+  const PlacesWithPlace(this.place) : super();
 
   final Place place;
 
   @override
   List<Object?> get props => [place];
+
+  @override
+  String toString() => '$runtimeType(#${place.id} ${place.name})';
 }
 
-/// Событие: инициализация.
+/// Удалить карточку.
+class PlacesRemovePlace extends PlacesWithPlace {
+  const PlacesRemovePlace(Place place) : super(place);
+}
+
+/// Сохранить настройки карты.
 class PlacesSaveMapSettings extends PlacesEvent {
   const PlacesSaveMapSettings({
     required this.mapSettings,
@@ -48,4 +60,20 @@ class PlacesSaveMapSettings extends PlacesEvent {
 
   @override
   List<Object?> get props => [mapSettings];
+
+  @override
+  String toString() => 'PlacesSaveMapSettings()';
+}
+
+/// Уведомить об изменении места.
+class PlacesNotifyPlace extends PlacesEvent {
+  const PlacesNotifyPlace(this.notification) : super();
+
+  final PlaceNotification notification;
+
+  @override
+  List<Object?> get props => [notification];
+
+  @override
+  String toString() => 'PlacesNotifyPlace($notification)';
 }

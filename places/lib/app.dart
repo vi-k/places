@@ -11,20 +11,17 @@ import 'bloc/favorite/favorite_bloc.dart';
 import 'bloc/places/places_bloc.dart';
 import 'data/interactor/place_interactor.dart';
 import 'data/repositories/db/db_repository.dart';
-import 'data/repositories/db/mock_db_repository.dart';
 import 'data/repositories/db/sqlite_db_repository.dart';
 import 'data/repositories/key_value/key_value_repository.dart';
-import 'data/repositories/key_value/mock_key_value_repository.dart';
 import 'data/repositories/key_value/shared_preferences_repository.dart';
 import 'data/repositories/location/location_repository.dart';
 import 'data/repositories/location/real_location_repository.dart';
 import 'data/repositories/place/api_place_mapper.dart';
 import 'data/repositories/place/api_place_repository.dart';
-import 'data/repositories/place/mock_place_repository.dart';
 import 'data/repositories/place/place_repository.dart';
 import 'data/repositories/upload/api_upload_repository.dart';
-import 'data/repositories/upload/mock_upload_repository.dart';
 import 'data/repositories/upload/upload_repository.dart';
+import 'logger.dart';
 import 'ui/screen/onboarding_screen.dart';
 import 'ui/screen/place_list_screen.dart';
 import 'ui/screen/splash_screen.dart';
@@ -45,114 +42,97 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print(state);
+    logger.d(state);
     super.didChangeAppLifecycleState(state);
   }
 
   @override
   void dispose() {
-    print('_AppState.dispose()');
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('${DateTime.now()}: App.build()');
+    logger.d('App.build');
     return MultiProvider(
+      providers: [
+        Provider<Dio>(
+          create: (context) => createDio(createDioOptions()),
+        ),
+        Provider<KeyValueRepository>(
+          create: (context) => SharedPreferencesRepository(),
+        ),
+        Provider<DbRepository>(
+          create: (context) => SqliteDbRepository(),
+        ),
+        ProxyProvider<Dio, UploadRepository>(
+          update: (context, dio, previous) => ApiUploadRepository(dio),
+        ),
+        ProxyProvider<Dio, PlaceRepository>(
+          update: (context, dio, previous) =>
+              ApiPlaceRepository(dio, ApiPlaceMapper()),
+        ),
+        Provider<LocationRepository>(
+          create: (context) => RealLocationRepository(),
+        ),
+        ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
+            PlaceInteractor>(
+          update: (context, placeRepository, dbRepository, locationRepository,
+                  previous) =>
+              PlaceInteractor(
+            placeRepository: placeRepository,
+            dbRepository: dbRepository,
+            locationRepository: locationRepository,
+          ),
+          dispose: (context, interactor) => interactor.close(),
+        ),
+      ],
+      child: MultiBlocProvider(
         providers: [
-          Provider<Dio>(
-            create: (context) => createDio(createDioOptions()),
+          BlocProvider<AppBloc>(
+            create: (context) => AppBloc(
+              context.read<KeyValueRepository>(),
+            )..add(const AppRestoreOrInit()),
           ),
-          Provider<KeyValueRepository>(
-            create: (context) => SharedPreferencesRepository(),
+          BlocProvider<PlacesBloc>(
+            create: (context) => PlacesBloc(
+              context.read<KeyValueRepository>(),
+              context.read<PlaceInteractor>(),
+            )..add(const PlacesRestoreOrInit()),
           ),
-          Provider<DbRepository>(
-            create: (context) => SqliteDbRepository(),
+          BlocProvider<WishlistBloc>(
+            create: (context) => WishlistBloc(
+              context.read<PlaceInteractor>(),
+            )..add(const FavoriteLoad()),
           ),
-          ProxyProvider<Dio, UploadRepository>(
-            update: (context, dio, previous) => ApiUploadRepository(dio),
-          ),
-          ProxyProvider<Dio, PlaceRepository>(
-            update: (context, dio, previous) =>
-                ApiPlaceRepository(dio, ApiPlaceMapper()),
-          ),
-          // Provider<KeyValueRepository>(
-          //   create: (context) => MockKeyValueRepository(),
-          // ),
-          // Provider<DbRepository>(
-          //   create: (context) => MockDbRepository(),
-          // ),
-          // Provider<PlaceRepository>(
-          //   create: (context) =>
-          //       MockPlaceRepository(),
-          // ),
-          // Provider<UploadRepository>(
-          //   create: (context) => const MockUploadRepository(),
-          // ),
-          Provider<LocationRepository>(
-            create: (context) => RealLocationRepository(),
-          ),
-          ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
-              PlaceInteractor>(
-            update: (context, placeRepository, dbRepository, locationRepository,
-                    previous) =>
-                PlaceInteractor(
-              placeRepository: placeRepository,
-              dbRepository: dbRepository,
-              locationRepository: locationRepository,
-            ),
-            dispose: (context, interactor) => interactor.close(),
+          BlocProvider<VisitedBloc>(
+            create: (context) => VisitedBloc(
+              context.read<PlaceInteractor>(),
+            )..add(const FavoriteLoad()),
           ),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AppBloc>(
-              create: (context) => AppBloc(
-                context.read<KeyValueRepository>(),
-              )..add(const AppInit()),
-            ),
-            BlocProvider<PlacesBloc>(
-              create: (context) => PlacesBloc(
-                context.read<KeyValueRepository>(),
-                context.read<PlaceInteractor>(),
-              ),
-            ),
-            BlocProvider<WishlistBloc>(
-              create: (context) => WishlistBloc(
-                context.read<PlaceInteractor>(),
-              )..add(const FavoriteLoad()),
-            ),
-            BlocProvider<VisitedBloc>(
-              create: (context) => VisitedBloc(
-                context.read<PlaceInteractor>(),
-              )..add(const FavoriteLoad()),
-            ),
-          ],
-          child: BlocBuilder<AppBloc, AppState>(
-            builder: (context, state) {
-              debugPrint('${DateTime.now()}: $state');
-              return MaterialApp(
-                key: ValueKey(state is! AppIniting),
-                title: 'Places',
-                theme: context.watch<AppBloc>().theme.app,
-                localizationsDelegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('ru'),
-                ],
-                home: state is AppIniting
-                    ? SplashScreen()
-                    : context.watch<AppBloc>().settings.showTutorial
-                        ? OnboardingScreen()
-                        : PlaceListScreen(),
-              );
-            },
+        child: BlocBuilder<AppBloc, AppState>(
+          builder: (context, state) => MaterialApp(
+            key: ValueKey(state.settings.isReady),
+            title: 'Places',
+            theme: context.watch<AppBloc>().theme.app,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('ru'),
+            ],
+            home: state.isNotReady
+                ? const SplashScreen()
+                : state.settings.value.showTutorial
+                    ? OnboardingScreen()
+                    : PlaceListScreen(),
           ),
         ),
-      );
+      ),
+    );
   }
 }

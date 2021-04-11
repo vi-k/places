@@ -30,6 +30,17 @@ class FormValue<T> extends Equatable {
   @override
   List<Object?> get props => [value, isModified, state, error];
 
+  @override
+  String toString({bool value = true, bool info = true}) => [
+        if (value) this.value is String ? "'${this.value}'" : '${this.value}',
+        if (info)
+          [
+            state.toString().replaceFirst(RegExp(r'.*\.'), ''),
+            if (isModified) 'modified',
+            if (error != null) "'$error'",
+          ].join(' '),
+      ].join(' ');
+
   bool get isUndefined => state == FormValueState.undefined;
   bool get isUnderway => state == FormValueState.underway;
   bool get isValid => state == FormValueState.valid;
@@ -48,15 +59,4 @@ class FormValue<T> extends Equatable {
 
   FormValue<T> setValue(T value, {bool save = false}) => FormValue._(
       value, !save && (isModified || value != this.value), state, error);
-
-  @override
-  String toString({bool value = true, bool info = true}) => [
-        if (value) this.value is String ? "'${this.value}'" : '${this.value}',
-        if (info)
-          [
-            state.toString().replaceFirst(RegExp(r'.*\.'), ''),
-            if (isModified) 'modified',
-            if (error != null) "'$error'",
-          ].join(' '),
-      ].join(' ');
 }

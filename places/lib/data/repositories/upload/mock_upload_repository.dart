@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:places/data/repositories/upload/resize_image.dart';
+import 'package:places/logger.dart';
 
 import 'upload_repository.dart';
 
@@ -19,10 +19,11 @@ class MockUploadRepository extends UploadRepository {
     if (jpeg == null) return null;
 
     sw.stop();
-    debugPrint('resize photo: ${sw.elapsed}');
+    logger.d('resize photo: ${sw.elapsed}');
 
-    debugPrint('file:/${file.path}');
+    final location = 'file:/${file.path}';
+    logger.d(location);
 
-    return 'file:/${file.path}';
+    return location;
   }
 }

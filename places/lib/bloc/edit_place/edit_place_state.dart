@@ -4,7 +4,6 @@ part of 'edit_place_bloc.dart';
 ///
 /// Основной класс состояния формы. Все остальные классы выполняют роль
 /// надстройки над ним для дополнительной информации о состоянии формы.
-@immutable
 class EditPlaceState extends Equatable with FormValues {
   const EditPlaceState._({
     required this.name,

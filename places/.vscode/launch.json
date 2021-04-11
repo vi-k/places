@@ -5,16 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart",
+            "name": "dev",
             "type": "dart",
             "request": "launch",
-            "args": ["--no-sound-null-safety"],
+            "args": [],
         },
         {
-            "name": "Profile",
+            "name": "profile",
             "type": "dart",
             "request": "launch",
-            "args": ["--no-sound-null-safety", "--profile"],
-        }
+            "args": ["--profile"],
+        },
+        {
+            "name": "prod",
+            "type": "dart",
+            "request": "launch",
+            "args": ["--release"],
+        },
     ]
 }

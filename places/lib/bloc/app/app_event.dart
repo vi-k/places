@@ -7,9 +7,9 @@ abstract class AppEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Инициализировать приложение.
-class AppInit extends AppEvent {
-  const AppInit();
+/// Восстановить прошлое состояние или инициализировать.
+class AppRestoreOrInit extends AppEvent {
+  const AppRestoreOrInit();
 }
 
 /// Изменить настройки.

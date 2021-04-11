@@ -4,18 +4,6 @@ class VisitedBloc extends _FavoriteBloc {
   VisitedBloc(PlaceInteractor placeInteractor) : super._(placeInteractor);
 
   @override
-  bool _onEvent(Place place) {
-    if (super._onEvent(place)) return true;
-
-    if (place.userInfo.favorite == Favorite.visited) {
-      emit(const FavoriteUnstable());
-      return true;
-    }
-
-    return false;
-  }
-
-  @override
   Future<List<Place>> _getList() => _placeInteractor.getVisited();
 
   @override
@@ -25,4 +13,7 @@ class VisitedBloc extends _FavoriteBloc {
   @override
   Future<Place> _addToAdjacentList(Place place) =>
       _placeInteractor.addToWishlist(place);
+
+  @override
+  bool _isOwn(Place place) => place.userInfo.favorite == Favorite.visited;
 }
