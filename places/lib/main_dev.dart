@@ -1,15 +1,22 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 import 'app.dart';
 import 'bloc_observer.dart';
-import 'logger.dart';
+import 'environment/build_config.dart';
+import 'environment/build_type.dart';
+import 'environment/environment.dart';
 
 void main() {
-  // await moveFromMockToRepository();
+  Environment.init(
+    buildType: BuildType.dev,
+    buildConfig: const BuildConfig(message: "It's a dev flavor"),
+    loggerLevel: Level.verbose,
+  );
 
-  Bloc.observer = MyBlocObserver(logger);
+  Bloc.observer = MyBlocObserver();
 
   Intl.defaultLocale = 'ru_RU';
 

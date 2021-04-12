@@ -92,6 +92,5 @@ void _resizePhoto(_ResizeParam param) {
     quality--;
   } while (param.maxSizeInBytes != null && jpeg.length > param.maxSizeInBytes!);
 
-  print(jpeg.runtimeType);
   param.sendPort.send(jpeg);
 }

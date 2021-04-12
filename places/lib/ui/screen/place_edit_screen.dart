@@ -589,7 +589,6 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       // задержку, чтобы камера успела установиться.
       await Future<void>.delayed(const Duration(milliseconds: 300));
       _updateMapController = false;
-      print('_updateMapController = false');
     } on MissingPluginException catch (_) {
       // Если переключить на другой экран, не дождавшись завершения, то получаем
       // исключение 'No implementation found for method ...'.

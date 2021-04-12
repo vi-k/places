@@ -1,12 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:logger/logger.dart';
 
 import 'bloc/place/place_bloc.dart';
+import 'logger.dart';
 
 class MyBlocObserver extends BlocObserver {
-  MyBlocObserver(this.logger);
-
-  final Logger logger;
+  MyBlocObserver();
 
   @override
   void onCreate(BlocBase bloc) {

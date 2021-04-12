@@ -148,7 +148,9 @@ class _SearchBarState extends State<SearchBar> {
                 right: 4,
                 child: filter?.let((it) => SvgButton(
                           Svg24.filter,
-                          color: theme.accentColor,
+                          color: it == Filter()
+                              ? theme.mainTextColor
+                              : theme.accentColor,
                           onPressed: () async {
                             final newFilter =
                                 await standartNavigatorPush<Filter>(

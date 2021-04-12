@@ -1,0 +1,4 @@
+flutter_icons:
+  image_path: "res_not_included/logo_prod.png"
+  android: true
+  ios: false

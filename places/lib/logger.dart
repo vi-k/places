@@ -1,7 +1,3 @@
 import 'package:logger/logger.dart';
 
-Logger logger = Logger(
-  printer: SimplePrinter(
-    // printTime: true,
-  ),
-);
+late final Logger logger = Logger(printer: SimplePrinter());
