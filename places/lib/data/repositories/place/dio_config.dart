@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:places/logger.dart';
 
 import 'dio_exception.dart';
 
@@ -14,25 +15,24 @@ Dio createDio(BaseOptions options) => Dio(options)
   ..interceptors.add(InterceptorsWrapper(
     onError: (error, handler) {
       final repositoryException = createExceptionFromDio(error);
-      print(repositoryException);
+      logger.d(repositoryException);
       handler.next(error);
     },
     onRequest: (options, handler) {
-      print('Выполняется запрос: ${options.method} ${options.uri}');
+      logger.d('Выполняется запрос: ${options.method} ${options.uri}');
       final dynamic data = options.data;
       if (data != null) {
         if (data is FormData) {
-          print(data.fields);
+          logger.d(data.fields);
         } else {
-          print('data: $data');
+          logger.d('data: $data');
         }
       }
       handler.next(options);
     },
     onResponse: (response, handler) {
-      print('Получен ответ: '
+      logger.d('Получен ответ: '
           '${response.statusMessage} (${response.statusCode})');
-      // print(response.data);
       handler.next(response);
     },
   ));

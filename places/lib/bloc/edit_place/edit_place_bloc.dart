@@ -43,8 +43,6 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   Stream<EditPlaceState> mapEventToState(
     EditPlaceEvent event,
   ) async* {
-    print('Event: $event');
-
     if (event is EditPlaceSetLocation) {
       yield* _setLocation();
     } else if (event is EditPlaceLoad) {
@@ -73,7 +71,6 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   // Устанавливает начальные координаты (вне mapEventToState).
   Future<void> _setLocationAsync() async {
     final location = await _locationRepository.getLocation();
-    print('location: $location, state: $state');
     if (location != null && state.lat.isUndefined && state.lon.isUndefined) {
       emit(state.copyWith(
         lat: _validateLatValue(state.lat, location.lat),

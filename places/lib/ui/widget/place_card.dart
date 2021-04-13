@@ -390,7 +390,6 @@ class _PlaceCardState extends State<PlaceCard>
     // Не знаю, как удалить дату. Как временное решение - удаляю, если дата
     // посещения установлена в прошлом.
     if (date != null) {
-      print('date: $date');
       final userInfo = date.isBefore(today)
           ? place.userInfo.copyWith(planToVisitReset: true)
           : place.userInfo.copyWith(planToVisit: date);
