@@ -9,6 +9,7 @@ import 'package:places/data/model/map_settings.dart';
 import 'package:places/data/model/place.dart';
 import 'package:places/data/repositories/key_value/key_value_repository.dart';
 import 'package:places/data/repositories/place/repository_exception.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'places_event.dart';
 part 'places_state.dart';
@@ -29,15 +30,25 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   static const _section = 'Places';
   static const _filterTag = 'filter';
   static const _mapSettingsTag = 'mapSettings';
+  static const _scrollOffsetTag = 'scrollOffset';
 
   final KeyValueRepository _keyValueRepository;
   final PlaceInteractor _placeInteractor;
   late final StreamSubscription<PlaceNotification> _placeInteractorSubscription;
+  late final StreamController _debounceController =
+      StreamController<PlacesEvent>()
+        ..stream.debounceTime(const Duration(milliseconds: 500)).listen(add);
 
   @override
   Future<void> close() async {
     await _placeInteractorSubscription.cancel();
+    await _debounceController.close();
     return super.close();
+  }
+
+  void slowAdd(PlacesEvent event) {
+    if (_debounceController.isClosed) return;
+    _debounceController.add(event);
   }
 
   @override
@@ -55,6 +66,8 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
       yield* _removePlace(event);
     } else if (event is PlacesSaveMapSettings) {
       yield* _saveMapSettings(event);
+    } else if (event is PlacesSaveScrollOffset) {
+      yield* _saveScrollOffset(event);
     } else if (event is PlacesNotifyPlace) {
       yield* _notifyPlace(event);
     }
@@ -87,9 +100,13 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     final mapSettings =
         mapSettingsJson == null ? null : MapSettings.parseJson(mapSettingsJson);
 
+    final scrollOffset =
+        await _keyValueRepository.loadDouble(_section, _scrollOffsetTag) ?? 0;
+
     yield state.copyWith(
       filter: BlocValue(filter),
       mapSettings: BlocValue(mapSettings),
+      scrollOffset: BlocValue(scrollOffset),
     );
 
     add(const PlacesReload());
@@ -136,6 +153,13 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     final json = event.mapSettings.jsonStringify();
     await _keyValueRepository.saveString(_section, _mapSettingsTag, json);
     yield state.copyWith(mapSettings: BlocValue(event.mapSettings));
+  }
+
+  // Сохраняет позицию скролла.
+  Stream<PlacesState> _saveScrollOffset(PlacesSaveScrollOffset event) async* {
+    await _keyValueRepository.saveDouble(
+        _section, _scrollOffsetTag, event.scrollOffset);
+    yield state.copyWith(scrollOffset: BlocValue(event.scrollOffset));
   }
 
   // Обновляет место.

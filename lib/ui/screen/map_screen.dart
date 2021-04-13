@@ -114,15 +114,16 @@ class _MapScreenState extends State<MapScreen>
                       onCameraIdle: () {
                         if (_lastPosition != null) {
                           bloc.add(PlacesSaveMapSettings(
-                              mapSettings: MapSettings(
-                            location: Coord(
-                              _lastPosition!.target.latitude,
-                              _lastPosition!.target.longitude,
+                            MapSettings(
+                              location: Coord(
+                                _lastPosition!.target.latitude,
+                                _lastPosition!.target.longitude,
+                              ),
+                              zoom: _lastPosition!.zoom,
+                              bearing: _lastPosition!.bearing,
+                              tilt: _lastPosition!.tilt,
                             ),
-                            zoom: _lastPosition!.zoom,
-                            bearing: _lastPosition!.bearing,
-                            tilt: _lastPosition!.tilt,
-                          )));
+                          ));
                         }
                       },
                       mapToolbarEnabled: false,

@@ -11,28 +11,37 @@ class AppSettings extends Equatable {
   const AppSettings({
     required this.isDark,
     required this.showTutorial,
+    required this.animationDuration,
   });
 
   const AppSettings.init()
       : isDark = false,
-        showTutorial = true;
+        showTutorial = true,
+        animationDuration = 300;
 
   final bool isDark;
   final bool showTutorial;
 
-  @override
-  List<Object?> get props => [isDark, showTutorial];
+  @JsonKey(defaultValue: 300)
+  final int animationDuration;
 
   @override
-  String toString() => 'Settings(isDark: $isDark, showTutorial: $showTutorial)';
+  List<Object?> get props => [isDark, showTutorial, animationDuration];
+
+  @override
+  String toString() => 'Settings(isDark: $isDark, '
+      'showTutorial: $showTutorial, '
+      'animationDuration: $animationDuration)';
 
   AppSettings copyWith({
     bool? isDark,
     bool? showTutorial,
+    int? animationDuration,
   }) =>
       AppSettings(
         isDark: isDark ?? this.isDark,
         showTutorial: showTutorial ?? this.showTutorial,
+        animationDuration: animationDuration ?? this.animationDuration,
       );
 
   factory AppSettings.fromJson(Map<String, dynamic> json) =>

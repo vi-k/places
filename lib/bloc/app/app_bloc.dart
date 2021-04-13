@@ -6,6 +6,7 @@ import 'package:places/bloc/app/app_settings.dart';
 import 'package:places/bloc/bloc_values.dart';
 import 'package:places/data/model/filter.dart';
 import 'package:places/data/repositories/key_value/key_value_repository.dart';
+import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/themes.dart';
 
 part 'app_event.dart';
@@ -36,23 +37,27 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   // Восстанавливает общее состояние приложения.
   Stream<AppState> _restoreOrInit() async* {
-    AppSettings? settings;
+    var settings = const AppSettings.init();
 
     await Future.wait([
       // Загружаем настройки.
       _keyValueRepository.loadString(_section, _settingsTag).then((json) {
-        settings = json == null
-            ? const AppSettings.init()
-            : AppSettings.parseJson(json);
+        if (json != null) {
+          settings = AppSettings.parseJson(json);
+        }
       }),
       // Выжидаем минимум времени.
       Future<void>.delayed(const Duration(seconds: 4)),
     ]);
 
     // Инициализируем тему.
-    _updateTheme(settings!.isDark);
+    _updateTheme(settings.isDark);
 
-    yield state.copyWith(settings: BlocValue(settings!));
+    // Меняем стандартную длительность анимации.
+    standartAnimationDuration =
+        Duration(milliseconds: settings.animationDuration);
+
+    yield state.copyWith(settings: BlocValue(settings));
   }
 
   // Обновляет тему.
@@ -72,16 +77,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _updateTheme(isDark);
     }
 
+    final animationDuration = event.animationDuration;
+    if (animationDuration != null) {
+      standartAnimationDuration = Duration(milliseconds: animationDuration);
+    }
+
     // Меняем состояние.
-    final newSettings = BlocValue(state.settings.value.copyWith(
+    final newSettings = state.settings.value.copyWith(
       isDark: isDark,
       showTutorial: event.showTutorial,
-    ));
-    yield state.copyWith(settings: newSettings);
+      animationDuration: animationDuration,
+    );
+    yield state.copyWith(settings: BlocValue(newSettings));
 
     // Сохраняем настройки (ради пользователя делаем это после изменения
     // состояния).
-    final json = newSettings.value.jsonStringify();
+    final json = newSettings.jsonStringify();
     await _keyValueRepository.saveString(_section, _settingsTag, json);
   }
 }

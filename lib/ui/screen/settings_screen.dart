@@ -17,6 +17,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  AppBloc get appBloc => context.read<AppBloc>();
+
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<AppBloc>().theme;
@@ -34,9 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: theme.textRegular14Main,
               ),
               value: state.settings.value.isDark,
-              onChanged: (value) {
-                context.read<AppBloc>().add(AppChangeSettings(isDark: value));
-              },
+              onChanged: (value) =>
+                  appBloc.add(AppChangeSettings(isDark: value)),
             ),
             const _ListDivider(),
             ListTile(
@@ -52,12 +53,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context, () => OnboardingScreen()),
             ),
             const _ListDivider(),
+            SwitchListTile(
+              title: Text(
+                stringShowTutorialOnNextStartup,
+                style: theme.textRegular14Main,
+              ),
+              value: state.settings.value.showTutorial,
+              onChanged: (value) =>
+                  appBloc.add(AppChangeSettings(showTutorial: value)),
+            ),
+            const _ListDivider(),
+            ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    stringAnimationDuration,
+                    style: theme.textRegular14Main,
+                  ),
+                  Text(
+                    '${state.settings.value.animationDuration} мс',
+                    style: theme.textRegular14Accent,
+                  ),
+                ],
+              ),
+              subtitle: Slider(
+                min: 0,
+                max: _sliderValues.length - 1,
+                divisions: _sliderValues.length - 1,
+                value: _valueToSlider(state.settings.value.animationDuration),
+                onChanged: (value) => appBloc.add(AppChangeSettings(
+                    animationDuration: _sliderToValue(value))),
+              ),
+            ),
+            const _ListDivider(),
           ],
         ),
       ),
       bottomNavigationBar: const AppNavigationBar(index: 3),
     );
   }
+
+  final _sliderValues = [0, 100, 200, 300, 500, 1000, 1500, 2000, 3000];
+
+  double _valueToSlider(int value) {
+    for (final e in _sliderValues.asMap().entries) {
+      if (e.value == value) return e.key.toDouble();
+    }
+    return 250;
+  }
+
+  int _sliderToValue(double slider) => _sliderValues[slider.round()];
 }
 
 class _ListDivider extends StatelessWidget {

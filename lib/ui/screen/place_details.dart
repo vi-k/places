@@ -103,6 +103,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
         ),
         const SizedBox(height: dividerHeight),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               PlaceTypeUi(place.type).lowerCaseName,
@@ -110,7 +111,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
             ),
             const SizedBox(width: commonSpacing),
             Text(
-              'закрыто до 09:00', // Временно
+              '${place.distance}',
               style: theme.textRegular14Light,
             ),
           ],

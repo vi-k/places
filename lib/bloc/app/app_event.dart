@@ -17,13 +17,16 @@ class AppChangeSettings extends AppEvent {
   const AppChangeSettings({
     this.isDark,
     this.showTutorial,
+    this.animationDuration,
     this.filter,
   });
 
   final bool? isDark;
   final bool? showTutorial;
+  final int? animationDuration;
   final Filter? filter;
 
   @override
-  List<Object?> get props => [isDark, showTutorial, filter];
+  List<Object?> get props =>
+      [isDark, showTutorial, animationDuration, filter];
 }

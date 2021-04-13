@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:places/utils/coord.dart';
 
@@ -78,9 +77,7 @@ const appBarFiltersPadding = EdgeInsets.only(top: 8, bottom: 24);
 const clearPadding = EdgeInsets.all(4);
 
 /// Анимация.
-const standartAnimationDuration =
-    Duration(milliseconds: kReleaseMode ? 300 : 600);
-// Duration(milliseconds: 300);
+late Duration standartAnimationDuration;
 
 /// Картография
 const initialPlace = Coord(52.5442, 31.8089); // Новое место

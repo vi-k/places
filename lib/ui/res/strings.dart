@@ -1,5 +1,6 @@
 /// Строковые константы.
 
+const stringAnimationDuration = 'Длительность анимации';
 const stringApply = 'Показать';
 const stringBuildRoute = 'Построить маршрут';
 const stringCamera = 'Камера';
@@ -58,6 +59,7 @@ const stringSave = 'Сохранить';
 const stringSearch = 'Поиск';
 const stringSettings = 'Настройки';
 const stringPlaceList = 'Список интересных мест';
+const stringShowTutorialOnNextStartup = 'Смотреть туториал при следующем запуске';
 const stringSkip = 'Пропустить';
 const stringStart = 'На старт';
 const stringToFavorite = 'В Избранное';

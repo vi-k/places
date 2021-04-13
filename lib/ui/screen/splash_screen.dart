@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   late final Animation<double> _animation =
       Tween<double>(begin: 0, end: 4 * pi).animate(CurvedAnimation(
-    curve: Curves.easeInOutExpo,
+    curve: Curves.easeInOutCirc,
     parent: _animController,
   ));
 

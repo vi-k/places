@@ -23,14 +23,15 @@ class PageViewSelector extends StatefulWidget {
 }
 
 class _PageViewSelectorState extends State<PageViewSelector> {
-  late final PageController _controller = widget.controller
-    ..addListener(_onPageChanged);
+  late final PageController _controller = widget.controller;
 
   var _currentPage = 0.0;
 
-  void _onPageChanged() => setState(() {
-        _currentPage = _controller.page ?? 0;
-      });
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onPageChanged);
+  }
 
   @override
   void dispose() {
@@ -47,31 +48,39 @@ class _PageViewSelectorState extends State<PageViewSelector> {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < widget.count; i++) ...[
-          const SizedBox(width: commonSpacing1_2),
           InkWell(
+            borderRadius: BorderRadius.circular(textFieldRadius),
             onTap: () => _controller.animateToPage(
               i,
               duration: standartAnimationDuration,
               curve: Curves.easeOut,
             ),
-            child: Container(
-              height: commonSpacing1_2,
-              width: commonSpacing1_2 +
-                  (1 - (_currentPage - i).abs().clamp(0, 1)) * 16,
-              decoration: BoxDecoration(
-                color: Color.alphaBlend(
-                  theme.lightTextColor
-                      .withOpacity((_currentPage - i).abs().clamp(0, 1)),
-                  theme.accentColor,
+            child: Padding(
+              padding: const EdgeInsets.all(commonSpacing1_4),
+              child: Container(
+                height: commonSpacing1_2,
+                width: commonSpacing1_2 +
+                    (1 - (_currentPage - i).abs().clamp(0, 1)) * 16,
+                decoration: BoxDecoration(
+                  color: Color.alphaBlend(
+                    theme.lightTextColor
+                        .withOpacity((_currentPage - i).abs().clamp(0, 1)),
+                    theme.accentColor,
+                  ),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(commonSpacing1_2),
                 ),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(commonSpacing1_2),
               ),
             ),
           ),
         ],
-        const SizedBox(width: commonSpacing1_2),
       ],
     );
+  }
+
+  void _onPageChanged() {
+    setState(() {
+      _currentPage = _controller.page ?? 0;
+    });
   }
 }

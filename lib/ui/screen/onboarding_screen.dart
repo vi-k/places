@@ -10,8 +10,6 @@ import 'package:places/ui/widget/small_button.dart';
 import 'package:places/ui/widget/standart_button.dart';
 import 'package:provider/provider.dart';
 
-import 'place_list_screen.dart';
-
 /// Экран туториала.
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -28,7 +26,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           _pageCount,
           (index) => AnimationController(
                 vsync: this,
-                duration: const Duration(milliseconds: 1000),
+                duration: standartAnimationDuration * 2,
               ));
 
   late final List<Animation<double>> _animations =
@@ -44,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       setState(() {
         _currentPage = _pageController.page ?? 0;
         final pageIndex = _currentPage.round();
-        if (_currentPage == pageIndex) {
+        if ((_currentPage - pageIndex).abs() < 0.05) {
           final animController = _animControllers[pageIndex];
           if (animController.isDismissed) {
             animController.forward();
@@ -73,12 +71,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     } else {
       // Если это первый экран, то запускаем основной экран
       context.read<AppBloc>().add(const AppChangeSettings(showTutorial: false));
-      Navigator.pushReplacement<void, void>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PlaceListScreen(),
-        ),
-      );
     }
   }
 
@@ -90,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         : 0.0;
 
     // Запуск первой анимации надо задержать.
-    Future<void>.delayed(standartAnimationDuration, () {
+    Future<void>.delayed(const Duration(milliseconds: 200), () {
       if (mounted) _animControllers[0].forward();
     });
 

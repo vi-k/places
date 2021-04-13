@@ -34,7 +34,7 @@ class PlacesReload extends PlacesEvent {
 }
 
 abstract class PlacesWithPlace extends PlacesEvent {
-  const PlacesWithPlace(this.place) : super();
+  const PlacesWithPlace(this.place);
 
   final Place place;
 
@@ -52,22 +52,30 @@ class PlacesRemovePlace extends PlacesWithPlace {
 
 /// Сохранить настройки карты.
 class PlacesSaveMapSettings extends PlacesEvent {
-  const PlacesSaveMapSettings({
-    required this.mapSettings,
-  });
+  const PlacesSaveMapSettings(this.mapSettings);
 
   final MapSettings mapSettings;
 
   @override
   List<Object?> get props => [mapSettings];
+}
+
+/// Сохранить позицию скролла.
+class PlacesSaveScrollOffset extends PlacesEvent {
+  const PlacesSaveScrollOffset(this.scrollOffset);
+
+  final double scrollOffset;
 
   @override
-  String toString() => 'PlacesSaveMapSettings()';
+  List<Object?> get props => [scrollOffset];
+
+  @override
+  String toString() => 'PlacesSaveScrollOffset($scrollOffset)';
 }
 
 /// Уведомить об изменении места.
 class PlacesNotifyPlace extends PlacesEvent {
-  const PlacesNotifyPlace(this.notification) : super();
+  const PlacesNotifyPlace(this.notification);
 
   final PlaceNotification notification;
 

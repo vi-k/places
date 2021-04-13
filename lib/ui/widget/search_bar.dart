@@ -149,17 +149,17 @@ class _SearchBarState extends State<SearchBar> {
                 child: filter?.let((it) => SvgButton(
                           Svg24.filter,
                           color: it == Filter()
-                              ? theme.mainTextColor
+                              ? theme.lightTextColor56
                               : theme.accentColor,
                           onPressed: () async {
                             final newFilter =
                                 await standartNavigatorPush<Filter>(
                                     context, () => FiltersScreen(filter: it));
 
-                            newFilter?.also((it) {
+                            if (newFilter != null) {
                               filter = newFilter;
                               widget.onFilterChanged?.call(newFilter);
-                            });
+                            }
                           },
                         )) ??
                     SvgButton(

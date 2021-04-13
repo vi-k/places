@@ -55,6 +55,7 @@ class MyThemeData {
 
     textMiddle12White = _textMiddle12.withColor(mainColor100);
 
+    textRegular14Accent = _textRegular14.withColor(accentColor);
     textRegular14Main = _textRegular14.withColor(mainTextColor);
     textRegular14Light = _textRegular14.withColor(lightTextColor);
     textRegular14Light56 = _textRegular14.withColor(lightTextColor56);
@@ -103,6 +104,7 @@ class MyThemeData {
 
   late final TextStyle textMiddle12White;
 
+  late final TextStyle textRegular14Accent;
   late final TextStyle textRegular14Main;
   late final TextStyle textRegular14Light;
   late final TextStyle textRegular14Light56;

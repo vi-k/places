@@ -24,7 +24,8 @@ class SliverFloatingHeader extends StatelessWidget {
     final theme = context.watch<AppBloc>().theme;
 
     return SliverPersistentHeader(
-      pinned: true,
+      pinned: false,
+      floating: true,
       delegate: SliverTitleDelegate(
         systemBarHeight: MediaQuery.of(context).padding.top,
         title: title,

@@ -24,7 +24,26 @@ class PlaceListScreen extends StatefulWidget {
 }
 
 class _PlaceListScreenState extends State<PlaceListScreen> {
+  final _controller = ScrollController();
+  var _scrollInitialized = false;
+
   PlacesBloc get bloc => context.read<PlacesBloc>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      if (_scrollInitialized) {
+        bloc.slowAdd(PlacesSaveScrollOffset(_controller.position.pixels));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,49 +55,93 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
             : 3;
 
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxScrolled) => [
+      body: CustomScrollView(
+        controller: _controller,
+        slivers: [
           _buildHeader(columnsCount),
+          BlocBuilder<PlacesBloc, PlacesState>(
+            builder: (context, state) {
+              if (state is PlacesLoading || state.places.isNotReady) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              if (state is PlacesLoadingFailed) {
+                return SliverToBoxAdapter(
+                  child: Failed(
+                    svg: Svg64.delete,
+                    title: stringError,
+                    message: state.error.toString(),
+                    onRepeat: () => bloc.add(const PlacesReload()),
+                  ),
+                );
+              }
+
+              // Восстановление позиции скролла. К сожалению, только здесь.
+              if (!_scrollInitialized) {
+                Future<void>(() {
+                  _controller.jumpTo(state.scrollOffset.value);
+                  _scrollInitialized = true;
+                });
+              }
+
+              return PlaceCardGrid(
+                cardType: Favorite.no,
+                places: state.places.value,
+                asSliver: true,
+                onCardClose: (place) => _deletePlace(context, place),
+              );
+            },
+          ),
         ],
-        body: BlocBuilder<PlacesBloc, PlacesState>(
-          builder: (context, state) {
-            if (state is PlacesLoading || state.places.isNotReady) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (state is PlacesLoadingFailed) {
-              return Failed(
-                svg: Svg64.delete,
-                title: stringError,
-                message: state.error.toString(),
-                onRepeat: () => bloc.add(const PlacesReload()),
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: () async => bloc.add(const PlacesReload()),
-              child: state.places.value.isEmpty
-                  ? const Failed(
-                      svg: Svg64.search,
-                      title: stringNothingFound,
-                      message: stringNothingFoundMessage,
-                    )
-                  : CustomScrollView(
-                      slivers: [
-                        PlaceCardGrid(
-                          cardType: Favorite.no,
-                          places: state.places.value,
-                          asSliver: true,
-                          onCardClose: (place) => _deletePlace(context, place),
-                        ),
-                      ],
-                    ),
-            );
-          },
-        ),
       ),
+
+      // body: NestedScrollView(
+      //   headerSliverBuilder: (context, innerBoxScrolled) => [
+      //     _buildHeader(columnsCount),
+      //   ],
+      //   body: BlocBuilder<PlacesBloc, PlacesState>(
+      //     builder: (context, state) {
+      //       if (state is PlacesLoading || state.places.isNotReady) {
+      //         return const Center(
+      //           child: CircularProgressIndicator(),
+      //         );
+      //       }
+
+      //       if (state is PlacesLoadingFailed) {
+      //         return Failed(
+      //           svg: Svg64.delete,
+      //           title: stringError,
+      //           message: state.error.toString(),
+      //           onRepeat: () => bloc.add(const PlacesReload()),
+      //         );
+      //       }
+
+      //       return RefreshIndicator(
+      //         onRefresh: () async => bloc.add(const PlacesReload()),
+      //         child: state.places.value.isEmpty
+      //             ? const Failed(
+      //                 svg: Svg64.search,
+      //                 title: stringNothingFound,
+      //                 message: stringNothingFoundMessage,
+      //               )
+      //             : CustomScrollView(
+      //                 slivers: [
+      //                   PlaceCardGrid(
+      //                     cardType: Favorite.no,
+      //                     places: state.places.value,
+      //                     asSliver: true,
+      //                     onCardClose: (place) => _deletePlace(context, place),
+      //                   ),
+      //                 ],
+      //               ),
+      //       );
+      //     },
+      //   ),
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: columnsCount == 2
           ? FloatingActionButton(
