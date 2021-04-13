@@ -6,7 +6,7 @@ import 'package:places/environment/build_type.dart';
 ///
 /// В правом верхнем углу: debug, profile или release. В левом нижнем:
 /// flavor. Если `buildType == BuildType.prod`, баннеры не отображаются.
-class FlavorBanner extends StatefulWidget {
+class FlavorBanner extends StatelessWidget {
   const FlavorBanner({
     Key? key,
     required this.buildType,
@@ -17,21 +17,14 @@ class FlavorBanner extends StatefulWidget {
   final Widget child;
 
   @override
-  _FlavorBannerState createState() => _FlavorBannerState();
-}
-
-class _FlavorBannerState extends State<FlavorBanner> {
-  @override
   Widget build(BuildContext context) {
-    if (widget.buildType == BuildType.prod) {
-      return widget.child;
-    }
+    if (buildType == BuildType.prod) return child;
 
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Banner(
         location: BannerLocation.bottomStart,
-        message: widget.buildType.name.toUpperCase(),
+        message: buildType.name.toUpperCase(),
         child: Banner(
           location: BannerLocation.topEnd,
           message: kReleaseMode
@@ -39,7 +32,7 @@ class _FlavorBannerState extends State<FlavorBanner> {
               : kProfileMode
                   ? 'PROFILE'
                   : 'DEBUG',
-          child: widget.child,
+          child: child,
         ),
       ),
     );
