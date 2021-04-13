@@ -5,9 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dart & Flutter",
+            "name": "dev-debug",
+            "program": "lib/main_dev.dart",
+            "args": ["--flavor=dev"],
             "request": "launch",
-            "type": "dart"
-        }
+            "type": "dart",
+        },
+        {
+            "name": "dev-profile",
+            "program": "lib/main_dev.dart",
+            "args": ["--profile", "--flavor=dev"],
+            "request": "launch",
+            "type": "dart",
+        },
+        {
+            "name": "prod",
+            "program": "lib/main_prod.dart",
+            "args": ["--release", "--flavor=prod"],
+            "request": "launch",
+            "type": "dart",
+        },
     ]
 }
