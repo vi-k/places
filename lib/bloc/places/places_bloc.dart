@@ -35,26 +35,33 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   final KeyValueRepository _keyValueRepository;
   final PlaceInteractor _placeInteractor;
   late final StreamSubscription<PlaceNotification> _placeInteractorSubscription;
-  late final StreamController _debounceController =
-      StreamController<PlacesEvent>()
-        ..stream.debounceTime(const Duration(milliseconds: 500)).listen(add);
 
   @override
   Future<void> close() async {
     await _placeInteractorSubscription.cancel();
-    await _debounceController.close();
     return super.close();
   }
 
-  void slowAdd(PlacesEvent event) {
-    if (_debounceController.isClosed) return;
-    _debounceController.add(event);
-  }
+  bool isDebouncedEvent(PlacesEvent event) => event is PlacesSaveScrollOffset;
+  bool isNotDebouncedEvent(PlacesEvent event) => !isDebouncedEvent(event);
+
+  /// События скролла пропускаем через debounce.
+  @override
+  Stream<Transition<PlacesEvent, PlacesState>> transformEvents(
+          Stream<PlacesEvent> events,
+          TransitionFunction<PlacesEvent, PlacesState> transitionFn) =>
+      MergeStream<PlacesEvent>([
+        events
+            .where(isDebouncedEvent)
+            .debounceTime(const Duration(milliseconds: 500)),
+        events.where(isNotDebouncedEvent),
+      ]).asyncExpand(transitionFn);
 
   @override
   Stream<PlacesState> mapEventToState(
     PlacesEvent event,
   ) async* {
+    print(event);
     if (event is PlacesRestoreOrInit) {
       yield* _restoreOrInit();
     } else if (event is PlacesLoad) {

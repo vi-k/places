@@ -34,7 +34,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
     super.initState();
     _controller.addListener(() {
       if (_scrollInitialized) {
-        bloc.slowAdd(PlacesSaveScrollOffset(_controller.position.pixels));
+        bloc.add(PlacesSaveScrollOffset(_controller.position.pixels));
       }
     });
   }
