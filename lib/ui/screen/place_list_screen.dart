@@ -62,7 +62,8 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
           BlocBuilder<PlacesBloc, PlacesState>(
             builder: (context, state) {
               if (state is PlacesLoading || state.places.isNotReady) {
-                return const SliverToBoxAdapter(
+                return const SliverFillRemaining(
+                  hasScrollBody: false,
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -92,7 +93,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                 cardType: Favorite.no,
                 places: state.places.value,
                 asSliver: true,
-                onCardClose: (place) => _deletePlace(context, place),
+                // onCardClose: (place) => _deletePlace(context, place),
               );
             },
           ),

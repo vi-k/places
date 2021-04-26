@@ -22,6 +22,7 @@ import 'package:places/ui/widget/small_app_bar.dart';
 import 'package:places/utils/coord.dart';
 import 'package:places/utils/distance.dart';
 
+import 'place_edit_screen.dart';
 import 'search_screen.dart';
 
 /// Карта мест.
@@ -189,8 +190,7 @@ class _MapScreenState extends State<MapScreen>
             ? FloatingActionButton.extended(
                 isExtended: true,
                 onPressed: () {
-                  setState(() {});
-                  // PlaceEditScreen.start(context);
+                  PlaceEditScreen.start(context);
                 },
                 icon: const Icon(Icons.add),
                 label: Text(stringNewPlace.toUpperCase()),

@@ -14,7 +14,7 @@ class PlaceCardGrid extends StatefulWidget {
     required this.places,
     required this.cardType,
     this.asSliver = false,
-    required this.onCardClose,
+    this.onCardClose,
   }) : super(key: key);
 
   /// Список мест.
