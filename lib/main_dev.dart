@@ -13,7 +13,6 @@ void main() {
   Environment.init(
     buildType: BuildType.dev,
     buildConfig: const BuildConfig(message: "It's a dev flavor"),
-    loggerLevel: Level.verbose,
   );
 
   Bloc.observer = MyBlocObserver();

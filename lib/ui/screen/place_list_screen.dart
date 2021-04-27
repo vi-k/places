@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:places/bloc/places/places_bloc.dart';
 import 'package:places/data/model/place.dart';
+import 'package:places/environment/build_type.dart';
+import 'package:places/environment/environment.dart';
 import 'package:places/ui/res/const.dart';
 import 'package:places/ui/res/strings.dart';
 import 'package:places/ui/res/svg.dart';
@@ -93,7 +96,9 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                 cardType: Favorite.no,
                 places: state.places.value,
                 asSliver: true,
-                // onCardClose: (place) => _deletePlace(context, place),
+                onCardClose: Environment.buildType == BuildType.dev
+                    ? (place) => _deletePlace(context, place)
+                    : null,
               );
             },
           ),
@@ -169,7 +174,8 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                   key: ValueKey(state.filter),
                   onTap: () => SearchScreen.start(context),
                   filter: state.filter.value,
-                  onFilterChanged: (filter) => bloc.add(PlacesFilterChanged(filter)),
+                  onFilterChanged: (filter) =>
+                      bloc.add(PlacesFilterChanged(filter)),
                 ),
         ),
         bottomHeight: smallButtonHeight,

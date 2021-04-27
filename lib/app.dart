@@ -113,7 +113,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             ),
           ],
           child: FlavorBanner(
-            buildType: Environment.instance.buildType,
+            buildType: Environment.buildType,
             child: BlocBuilder<AppBloc, AppState>(
               builder: (context, state) => MaterialApp(
                 debugShowCheckedModeBanner: false,
