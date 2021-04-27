@@ -93,23 +93,23 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             BlocProvider<AppBloc>(
               create: (context) => AppBloc(
                 context.read<KeyValueRepository>(),
-              )..add(const AppRestoreOrInit()),
+              )..add(const AppStarted()),
             ),
             BlocProvider<PlacesBloc>(
               create: (context) => PlacesBloc(
                 context.read<KeyValueRepository>(),
                 context.read<PlaceInteractor>(),
-              )..add(const PlacesRestoreOrInit()),
+              )..add(const PlacesStarted()),
             ),
             BlocProvider<WishlistBloc>(
               create: (context) => WishlistBloc(
                 context.read<PlaceInteractor>(),
-              )..add(const FavoriteLoad()),
+              )..add(const FavoriteStarted()),
             ),
             BlocProvider<VisitedBloc>(
               create: (context) => VisitedBloc(
                 context.read<PlaceInteractor>(),
-              )..add(const FavoriteLoad()),
+              )..add(const FavoriteStarted()),
             ),
           ],
           child: FlavorBanner(

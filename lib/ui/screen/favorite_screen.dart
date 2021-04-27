@@ -21,9 +21,6 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen>
     with SingleTickerProviderStateMixin {
-  WishlistBloc get wishlistBloc => context.read<WishlistBloc>();
-  VisitedBloc get visitedBloc => context.read<VisitedBloc>();
-
   static const _tabs = [stringWishlistName, stringVisitedName];
   late final TabController _tabController = TabController(
     length: _tabs.length,
@@ -65,16 +62,17 @@ class _FavoriteScreenState extends State<FavoriteScreen>
   Widget _buildWishlistTab(PlaceInteractor placeInteractor) => Tab(
         child: BlocBuilder<WishlistBloc, FavoriteState>(
           builder: (context, state) {
-            if (state is FavoriteLoadingFailed) {
+            if (state is FavoriteLoadFailure) {
               return Failed(
                 svg: Svg64.delete,
                 title: stringError,
                 message: state.error.toString(),
-                onRepeat: () => wishlistBloc.add(const FavoriteLoad()),
+                onRepeat: () =>
+                    context.read<WishlistBloc>().add(const FavoriteStarted()),
               );
             }
 
-            if (state is FavoriteLoading || state.places.isNotReady) {
+            if (state is FavoriteLoadInProgress || state.places.isNotReady) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -89,8 +87,9 @@ class _FavoriteScreenState extends State<FavoriteScreen>
                 : PlaceCardGrid(
                     cardType: Favorite.wishlist,
                     places: state.places.value,
-                    onCardClose: (place) =>
-                        wishlistBloc.add(FavoriteRemovePlace(place)),
+                    onCardClose: (place) => context
+                        .read<WishlistBloc>()
+                        .add(FavoritePlaceRemoved(place)),
                   );
           },
         ),
@@ -99,16 +98,17 @@ class _FavoriteScreenState extends State<FavoriteScreen>
   Widget _buildVisitedTab(PlaceInteractor placeInteractor) => Tab(
         child: BlocBuilder<VisitedBloc, FavoriteState>(
           builder: (context, state) {
-            if (state is FavoriteLoadingFailed) {
+            if (state is FavoriteLoadFailure) {
               return Failed(
                 svg: Svg64.delete,
                 title: stringError,
                 message: state.error.toString(),
-                onRepeat: () => visitedBloc.add(const FavoriteLoad()),
+                onRepeat: () =>
+                    context.read<VisitedBloc>().add(const FavoriteStarted()),
               );
             }
 
-            if (state is FavoriteLoading || state.places.isNotReady) {
+            if (state is FavoriteLoadInProgress || state.places.isNotReady) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -123,8 +123,9 @@ class _FavoriteScreenState extends State<FavoriteScreen>
                 : PlaceCardGrid(
                     cardType: Favorite.visited,
                     places: state.places.value,
-                    onCardClose: (place) =>
-                        visitedBloc.add(FavoriteMoveToAdjacentList(place)),
+                    onCardClose: (place) => context
+                        .read<VisitedBloc>()
+                        .add(FavoritePlaceMoved(place)),
                   );
           },
         ),

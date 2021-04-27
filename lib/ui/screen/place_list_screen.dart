@@ -34,7 +34,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
     super.initState();
     _controller.addListener(() {
       if (_scrollInitialized) {
-        bloc.add(PlacesSaveScrollOffset(_controller.position.pixels));
+        bloc.add(PlacesScrollChanged(_controller.position.pixels));
       }
     });
   }
@@ -61,7 +61,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
           _buildHeader(columnsCount),
           BlocBuilder<PlacesBloc, PlacesState>(
             builder: (context, state) {
-              if (state is PlacesLoading || state.places.isNotReady) {
+              if (state is PlacesLoadInProgress || state.places.isNotReady) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(
@@ -70,13 +70,13 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                 );
               }
 
-              if (state is PlacesLoadingFailed) {
+              if (state is PlacesLoadFailure) {
                 return SliverToBoxAdapter(
                   child: Failed(
                     svg: Svg64.delete,
                     title: stringError,
                     message: state.error.toString(),
-                    onRepeat: () => bloc.add(const PlacesReload()),
+                    onRepeat: () => bloc.add(const PlacesRerfreshed()),
                   ),
                 );
               }
@@ -169,7 +169,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                   key: ValueKey(state.filter),
                   onTap: () => SearchScreen.start(context),
                   filter: state.filter.value,
-                  onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
+                  onFilterChanged: (filter) => bloc.add(PlacesFilterChanged(filter)),
                 ),
         ),
         bottomHeight: smallButtonHeight,
@@ -195,7 +195,7 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
         false;
 
     if (doDelete) {
-      bloc.add(PlacesRemovePlace(place));
+      bloc.add(PlacesPlaceRemoved(place));
     }
   }
 }

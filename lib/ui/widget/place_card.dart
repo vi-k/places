@@ -75,13 +75,13 @@ class _PlaceCardState extends State<PlaceCard>
                           if (widget.cardType == Favorite.wishlist) {
                             context.read<WishlistBloc>().add(
                                 direction == DismissDirection.startToEnd
-                                    ? FavoriteMoveToAdjacentList(state.place)
-                                    : FavoriteRemovePlace(state.place));
+                                    ? FavoritePlaceMoved(state.place)
+                                    : FavoritePlaceRemoved(state.place));
                           } else {
                             context.read<VisitedBloc>().add(
                                 direction == DismissDirection.startToEnd
-                                    ? FavoriteRemovePlace(state.place)
-                                    : FavoriteMoveToAdjacentList(state.place));
+                                    ? FavoritePlaceRemoved(state.place)
+                                    : FavoritePlaceMoved(state.place));
                           }
                         },
                         background: widget.cardType == Favorite.wishlist
@@ -195,7 +195,7 @@ class _PlaceCardState extends State<PlaceCard>
               ? Svg24.heartFull
               : Svg24.heart,
           color,
-          () => context.read<PlaceBloc>().add(const PlaceToggleWishlist()),
+          () => context.read<PlaceBloc>().add(const PlaceWishlistToggled()),
         ),
       );
     } else if (widget.cardType == Favorite.wishlist) {
@@ -394,7 +394,7 @@ class _PlaceCardState extends State<PlaceCard>
           ? place.userInfo.copyWith(planToVisitReset: true)
           : place.userInfo.copyWith(planToVisit: date);
 
-      context.read<PlaceBloc>().add(PlaceUpdateUserInfo(userInfo));
+      context.read<PlaceBloc>().add(PlaceUserInfoUpdated(userInfo));
     }
   }
 }

@@ -142,7 +142,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
             ),
             SmallButton(
               onPressed: () =>
-                  context.read<PlaceBloc>().add(const PlaceToggleWishlist()),
+                  context.read<PlaceBloc>().add(const PlaceWishlistToggled()),
               svg: place.userInfo.favorite == Favorite.wishlist ||
                       place.userInfo.favorite == Favorite.visited
                   ? Svg24.heartFull

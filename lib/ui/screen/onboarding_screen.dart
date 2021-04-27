@@ -70,7 +70,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       Navigator.pop(context);
     } else {
       // Если это первый экран, то запускаем основной экран
-      context.read<AppBloc>().add(const AppChangeSettings(showTutorial: false));
+      context
+          .read<AppBloc>()
+          .add(const AppSettingsChanged(showTutorial: false));
     }
   }
 

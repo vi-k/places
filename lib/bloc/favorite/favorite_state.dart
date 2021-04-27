@@ -34,13 +34,13 @@ class FavoriteState extends Equatable with BlocValues {
 }
 
 /// Загрузка данных.
-class FavoriteLoading extends FavoriteState {
-  FavoriteLoading(FavoriteState state) : super.from(state);
+class FavoriteLoadInProgress extends FavoriteState {
+  FavoriteLoadInProgress(FavoriteState state) : super.from(state);
 }
 
 /// Ошибка загрузки данных.
-class FavoriteLoadingFailed extends FavoriteState {
-  FavoriteLoadingFailed(FavoriteState state, this.error) : super.from(state);
+class FavoriteLoadFailure extends FavoriteState {
+  FavoriteLoadFailure(FavoriteState state, this.error) : super.from(state);
 
   final Exception error;
 
@@ -48,6 +48,5 @@ class FavoriteLoadingFailed extends FavoriteState {
   List<Object?> get props => [values, error];
 
   @override
-  // ignore: no_runtimetype_tostring
-  String toString() => 'FavoriteLoadingFailed($error)';
+  String toString() => 'FavoriteLoadFailure($error)';
 }

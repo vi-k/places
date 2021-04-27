@@ -34,7 +34,7 @@ class SearchScreen extends StatefulWidget {
         context,
         () => BlocProvider<SearchBloc>(
             create: (_) => SearchBloc(context.read<PlaceInteractor>())
-              ..add(const SearchLoadHistory()),
+              ..add(const SearchStarted()),
             child: const SearchScreen._()));
   }
 }
@@ -65,8 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
               onTextChanged: (text) {
                 if (lastQuery != text) {
                   lastQuery = text;
-                  context.read<SearchBloc>().add(
-                      text.isEmpty ? const SearchLoadHistory() : Search(text));
+                  context.read<SearchBloc>().add(SearchStarted(text));
                 }
               },
             ),
@@ -75,12 +74,12 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: BlocBuilder<SearchBloc, SearchState>(
         builder: (context, state) {
-          if (state is SearchHistoryFailed) {
+          if (state is SearchFailure) {
             return Failed(
               svg: Svg64.delete,
               title: stringError,
               message: state.error.toString(),
-              onRepeat: () => bloc.add(const SearchLoadHistory()),
+              onRepeat: () => bloc.add(SearchStarted(state.text)),
             );
           }
 
@@ -88,16 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
             return _buildHistory(context, theme, state);
           }
 
-          if (state is SearchFailed) {
-            return Failed(
-              svg: Svg64.delete,
-              title: stringError,
-              message: state.error.toString(),
-              onRepeat: () => bloc.add(Search(state.text)),
-            );
-          }
-
-          if (state is SearchResults) {
+          if (state is SearchSuccess) {
             if (state.places.isEmpty) {
               return const Failed(
                 svg: Svg64.search,
@@ -173,7 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           onPressed: () {
                             context
                                 .read<SearchBloc>()
-                                .add(SearchRemoveFromHistory(searchInfo.text));
+                                .add(SearchRemovedFromHistory(searchInfo.text));
                           },
                         ),
                       );
@@ -188,7 +178,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   label: stringClearHistory,
                   style: theme.textMiddle16Accent,
                   onPressed: () {
-                    context.read<SearchBloc>().add(const SearchClearHistory());
+                    context.read<SearchBloc>().add(const SearchHistoryCleared());
                   },
                 ),
               ],

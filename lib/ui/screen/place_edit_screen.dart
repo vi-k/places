@@ -59,7 +59,7 @@ class PlaceEditScreen extends StatefulWidget {
                   context.read<UploadRepository>(),
                   context.read<LocationRepository>(),
                   placeId,
-                ),
+                )..add(const EditPlaceStarted()),
             child: const PlaceEditScreen._()));
   }
 }
@@ -102,14 +102,14 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
       listener: (context, state) {
         logger.d('$state');
         // Выходим после сохранения.
-        if (state is EditPlaceSaved) {
+        if (state is EditPlaceSaveSuccess) {
           Navigator.pop(context);
         }
       },
       // Обновляем, когда начинается или заканчивается загрузка или сохранение.
       buildWhen: (previous, current) =>
-          previous is EditPlaceLoading && current is! EditPlaceLoading ||
-          previous is! EditPlaceLoading && current is EditPlaceLoading,
+          previous is EditPlaceLoadInProgress &&
+          current is! EditPlaceLoadInProgress,
       builder: (context, state) => Scaffold(
         appBar: SmallAppBar(
           title: bloc.isNew ? stringNewPlace : stringEdit,
@@ -118,7 +118,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         body: WillPopScope(
           onWillPop: _onWillPop,
           child: AbsorbPointer(
-            absorbing: state is EditPlaceLoading,
+            absorbing: state is EditPlaceLoadInProgress,
             child: Column(
               children: [
                 Expanded(
@@ -133,7 +133,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                           _buildDescription(),
                         ],
                       ),
-                      if (state is EditPlaceLoading)
+                      if (state is EditPlaceLoadInProgress)
                         const Center(child: CircularProgressIndicator()),
                     ],
                   ),
@@ -233,11 +233,11 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   Widget _buildPhoto(Photo photo) => Dismissible(
         key: ValueKey(photo.hashCode),
         direction: DismissDirection.up,
-        onDismissed: (_) => bloc.add(EditPlaceRemovePhoto(photo)),
+        onDismissed: (_) => bloc.add(EditPlacePhotoRemoved(photo)),
         child: PhotoCard(
           url: photo.url,
           path: photo.path,
-          onClose: () => bloc.add(EditPlaceRemovePhoto(photo)),
+          onClose: () => bloc.add(EditPlacePhotoRemoved(photo)),
         ),
       );
 
@@ -295,7 +295,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                 errorText: state.name.error,
               ),
               textInputAction: TextInputAction.next,
-              onChanged: (value) => bloc.add(EditPlaceSetValues(name: value)),
+              onChanged: (value) => bloc.add(EditPlaceChanged(name: value)),
               onEditingComplete: () =>
                   FocusScope.of(context).nextEditableTextFocus(),
             );
@@ -320,8 +320,10 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           }
         },
         buildWhen: (previous, current) =>
-            previous is EditPlaceLoading && current is! EditPlaceLoading ||
-            previous is! EditPlaceLoading && current is EditPlaceLoading ||
+            previous is EditPlaceLoadInProgress &&
+                current is! EditPlaceLoadInProgress ||
+            previous is! EditPlaceLoadInProgress &&
+                current is EditPlaceLoadInProgress ||
             previous.lat != current.lat ||
             previous.lon != current.lon,
         builder: (context, state) {
@@ -347,7 +349,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
                         onChanged: (value) =>
-                            bloc.add(EditPlaceSetValues(lat: value)),
+                            bloc.add(EditPlaceChanged(lat: value)),
                         onEditingComplete: () {
                           FocusScope.of(context).nextEditableTextFocus();
                         },
@@ -369,7 +371,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                           errorText: state.lon.error,
                         ),
                         onChanged: (value) =>
-                            bloc.add(EditPlaceSetValues(lon: value)),
+                            bloc.add(EditPlaceChanged(lon: value)),
                         onEditingComplete: () {
                           FocusScope.of(context).nextEditableTextFocus();
                         },
@@ -425,8 +427,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                               },
                               onCameraIdle: () {
                                 if (_moveCoord != null) {
-                                  bloc.add(
-                                      EditPlaceSetValues(coord: _moveCoord));
+                                  bloc.add(EditPlaceChanged(coord: _moveCoord));
                                   _moveCoord = null;
                                 }
                               },
@@ -436,7 +437,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                           ),
                           // Прогресс-индикатор, когда устанавливается текущая
                           // позиция.
-                          if (state is! EditPlaceLoading &&
+                          if (state is! EditPlaceLoadInProgress &&
                               state.lat.isUndefined &&
                               state.lon.isUndefined)
                             const Positioned.fill(
@@ -444,7 +445,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                                 child: CircularProgressIndicator(),
                               ),
                             ),
-                          // Маркер места - всегда по центру экрна.
+                          // Маркер места - всегда по центру экрана.
                           Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -498,7 +499,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
               maxLines: 10,
               textInputAction: TextInputAction.done,
               onChanged: (value) =>
-                  bloc.add(EditPlaceSetValues(description: value)),
+                  bloc.add(EditPlaceChanged(description: value)),
             );
           },
         ),
@@ -516,7 +517,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             return StandartButton(
               label: bloc.isNew ? stringCreate : stringSave,
               onPressed: state.isModified
-                  ? () => bloc.add(const EditPlaceSave())
+                  ? () => bloc.add(const EditPlaceFinished())
                   : null,
             );
           },
@@ -558,7 +559,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
     );
 
     if (photo != null) {
-      bloc.add(EditPlaceAddPhoto(photo));
+      bloc.add(EditPlacePhotoAdded(photo));
     }
   }
 
@@ -568,7 +569,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         context, () => PlaceTypeSelectScreen(placeType: type));
 
     if (newType != null) {
-      bloc.add(EditPlaceSetValues(type: newType));
+      bloc.add(EditPlaceChanged(type: newType));
     }
   }
 

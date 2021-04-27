@@ -28,15 +28,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Stream<AppState> mapEventToState(
     AppEvent event,
   ) async* {
-    if (event is AppRestoreOrInit) {
-      yield* _restoreOrInit();
-    } else if (event is AppChangeSettings) {
+    if (event is AppStarted) {
+      yield* _restoreApp();
+    } else if (event is AppSettingsChanged) {
       yield* _changeSettings(event);
     }
   }
 
   // Восстанавливает общее состояние приложения.
-  Stream<AppState> _restoreOrInit() async* {
+  Stream<AppState> _restoreApp() async* {
     var settings = const AppSettings.init();
 
     await Future.wait([
@@ -66,10 +66,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   // Изменяет и сохраняет настройки.
-  Stream<AppState> _changeSettings(AppChangeSettings event) async* {
+  Stream<AppState> _changeSettings(AppSettingsChanged event) async* {
     if (state.settings.isNotReady) {
       throw StateError('AppBloc: The state not initalized. '
-          'Dispatch an [AppRestoreOrInit] event.');
+          'Dispatch an [AppStarted] event.');
     }
 
     final isDark = event.isDark;

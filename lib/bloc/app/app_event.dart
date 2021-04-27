@@ -7,14 +7,12 @@ abstract class AppEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Восстановить прошлое состояние или инициализировать.
-class AppRestoreOrInit extends AppEvent {
-  const AppRestoreOrInit();
+class AppStarted extends AppEvent {
+  const AppStarted();
 }
 
-/// Изменить настройки.
-class AppChangeSettings extends AppEvent {
-  const AppChangeSettings({
+class AppSettingsChanged extends AppEvent {
+  const AppSettingsChanged({
     this.isDark,
     this.showTutorial,
     this.animationDuration,
@@ -27,6 +25,5 @@ class AppChangeSettings extends AppEvent {
   final Filter? filter;
 
   @override
-  List<Object?> get props =>
-      [isDark, showTutorial, animationDuration, filter];
+  List<Object?> get props => [isDark, showTutorial, animationDuration, filter];
 }

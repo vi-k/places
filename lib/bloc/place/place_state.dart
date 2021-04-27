@@ -1,6 +1,6 @@
 part of 'place_bloc.dart';
 
-abstract class PlaceState extends Equatable {
+class PlaceState extends Equatable {
   const PlaceState(this.place);
 
   final Place place;
@@ -9,12 +9,6 @@ abstract class PlaceState extends Equatable {
   List<Object?> get props => [place];
 }
 
-/// Загрузка/обновление.
-class PlaceLoading extends PlaceState {
-  PlaceLoading(PlaceState prevState) : super(prevState.place);
-}
-
-/// Данные готовы.
-class PlaceReady extends PlaceState {
-  const PlaceReady(Place place) : super(place);
+class PlaceLoadInProgress extends PlaceState {
+  PlaceLoadInProgress(PlaceState prevState) : super(prevState.place);
 }

@@ -7,19 +7,16 @@ abstract class EditPlaceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Установить начальные координаты.
+class EditPlaceStarted extends EditPlaceEvent {
+  const EditPlaceStarted() : super();
+}
+
 class EditPlaceSetLocation extends EditPlaceEvent {
   const EditPlaceSetLocation() : super();
 }
 
-/// Загрузить информацию о месте.
-class EditPlaceLoad extends EditPlaceEvent {
-  const EditPlaceLoad() : super();
-}
-
-/// Добавить фотографию.
-class EditPlaceAddPhoto extends EditPlaceEvent {
-  const EditPlaceAddPhoto(this.photo);
+class EditPlacePhotoAdded extends EditPlaceEvent {
+  const EditPlacePhotoAdded(this.photo);
 
   final Photo photo;
 
@@ -27,9 +24,8 @@ class EditPlaceAddPhoto extends EditPlaceEvent {
   List<Object?> get props => [photo];
 }
 
-/// Удалить фотографию.
-class EditPlaceRemovePhoto extends EditPlaceEvent {
-  const EditPlaceRemovePhoto(this.photo);
+class EditPlacePhotoRemoved extends EditPlaceEvent {
+  const EditPlacePhotoRemoved(this.photo);
 
   final Photo photo;
 
@@ -37,9 +33,8 @@ class EditPlaceRemovePhoto extends EditPlaceEvent {
   List<Object?> get props => [photo];
 }
 
-/// Установить значения полей.
-class EditPlaceSetValues extends EditPlaceEvent {
-  const EditPlaceSetValues({
+class EditPlaceChanged extends EditPlaceEvent {
+  const EditPlaceChanged({
     this.name,
     this.type,
     this.coord,
@@ -59,7 +54,6 @@ class EditPlaceSetValues extends EditPlaceEvent {
   List<Object?> get props => [name, type, coord, lat, lon, description];
 }
 
-/// Сохранить результат.
-class EditPlaceSave extends EditPlaceEvent {
-  const EditPlaceSave();
+class EditPlaceFinished extends EditPlaceEvent {
+  const EditPlaceFinished();
 }

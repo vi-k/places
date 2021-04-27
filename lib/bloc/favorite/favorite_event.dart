@@ -10,9 +10,8 @@ abstract class FavoriteEvent extends Equatable {
   String toString() => '$runtimeType()';
 }
 
-/// Загрузить избранное.
-class FavoriteLoad extends FavoriteEvent {
-  const FavoriteLoad();
+class FavoriteStarted extends FavoriteEvent {
+  const FavoriteStarted();
 }
 
 abstract class FavoriteEventWithPlace extends FavoriteEvent {
@@ -24,22 +23,19 @@ abstract class FavoriteEventWithPlace extends FavoriteEvent {
   List<Object?> get props => [place];
 
   @override
-  String toString() => '$runtimeType(${place.id} ${place.name})';
+  String toString() => '$runtimeType(#${place.id} ${place.name})';
 }
 
-/// Удалить карточку из избранного.
-class FavoriteRemovePlace extends FavoriteEventWithPlace {
-  const FavoriteRemovePlace(Place place) : super(place);
+class FavoritePlaceRemoved extends FavoriteEventWithPlace {
+  const FavoritePlaceRemoved(Place place) : super(place);
 }
 
-/// Перенести карточку в соседний список.
-class FavoriteMoveToAdjacentList extends FavoriteEventWithPlace {
-  const FavoriteMoveToAdjacentList(Place place) : super(place);
+class FavoritePlaceMoved extends FavoriteEventWithPlace {
+  const FavoritePlaceMoved(Place place) : super(place);
 }
 
-/// Уведомить об изменении места.
-class FavoriteNotifyPlace extends FavoriteEvent {
-  const FavoriteNotifyPlace(this.notification) : super();
+class FavoritePlaceChanged extends FavoriteEvent {
+  const FavoritePlaceChanged(this.notification) : super();
 
   final PlaceNotification notification;
 
@@ -47,5 +43,5 @@ class FavoriteNotifyPlace extends FavoriteEvent {
   List<Object?> get props => [notification];
 
   @override
-  String toString() => 'FavoriteNotifyPlace($notification)';
+  String toString() => 'FavoritePlaceChanged($notification)';
 }

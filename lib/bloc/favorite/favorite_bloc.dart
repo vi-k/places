@@ -20,7 +20,7 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     // Подписываемся на уведомления об изменении мест.
     _placeInteractorSubscription =
         _placeInteractor.stream.listen((notification) {
-      add(FavoriteNotifyPlace(notification));
+      add(FavoritePlaceChanged(notification));
     });
   }
 
@@ -40,14 +40,14 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
 
   @override
   Stream<FavoriteState> mapEventToState(FavoriteEvent event) async* {
-    if (event is FavoriteLoad) {
+    if (event is FavoriteStarted) {
       yield* _load();
-    } else if (event is FavoriteRemovePlace) {
+    } else if (event is FavoritePlaceRemoved) {
       yield* _removePlace(event);
-    } else if (event is FavoriteMoveToAdjacentList) {
+    } else if (event is FavoritePlaceMoved) {
       yield* _moveToAdjacentList(event);
-    } else if (event is FavoriteNotifyPlace) {
-      yield* _notifyPlace(event);
+    } else if (event is FavoritePlaceChanged) {
+      yield* _updatePlace(event);
     }
   }
 
@@ -55,23 +55,23 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   void _checkPlaces() {
     if (state.places.isNotReady) {
       throw StateError('$runtimeType: The places not loaded. '
-          'Dispatch a [FavoriteLoad] event.');
+          'Dispatch a [FavoriteStarted] event.');
     }
   }
 
   // Загружает избранное.
   Stream<FavoriteState> _load() async* {
-    yield FavoriteLoading(state);
+    yield FavoriteLoadInProgress(state);
     try {
       final places = await _getList();
       yield state.copyWith(places: BlocValue(places));
     } on RepositoryException catch (e) {
-      yield FavoriteLoadingFailed(state, e);
+      yield FavoriteLoadFailure(state, e);
     }
   }
 
-  // Удяляет место из списка.
-  Stream<FavoriteState> _removePlace(FavoriteRemovePlace event) async* {
+  // Удаляет место из списка.
+  Stream<FavoriteState> _removePlace(FavoritePlaceRemoved event) async* {
     _checkPlaces();
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
@@ -82,13 +82,13 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     try {
       await _removeFromList(event.place);
     } on RepositoryException catch (e) {
-      yield FavoriteLoadingFailed(state, e);
+      yield FavoriteLoadFailure(state, e);
     }
   }
 
-  // Переносим в соседний список.
+  // Переносит в соседний список.
   Stream<FavoriteState> _moveToAdjacentList(
-      FavoriteMoveToAdjacentList event) async* {
+      FavoritePlaceMoved event) async* {
     _checkPlaces();
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.
@@ -100,12 +100,12 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
       await _removeFromList(event.place);
       await _addToAdjacentList(event.place);
     } on RepositoryException catch (e) {
-      yield FavoriteLoadingFailed(state, e);
+      yield FavoriteLoadFailure(state, e);
     }
   }
 
   // Обновляет место.
-  Stream<FavoriteState> _notifyPlace(FavoriteNotifyPlace event) async* {
+  Stream<FavoriteState> _updatePlace(FavoritePlaceChanged event) async* {
     if (state.places.isNotReady) return;
 
     final notification = event.notification;

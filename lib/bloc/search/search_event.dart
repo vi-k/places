@@ -10,9 +10,8 @@ abstract class SearchEvent extends Equatable {
   String toString() => '$runtimeType()';
 }
 
-/// Начать поиск.
-class Search extends SearchEvent {
-  const Search(this.text);
+class SearchStarted extends SearchEvent {
+  const SearchStarted([this.text = '']);
 
   final String text;
 
@@ -20,22 +19,15 @@ class Search extends SearchEvent {
   List<Object?> get props => [text];
 
   @override
-  String toString() => 'Search($text)';
+  String toString() => 'SearchStarted($text)';
 }
 
-/// Загрузить историю поиска.
-class SearchLoadHistory extends SearchEvent {
-  const SearchLoadHistory();
+class SearchHistoryCleared extends SearchEvent {
+  const SearchHistoryCleared();
 }
 
-/// Очистить историю поиска.
-class SearchClearHistory extends SearchEvent {
-  const SearchClearHistory();
-}
-
-/// Удалить запись из истории поиска.
-class SearchRemoveFromHistory extends SearchEvent {
-  const SearchRemoveFromHistory(this.text);
+class SearchRemovedFromHistory extends SearchEvent {
+  const SearchRemovedFromHistory(this.text);
 
   final String text;
 
@@ -43,12 +35,11 @@ class SearchRemoveFromHistory extends SearchEvent {
   List<Object?> get props => [text];
 
   @override
-  String toString() => 'SearchRemoveFromHistory($text)';
+  String toString() => 'SearchRemovedFromHistory($text)';
 }
 
-/// Уведомить об изменении места.
-class SearchNotifyPlace extends SearchEvent {
-  const SearchNotifyPlace(this.notification) : super();
+class SearchPlaceChanged extends SearchEvent {
+  const SearchPlaceChanged(this.notification) : super();
 
   final PlaceNotification notification;
 
@@ -56,5 +47,5 @@ class SearchNotifyPlace extends SearchEvent {
   List<Object?> get props => [notification];
 
   @override
-  String toString() => 'SearchNotifyPlace($notification)';
+  String toString() => 'SearchPlaceChanged($notification)';
 }

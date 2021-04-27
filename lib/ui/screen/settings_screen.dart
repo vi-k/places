@@ -37,7 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               value: state.settings.value.isDark,
               onChanged: (value) =>
-                  appBloc.add(AppChangeSettings(isDark: value)),
+                  appBloc.add(AppSettingsChanged(isDark: value)),
             ),
             const _ListDivider(),
             ListTile(
@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               value: state.settings.value.showTutorial,
               onChanged: (value) =>
-                  appBloc.add(AppChangeSettings(showTutorial: value)),
+                  appBloc.add(AppSettingsChanged(showTutorial: value)),
             ),
             const _ListDivider(),
             ListTile(
@@ -82,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 max: _sliderValues.length - 1,
                 divisions: _sliderValues.length - 1,
                 value: _valueToSlider(state.settings.value.animationDuration),
-                onChanged: (value) => appBloc.add(AppChangeSettings(
+                onChanged: (value) => appBloc.add(AppSettingsChanged(
                     animationDuration: _sliderToValue(value))),
               ),
             ),

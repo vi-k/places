@@ -114,7 +114,7 @@ class _MapScreenState extends State<MapScreen>
                       },
                       onCameraIdle: () {
                         if (_lastPosition != null) {
-                          bloc.add(PlacesSaveMapSettings(
+                          bloc.add(PlacesMapChanged(
                             MapSettings(
                               location: Coord(
                                 _lastPosition!.target.latitude,
@@ -156,7 +156,7 @@ class _MapScreenState extends State<MapScreen>
                           ),
                       },
                     ),
-                    if (state is PlacesLoading)
+                    if (state is PlacesLoadInProgress)
                       const Center(
                         child: CircularProgressIndicator(),
                       ),
@@ -204,7 +204,7 @@ class _MapScreenState extends State<MapScreen>
   PreferredSizeWidget _buildAppBar(PlacesState state) => SmallAppBar(
         title: stringMap,
         button: stringRefresh,
-        onPressed: () => bloc.add(const PlacesReload()),
+        onPressed: () => bloc.add(const PlacesRerfreshed()),
         bottom: Padding(
           padding: commonPaddingLBR,
           child: state.filter.isNotReady
@@ -212,7 +212,7 @@ class _MapScreenState extends State<MapScreen>
               : SearchBar(
                   onTap: () => SearchScreen.start(context),
                   filter: state.filter.value,
-                  onFilterChanged: (filter) => bloc.add(PlacesLoad(filter)),
+                  onFilterChanged: (filter) => bloc.add(PlacesFilterChanged(filter)),
                 ),
         ),
       );

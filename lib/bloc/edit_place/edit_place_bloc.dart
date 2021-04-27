@@ -27,9 +27,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
     this._locationRepository,
     this._id,
   ) : super(EditPlaceState.init(
-            _id == 0 ? FormValueState.underway : FormValueState.undefined)) {
-    add(_id == 0 ? const EditPlaceSetLocation() : const EditPlaceLoad());
-  }
+            _id == 0 ? FormValueState.underway : FormValueState.undefined));
 
   final PlaceInteractor _placeInteractor;
   final UploadRepository _uploadRepository;
@@ -43,17 +41,21 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   Stream<EditPlaceState> mapEventToState(
     EditPlaceEvent event,
   ) async* {
-    if (event is EditPlaceSetLocation) {
+    if (event is EditPlaceStarted) {
+      if (isNew) {
+        yield* _setLocation();
+      } else {
+        yield* _load();
+      }
+    } else if (event is EditPlaceSetLocation) {
       yield* _setLocation();
-    } else if (event is EditPlaceLoad) {
-      yield* _load();
-    } else if (event is EditPlaceAddPhoto) {
+    } else if (event is EditPlacePhotoAdded) {
       yield* _addPhoto(event);
-    } else if (event is EditPlaceRemovePhoto) {
+    } else if (event is EditPlacePhotoRemoved) {
       yield* _removePhoto(event);
-    } else if (event is EditPlaceSetValues) {
+    } else if (event is EditPlaceChanged) {
       yield* _setValues(event);
-    } else if (event is EditPlaceSave) {
+    } else if (event is EditPlaceFinished) {
       yield* _save();
     }
   }
@@ -81,7 +83,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
 
   // Загружает данные о месте.
   Stream<EditPlaceState> _load() async* {
-    yield EditPlaceLoading(state);
+    yield EditPlaceLoadInProgress(state);
     try {
       final place = await _placeInteractor.getPlace(_id);
       yield state.copyWith(
@@ -94,12 +96,12 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
         description: FormValue.valid(place.description),
       );
     } on RepositoryException catch (error) {
-      yield EditPlaceLoadingFailed(state, error);
+      yield EditPlaceLoadFailure(state, error);
     }
   }
 
   // Добавляет фотографию.
-  Stream<EditPlaceState> _addPhoto(EditPlaceAddPhoto event) async* {
+  Stream<EditPlaceState> _addPhoto(EditPlacePhotoAdded event) async* {
     final newPhotos = List<Photo>.from(state.photos.value)..add(event.photo);
     yield state.copyWith(
         photos: _validatePhotos(state.photos.setValue(newPhotos)));
@@ -127,24 +129,24 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
       emit(state.copyWith(
           photos: _validatePhotos(state.photos.setValue(newPhotos))));
     } on RepositoryException catch (error) {
-      emit(EditPlaceLoadingFailed(state, error));
+      emit(EditPlaceLoadFailure(state, error));
     }
   }
 
   // Удаляет фотографию.
-  Stream<EditPlaceState> _removePhoto(EditPlaceRemovePhoto event) async* {
+  Stream<EditPlaceState> _removePhoto(EditPlacePhotoRemoved event) async* {
     try {
       final newPhotos = List<Photo>.from(state.photos.value)
         ..remove(event.photo);
       yield state.copyWith(
           photos: _validatePhotos(state.photos.setValue(newPhotos)));
     } on RepositoryException catch (error) {
-      yield EditPlaceLoadingFailed(state, error);
+      yield EditPlaceLoadFailure(state, error);
     }
   }
 
   // Устанавливает значения полей.
-  Stream<EditPlaceState> _setValues(EditPlaceSetValues event) async* {
+  Stream<EditPlaceState> _setValues(EditPlaceChanged event) async* {
     try {
       yield state.copyWith(
         name: event.name == null
@@ -172,7 +174,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
             : state.description.setValue(event.description!).toValid(),
       );
     } on RepositoryException catch (error) {
-      yield EditPlaceLoadingFailed(state, error);
+      yield EditPlaceLoadFailure(state, error);
     }
   }
 
@@ -192,7 +194,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
       return;
     }
 
-    yield EditPlaceLoading(checkedState);
+    yield EditPlaceLoadInProgress(checkedState);
 
     final place = PlaceBase(
       id: _id,
@@ -223,9 +225,9 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
         description: checkedState.description.toSaved(),
       );
 
-      yield EditPlaceSaved(savedState);
+      yield EditPlaceSaveSuccess(savedState);
     } on RepositoryException catch (error) {
-      yield EditPlaceSavingFailed(checkedState, error);
+      yield EditPlaceSaveFailure(checkedState, error);
     }
   }
 

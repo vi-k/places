@@ -74,13 +74,13 @@ class EditPlaceState extends Equatable with FormValues {
 }
 
 /// Загрузка/соахранение.
-class EditPlaceLoading extends EditPlaceState {
-  EditPlaceLoading(EditPlaceState state) : super.from(state);
+class EditPlaceLoadInProgress extends EditPlaceState {
+  EditPlaceLoadInProgress(EditPlaceState state) : super.from(state);
 }
 
 /// Ошибка загрузки.
-class EditPlaceLoadingFailed extends EditPlaceState {
-  EditPlaceLoadingFailed(EditPlaceState state, this.error) : super.from(state);
+class EditPlaceLoadFailure extends EditPlaceState {
+  EditPlaceLoadFailure(EditPlaceState state, this.error) : super.from(state);
 
   final Exception error;
 
@@ -89,8 +89,8 @@ class EditPlaceLoadingFailed extends EditPlaceState {
 }
 
 /// Ошибка сохранения.
-class EditPlaceSavingFailed extends EditPlaceState {
-  EditPlaceSavingFailed(EditPlaceState state, this.error) : super.from(state);
+class EditPlaceSaveFailure extends EditPlaceState {
+  EditPlaceSaveFailure(EditPlaceState state, this.error) : super.from(state);
 
   final Exception error;
 
@@ -99,6 +99,6 @@ class EditPlaceSavingFailed extends EditPlaceState {
 }
 
 /// Информация сохранена.
-class EditPlaceSaved extends EditPlaceState {
-  EditPlaceSaved(EditPlaceState state) : super.from(state);
+class EditPlaceSaveSuccess extends EditPlaceState {
+  EditPlaceSaveSuccess(EditPlaceState state) : super.from(state);
 }

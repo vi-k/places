@@ -10,14 +10,12 @@ abstract class PlacesEvent extends Equatable {
   String toString() => '$runtimeType()';
 }
 
-/// Восстановить прошлое состояние или инициализировать.
-class PlacesRestoreOrInit extends PlacesEvent {
-  const PlacesRestoreOrInit();
+class PlacesStarted extends PlacesEvent {
+  const PlacesStarted();
 }
 
-/// Загрузить список мест.
-class PlacesLoad extends PlacesEvent {
-  const PlacesLoad(this.filter);
+class PlacesFilterChanged extends PlacesEvent {
+  const PlacesFilterChanged(this.filter);
 
   final Filter filter;
 
@@ -25,12 +23,11 @@ class PlacesLoad extends PlacesEvent {
   List<Object?> get props => [filter];
 
   @override
-  String toString() => 'PlacesLoad($filter)';
+  String toString() => 'PlacesFilterChanged($filter)';
 }
 
-/// Обновить список мест со старым фильтром.
-class PlacesReload extends PlacesEvent {
-  const PlacesReload();
+class PlacesRerfreshed extends PlacesEvent {
+  const PlacesRerfreshed();
 }
 
 abstract class PlacesWithPlace extends PlacesEvent {
@@ -45,24 +42,24 @@ abstract class PlacesWithPlace extends PlacesEvent {
   String toString() => '$runtimeType(#${place.id} ${place.name})';
 }
 
-/// Удалить карточку.
-class PlacesRemovePlace extends PlacesWithPlace {
-  const PlacesRemovePlace(Place place) : super(place);
+class PlacesPlaceRemoved extends PlacesWithPlace {
+  const PlacesPlaceRemoved(Place place) : super(place);
 }
 
-/// Сохранить настройки карты.
-class PlacesSaveMapSettings extends PlacesEvent {
-  const PlacesSaveMapSettings(this.mapSettings);
+class PlacesMapChanged extends PlacesEvent {
+  const PlacesMapChanged(this.mapSettings);
 
   final MapSettings mapSettings;
 
   @override
   List<Object?> get props => [mapSettings];
+
+  @override
+  String toString() => 'PlacesMapSettingsChanged()';
 }
 
-/// Сохранить позицию скролла.
-class PlacesSaveScrollOffset extends PlacesEvent {
-  const PlacesSaveScrollOffset(this.scrollOffset);
+class PlacesScrollChanged extends PlacesEvent {
+  const PlacesScrollChanged(this.scrollOffset);
 
   final double scrollOffset;
 
@@ -70,12 +67,11 @@ class PlacesSaveScrollOffset extends PlacesEvent {
   List<Object?> get props => [scrollOffset];
 
   @override
-  String toString() => 'PlacesSaveScrollOffset($scrollOffset)';
+  String toString() => 'PlacesScrollChanged($scrollOffset)';
 }
 
-/// Уведомить об изменении места.
-class PlacesNotifyPlace extends PlacesEvent {
-  const PlacesNotifyPlace(this.notification);
+class PlacesPlaceChanged extends PlacesEvent {
+  const PlacesPlaceChanged(this.notification);
 
   final PlaceNotification notification;
 
@@ -83,5 +79,5 @@ class PlacesNotifyPlace extends PlacesEvent {
   List<Object?> get props => [notification];
 
   @override
-  String toString() => 'PlacesNotifyPlace($notification)';
+  String toString() => 'PlacesPlaceChanged($notification)';
 }

@@ -23,7 +23,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     // Подписываемся на уведомления об изменении мест.
     _placeInteractorSubscription =
         _placeInteractor.stream.listen((notification) {
-      add(PlacesNotifyPlace(notification));
+      add(PlacesPlaceChanged(notification));
     });
   }
 
@@ -42,7 +42,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     return super.close();
   }
 
-  bool isDebouncedEvent(PlacesEvent event) => event is PlacesSaveScrollOffset;
+  bool isDebouncedEvent(PlacesEvent event) => event is PlacesScrollChanged;
   bool isNotDebouncedEvent(PlacesEvent event) => !isDebouncedEvent(event);
 
   /// События скролла пропускаем через debounce.
@@ -62,21 +62,21 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     PlacesEvent event,
   ) async* {
     print(event);
-    if (event is PlacesRestoreOrInit) {
-      yield* _restoreOrInit();
-    } else if (event is PlacesLoad) {
+    if (event is PlacesStarted) {
+      yield* _restore();
+    } else if (event is PlacesFilterChanged) {
       yield* _load(event.filter);
-    } else if (event is PlacesReload) {
+    } else if (event is PlacesRerfreshed) {
       _checkFilter();
       yield* _load(state.filter.value);
-    } else if (event is PlacesRemovePlace) {
+    } else if (event is PlacesPlaceRemoved) {
       yield* _removePlace(event);
-    } else if (event is PlacesSaveMapSettings) {
+    } else if (event is PlacesMapChanged) {
       yield* _saveMapSettings(event);
-    } else if (event is PlacesSaveScrollOffset) {
+    } else if (event is PlacesScrollChanged) {
       yield* _saveScrollOffset(event);
-    } else if (event is PlacesNotifyPlace) {
-      yield* _notifyPlace(event);
+    } else if (event is PlacesPlaceChanged) {
+      yield* _updatePlace(event);
     }
   }
 
@@ -84,7 +84,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   void _checkFilter() {
     if (state.filter.isNotReady) {
       throw StateError('PlacesBloc: The state not initalized. '
-          'Dispatch a [PlacesRestoreOrInit] event.');
+          'Dispatch a [PlacesStarted] event.');
     }
   }
 
@@ -92,12 +92,12 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   void _checkPlaces() {
     if (state.places.isNotReady) {
       throw StateError('PlacesBloc: The places not loaded. '
-          'Dispatch [PlacesLoad] or [PlacesReload] events.');
+          'Dispatch [PlacesRerfreshed] or [PlacesFilterChanged] events.');
     }
   }
 
   // Восстанавливает прошлое состояние или инициализирует.
-  Stream<PlacesState> _restoreOrInit() async* {
+  Stream<PlacesState> _restore() async* {
     final filterJson =
         await _keyValueRepository.loadString(_section, _filterTag);
     final filter = filterJson == null ? Filter() : Filter.parseJson(filterJson);
@@ -116,19 +116,19 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
       scrollOffset: BlocValue(scrollOffset),
     );
 
-    add(const PlacesReload());
+    add(const PlacesRerfreshed());
   }
 
   // Загружает список мест.
   Stream<PlacesState> _load(Filter filter) async* {
     final saveFuture = _saveFilter(filter);
     final stateWithNewFilter = state.copyWith(filter: BlocValue(filter));
-    yield PlacesLoading(stateWithNewFilter);
+    yield PlacesLoadInProgress(stateWithNewFilter);
     try {
       final places = await _placeInteractor.getPlaces(filter);
       yield stateWithNewFilter.copyWith(places: BlocValue(places));
     } on RepositoryException catch (e) {
-      yield PlacesLoadingFailed(state, e);
+      yield PlacesLoadFailure(state, e);
     }
     await saveFuture;
   }
@@ -140,7 +140,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   }
 
   // Удяляет место из списка.
-  Stream<PlacesState> _removePlace(PlacesRemovePlace event) async* {
+  Stream<PlacesState> _removePlace(PlacesPlaceRemoved event) async* {
     _checkPlaces();
 
     // Чтобы пользователь не ждал, удаляем вручную из списка.
@@ -151,26 +151,26 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
     try {
       await _placeInteractor.removePlace(event.place.id);
     } on RepositoryException catch (e) {
-      yield PlacesLoadingFailed(state, e);
+      yield PlacesLoadFailure(state, e);
     }
   }
 
   // Сохраняет настройки карты.
-  Stream<PlacesState> _saveMapSettings(PlacesSaveMapSettings event) async* {
+  Stream<PlacesState> _saveMapSettings(PlacesMapChanged event) async* {
     final json = event.mapSettings.jsonStringify();
     await _keyValueRepository.saveString(_section, _mapSettingsTag, json);
     yield state.copyWith(mapSettings: BlocValue(event.mapSettings));
   }
 
   // Сохраняет позицию скролла.
-  Stream<PlacesState> _saveScrollOffset(PlacesSaveScrollOffset event) async* {
+  Stream<PlacesState> _saveScrollOffset(PlacesScrollChanged event) async* {
     await _keyValueRepository.saveDouble(
         _section, _scrollOffsetTag, event.scrollOffset);
     yield state.copyWith(scrollOffset: BlocValue(event.scrollOffset));
   }
 
   // Обновляет место.
-  Stream<PlacesState> _notifyPlace(PlacesNotifyPlace event) async* {
+  Stream<PlacesState> _updatePlace(PlacesPlaceChanged event) async* {
     if (state.places.isNotReady) return;
 
     final notification = event.notification;

@@ -55,13 +55,13 @@ class PlacesState extends Equatable with BlocValues {
 }
 
 /// Загрузка данных.
-class PlacesLoading extends PlacesState {
-  PlacesLoading(PlacesState state) : super.from(state);
+class PlacesLoadInProgress extends PlacesState {
+  PlacesLoadInProgress(PlacesState state) : super.from(state);
 }
 
 /// Ошибка загрузки данных.
-class PlacesLoadingFailed extends PlacesState {
-  PlacesLoadingFailed(PlacesState state, this.error) : super.from(state);
+class PlacesLoadFailure extends PlacesState {
+  PlacesLoadFailure(PlacesState state, this.error) : super.from(state);
 
   final Exception error;
 

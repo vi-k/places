@@ -8,13 +8,13 @@ abstract class SearchState extends Equatable {
 }
 
 /// Загрузка результатов.
-class SearchLoading extends SearchState {
-  const SearchLoading();
+class SearchInProgress extends SearchState {
+  const SearchInProgress();
 }
 
 /// Результаты поиска.
-class SearchResults extends SearchState {
-  const SearchResults(this.places);
+class SearchSuccess extends SearchState {
+  const SearchSuccess(this.places);
 
   final List<Place> places;
 
@@ -23,8 +23,8 @@ class SearchResults extends SearchState {
 }
 
 /// Ошибка загрузки результатов поиска.
-class SearchFailed extends SearchState {
-  const SearchFailed(this.text, this.error) : super();
+class SearchFailure extends SearchState {
+  const SearchFailure(this.text, this.error) : super();
 
   final String text;
   final Exception error;
@@ -41,14 +41,4 @@ class SearchHistory extends SearchState {
 
   @override
   List<Object?> get props => [history];
-}
-
-/// Ошибка загрузки истории поиска.
-class SearchHistoryFailed extends SearchState {
-  const SearchHistoryFailed(this.error) : super();
-
-  final Exception error;
-
-  @override
-  List<Object?> get props => [error];
 }
