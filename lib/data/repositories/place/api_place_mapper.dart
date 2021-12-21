@@ -33,6 +33,7 @@ class ApiPlaceMapper {
       'placeType': value.type.name,
       'description': value.description,
     };
+
     return jsonEncode(obj);
   }
 }

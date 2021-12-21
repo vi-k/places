@@ -19,10 +19,12 @@ class RepositoryNetworkException extends RepositoryException {
   @override
   String get message {
     final msg = networkMessage.replaceFirst(
-        RegExp(
-          r'\s*\[' '$statusCode' r'\]$',
-        ),
-        '');
+      RegExp(
+        r'\s*\[' '$statusCode' r'\]$',
+      ),
+      '',
+    );
+
     return 'В запросе $method $url возникла ошибка: $statusCode '
         '$msg${data == null ? '' : '\n$data'}';
   }

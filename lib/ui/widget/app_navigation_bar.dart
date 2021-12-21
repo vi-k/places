@@ -63,37 +63,35 @@ class AppNavigationBar extends StatelessWidget {
         }
       },
       items: [
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            index == 0 ? Svg24.listFull : Svg24.list,
-            color: _itemColor(theme, index == 0),
-          ),
-          label: stringPlaceList,
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            index == 1 ? Svg24.mapFull : Svg24.map,
-            color: _itemColor(theme, index == 1),
-          ),
-          label: stringMap,
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            index == 2 ? Svg24.heartFull : Svg24.heart,
-            color: _itemColor(theme, index == 2),
-          ),
-          label: stringFavorite,
-        ),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            index == 3 ? Svg24.settingsFull : Svg24.settings,
-            color: _itemColor(theme, index == 3),
-          ),
-          label: stringSettings,
+        _buildBarItem(theme, 0, Svg24.listFull, Svg24.list, stringPlaceList),
+        _buildBarItem(theme, 1, Svg24.mapFull, Svg24.map, stringMap),
+        _buildBarItem(theme, 2, Svg24.heartFull, Svg24.heart, stringFavorite),
+        _buildBarItem(
+          theme,
+          3,
+          Svg24.settingsFull,
+          Svg24.settings,
+          stringSettings,
         ),
       ],
     );
   }
+
+  // ignore: long-parameter-list
+  BottomNavigationBarItem _buildBarItem(
+    MyThemeData theme,
+    int itemIndex,
+    String svgActive,
+    String svgInactive,
+    String label,
+  ) =>
+      BottomNavigationBarItem(
+        icon: SvgPicture.asset(
+          index == itemIndex ? svgActive : svgInactive,
+          color: _itemColor(theme, index == itemIndex),
+        ),
+        label: label,
+      );
 
   Color? _itemColor(MyThemeData theme, bool selected) => selected
       ? theme.app.bottomNavigationBarTheme.selectedItemColor

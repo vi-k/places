@@ -2,12 +2,12 @@
 # https://dart.dev/guides/language/analysis-options/
 # https://dart-lang.github.io/linter/lints/
 
-#include: package:pedantic/analysis_options.1.9.0.yaml
-
 analyzer:
   enable-experiment:
     - non-nullable
-    
+  plugins:
+    - dart_code_metrics
+
   exclude:
     # Web
     - 'web/**'
@@ -223,3 +223,23 @@ linter:
     avoid_positional_boolean_parameters: true
     hash_and_equals: true
     avoid_equals_and_hash_code_on_mutable_classes: true
+
+dart_code_metrics:
+  anti-patterns:
+    - long-method
+    - long-parameter-list
+  metrics:
+    cyclomatic-complexity: 20
+    lines-of-executable-code: 50
+    maximum-nesting-level: 5
+    number-of-parameters: 4
+    source-lines-of-code: 50
+  metrics-exclude:
+    - test/**
+  rules:
+    - newline-before-return
+    - no-boolean-literal-compare
+    - no-empty-block
+    - prefer-trailing-comma
+    - prefer-conditional-expressions
+    - no-equal-then-else

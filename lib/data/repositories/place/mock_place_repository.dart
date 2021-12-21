@@ -10,6 +10,7 @@ import 'package:places/utils/sort.dart';
 
 /// Моковый репозиторий мест.
 class MockPlaceRepository extends PlaceRepository {
+  // ignore: long-method
   MockPlaceRepository() {
     _places = [
       PlaceBase(
@@ -103,6 +104,7 @@ class MockPlaceRepository extends PlaceRepository {
     if (index != -1) throw RepositoryAlreadyExistsException();
 
     _places.add(place.copyWith(id: id));
+
     return id;
   }
 
@@ -135,12 +137,14 @@ class MockPlaceRepository extends PlaceRepository {
 
   /// Имитирует загрузку списка мест.
   @override
-  Future<List<PlaceBase>> loadList(
-      {int? count,
-      int? offset,
-      PlaceOrderBy? pageBy,
-      Object? pageLastValue,
-      Map<PlaceOrderBy, Object>? orderBy}) async {
+  // ignore: long-parameter-list
+  Future<List<PlaceBase>> loadList({
+    int? count,
+    int? offset,
+    PlaceOrderBy? pageBy,
+    Object? pageLastValue,
+    Map<PlaceOrderBy, Object>? orderBy,
+  }) async {
     // Сначала сортируем.
     final list = [..._places];
     if (orderBy != null) {
@@ -156,6 +160,7 @@ class MockPlaceRepository extends PlaceRepository {
             if (res != 0) return res;
           }
         }
+
         return 0;
       });
     }
@@ -172,7 +177,8 @@ class MockPlaceRepository extends PlaceRepository {
       final sort = orderBy[pageBy];
       if (sort == null) {
         throw RepositoryException(
-            'the [orderBy] must contain the field of the [pageBy]');
+          'the [orderBy] must contain the field of the [pageBy]',
+        );
       }
 
       // Должно быть указано последнее значение заданного поля.
@@ -197,13 +203,16 @@ class MockPlaceRepository extends PlaceRepository {
 
     if (offset != null) result = result.skip(offset);
     if (count != null) result = result.take(count);
+
     return result.toList();
   }
 
   /// Имитирует загрузку списка мест, соответствующих фильтру.
   @override
-  Future<List<PlaceBase>> loadFilteredList(
-      {Coord? coord, required Filter filter}) async {
+  Future<List<PlaceBase>> loadFilteredList({
+    Coord? coord,
+    required Filter filter,
+  }) async {
     Iterable<PlaceBase> tmp = _places;
 
     filter.placeTypes?.let((it) {

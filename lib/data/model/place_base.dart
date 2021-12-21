@@ -69,6 +69,7 @@ class PlaceBase extends Equatable implements Comparable<PlaceBase> {
       return 'PlaceBase(${toString(short: short, withType: false)})';
     } else {
       final result = '#$id "$name", ${type.name}, $distance';
+
       return short
           ? result
           : '$result, $coord, "${description.cut(20)}", '
@@ -77,6 +78,7 @@ class PlaceBase extends Equatable implements Comparable<PlaceBase> {
   }
 
   /// Копирует с внесением изменений.
+  // ignore: long-parameter-list
   PlaceBase copyWith({
     int? id,
     Coord? coord,
@@ -88,6 +90,7 @@ class PlaceBase extends Equatable implements Comparable<PlaceBase> {
     Coord? calcDistanceFrom,
   }) {
     assert(distance == null || calcDistanceFrom == null);
+
     return PlaceBase(
       id: id ?? this.id,
       coord: coord ?? this.coord,

@@ -20,7 +20,11 @@ class Section extends StatelessWidget {
     double spacing = commonSpacing3_4,
     bool applyPaddingToChild = true,
   })  : namePadding = EdgeInsets.only(
-            left: left, top: top, right: right, bottom: spacing),
+          left: left,
+          top: top,
+          right: right,
+          bottom: spacing,
+        ),
         childPadding = applyPaddingToChild
             ? EdgeInsets.only(left: left, right: right)
             : EdgeInsets.zero;

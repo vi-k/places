@@ -35,6 +35,7 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   @override
   Future<void> close() async {
     await _placeInteractorSubscription.cancel();
+
     return super.close();
   }
 
@@ -87,8 +88,7 @@ abstract class _FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   }
 
   // Переносит в соседний список.
-  Stream<FavoriteState> _moveToAdjacentList(
-      FavoritePlaceMoved event) async* {
+  Stream<FavoriteState> _moveToAdjacentList(FavoritePlaceMoved event) async* {
     _checkPlaces();
 
     // Чтобы пользователь не ждал, удаляем вручную без перезагрузки списка.

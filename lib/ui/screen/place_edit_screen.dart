@@ -52,15 +52,17 @@ class PlaceEditScreen extends StatefulWidget {
   /// обращаться к блоку.
   static void start(BuildContext context, [int placeId = 0]) {
     standartNavigatorPush<void>(
-        context,
-        () => BlocProvider<EditPlaceBloc>(
-            create: (_) => EditPlaceBloc(
-                  context.read<PlaceInteractor>(),
-                  context.read<UploadRepository>(),
-                  context.read<LocationRepository>(),
-                  placeId,
-                )..add(const EditPlaceStarted()),
-            child: const PlaceEditScreen._()));
+      context,
+      () => BlocProvider<EditPlaceBloc>(
+        create: (_) => EditPlaceBloc(
+          context.read<PlaceInteractor>(),
+          context.read<UploadRepository>(),
+          context.read<LocationRepository>(),
+          placeId,
+        )..add(const EditPlaceStarted()),
+        child: const PlaceEditScreen._(),
+      ),
+    );
   }
 }
 
@@ -152,6 +154,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
         buildWhen: (previous, current) => previous.photos != current.photos,
         builder: (context, state) {
           logger.d('builder photos');
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -250,6 +253,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           buildWhen: (previous, current) => previous.type != current.type,
           builder: (context, state) {
             logger.d('builder type');
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -287,6 +291,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
           buildWhen: (previous, current) => previous.name != current.name,
           builder: (context, state) {
             logger.d('builder name');
+
             return TextFormField(
               key: ValueKey(state.name.isUndefined),
               initialValue: state.name.value,
@@ -328,6 +333,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
             previous.lon != current.lon,
         builder: (context, state) {
           logger.d('builder coord');
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -478,7 +484,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           );
         },
@@ -492,6 +498,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
               previous.description != current.description,
           builder: (context, state) {
             logger.d('builder description');
+
             return TextFormField(
               key: ValueKey(state.description.isUndefined),
               initialValue: state.description.value,
@@ -514,6 +521,7 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
               previous.isModified != current.isModified,
           builder: (context, state) {
             logger.d('build done');
+
             return StandartButton(
               label: bloc.isNew ? stringCreate : stringSave,
               onPressed: state.isModified
@@ -566,7 +574,9 @@ class _PlaceEditScreenState extends State<PlaceEditScreen> {
   // Получает типа места.
   Future<void> _getPlaceType(PlaceType? type) async {
     final newType = await standartNavigatorPush<PlaceType>(
-        context, () => PlaceTypeSelectScreen(placeType: type));
+      context,
+      () => PlaceTypeSelectScreen(placeType: type),
+    );
 
     if (newType != null) {
       bloc.add(EditPlaceChanged(type: newType));

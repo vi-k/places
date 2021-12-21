@@ -1,5 +1,3 @@
-import 'package:logger/logger.dart';
-
 import 'build_config.dart';
 import 'build_type.dart';
 

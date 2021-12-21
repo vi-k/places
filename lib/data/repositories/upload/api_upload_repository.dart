@@ -31,12 +31,14 @@ class ApiUploadRepository extends UploadRepository {
       ..reset()
       ..start();
 
-    final formData = FormData.fromMap(<String, Object>{
-      'files': MultipartFile.fromBytes(
-        jpeg,
-        contentType: MediaType('image', 'jpeg'),
-      )
-    });
+    final formData = FormData.fromMap(
+      <String, Object>{
+        'files': MultipartFile.fromBytes(
+          jpeg,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      },
+    );
 
     final response = await dio.post<String>('/upload_file', data: formData);
     final location = response.headers.value('location');

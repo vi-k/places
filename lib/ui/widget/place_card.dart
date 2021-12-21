@@ -55,75 +55,78 @@ class PlaceCard extends StatefulWidget {
 
 class _PlaceCardState extends State<PlaceCard>
     with SingleTickerProviderStateMixin {
+  late MyThemeData _theme;
+
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<AppBloc>().theme;
+    _theme = context.watch<AppBloc>().theme;
 
     return BlocProvider<PlaceBloc>(
       create: (_) => PlaceBloc(context.read<PlaceInteractor>(), widget.place),
       child: BlocBuilder<PlaceBloc, PlaceState>(
-          builder: (context, state) => widget.cardType == Favorite.no
-              ? _buildCard(context, theme, state.place)
-              : Stack(
-                  children: [
-                    Container(),
-                    Center(
-                      child: Dismissible(
-                        key: ValueKey(state.place.id),
-                        direction: DismissDirection.horizontal,
-                        onDismissed: (direction) {
-                          if (widget.cardType == Favorite.wishlist) {
-                            context.read<WishlistBloc>().add(
-                                direction == DismissDirection.startToEnd
-                                    ? FavoritePlaceMoved(state.place)
-                                    : FavoritePlaceRemoved(state.place));
-                          } else {
-                            context.read<VisitedBloc>().add(
-                                direction == DismissDirection.startToEnd
-                                    ? FavoritePlaceRemoved(state.place)
-                                    : FavoritePlaceMoved(state.place));
-                          }
-                        },
-                        background: widget.cardType == Favorite.wishlist
-                            ? _buildBackground(theme,
-                                color: theme.accentColor,
-                                svg: Svg24.tick,
-                                label: stringToVisited,
-                                alignment: Alignment.centerLeft)
-                            : _buildBackground(theme,
-                                color: theme.attentionColor,
-                                svg: Svg24.bucket,
-                                label: stringDeleteFromVisited,
-                                alignment: Alignment.centerLeft),
-                        secondaryBackground:
-                            widget.cardType == Favorite.wishlist
-                                ? _buildBackground(theme,
-                                    color: theme.attentionColor,
-                                    svg: Svg24.bucket,
-                                    label: stringDeleteFromWishlist,
-                                    alignment: Alignment.centerRight)
-                                : _buildBackground(theme,
-                                    color: theme.accentColor,
-                                    svg: Svg24.heart,
-                                    label: stringToWishlist,
-                                    alignment: Alignment.centerRight),
-                        child: _buildCard(context, theme, state.place),
-                      ),
-                    ),
-                  ],
-                )),
+        builder: (context, state) => widget.cardType == Favorite.no
+            ? _buildCard(context, state.place)
+            : _buildDismissibleCard(context, state.place),
+      ),
     );
   }
 
-  Widget _buildCard(BuildContext context, MyThemeData theme, Place place) =>
-      Card(
+  Dismissible _buildDismissibleCard(BuildContext context, Place place) =>
+      Dismissible(
+        key: ValueKey(place.id),
+        direction: DismissDirection.horizontal,
+        onDismissed: (direction) {
+          if (widget.cardType == Favorite.wishlist) {
+            context.read<WishlistBloc>().add(
+                  direction == DismissDirection.startToEnd
+                      ? FavoritePlaceMoved(place)
+                      : FavoritePlaceRemoved(place),
+                );
+          } else {
+            context.read<VisitedBloc>().add(
+                  direction == DismissDirection.startToEnd
+                      ? FavoritePlaceRemoved(place)
+                      : FavoritePlaceMoved(place),
+                );
+          }
+        },
+        background: widget.cardType == Favorite.wishlist
+            ? _buildBackground(
+                color: _theme.accentColor,
+                svg: Svg24.tick,
+                label: stringToVisited,
+                alignment: Alignment.centerLeft,
+              )
+            : _buildBackground(
+                color: _theme.attentionColor,
+                svg: Svg24.bucket,
+                label: stringDeleteFromVisited,
+                alignment: Alignment.centerLeft,
+              ),
+        secondaryBackground: widget.cardType == Favorite.wishlist
+            ? _buildBackground(
+                color: _theme.attentionColor,
+                svg: Svg24.bucket,
+                label: stringDeleteFromWishlist,
+                alignment: Alignment.centerRight,
+              )
+            : _buildBackground(
+                color: _theme.accentColor,
+                svg: Svg24.heart,
+                label: stringToWishlist,
+                alignment: Alignment.centerRight,
+              ),
+        child: _buildCard(context, place),
+      );
+
+  Widget _buildCard(BuildContext context, Place place) => Card(
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildCardTop(place),
-                _buildCardBottom(theme, place),
+                _buildCardBottom(place),
               ],
             ),
             // Поверх карточки невидимая кнопка
@@ -131,14 +134,14 @@ class _PlaceCardState extends State<PlaceCard>
               padding: EdgeInsets.zero,
               onLongPress: widget.onLongPress,
               onPressed: () => _gotoPlaceDetails(context, place),
-              child: _buildSignatures(context, theme, place),
+              child: _buildSignatures(context, place),
             ),
-            if (widget.go != null) _buildGo(theme),
+            if (widget.go != null) _buildGo(),
           ],
         ),
       );
 
-  Positioned _buildGo(MyThemeData theme) => Positioned(
+  Positioned _buildGo() => Positioned(
         right: commonSpacing1_2,
         bottom: commonSpacing1_2,
         child: MaterialButton(
@@ -146,14 +149,14 @@ class _PlaceCardState extends State<PlaceCard>
           minWidth: standartButtonHeight,
           height: standartButtonHeight,
           padding: EdgeInsets.zero,
-          color: theme.accentColor,
+          color: _theme.accentColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(standartButtonRadius),
           ),
           onPressed: widget.go,
           child: SvgPicture.asset(
             Svg24.go,
-            color: theme.textBold14White.color,
+            color: _theme.textBold14White.color,
           ),
         ),
       );
@@ -182,8 +185,10 @@ class _PlaceCardState extends State<PlaceCard>
   }
 
   Widget _buildSignatures(
-      BuildContext context, MyThemeData theme, Place place) {
-    final textStyle = theme.textBold14White;
+    BuildContext context,
+    Place place,
+  ) {
+    final textStyle = _theme.textBold14White;
     final color = textStyle.color!;
 
     final signatures = <Widget>[];
@@ -202,7 +207,7 @@ class _PlaceCardState extends State<PlaceCard>
       signatures.add(
         _buildSignatureButton(
           Svg24.calendar,
-          place.userInfo.planToVisit == null ? color : theme.accentColor,
+          place.userInfo.planToVisit == null ? color : _theme.accentColor,
           () => _setDate(context, place),
         ),
       );
@@ -235,7 +240,10 @@ class _PlaceCardState extends State<PlaceCard>
   }
 
   Widget _buildSignaturePlaceType(
-          BuildContext context, TextStyle textStyle, Place place) =>
+    BuildContext context,
+    TextStyle textStyle,
+    Place place,
+  ) =>
       Padding(
         padding: commonPaddingLR,
         child: Text(
@@ -245,7 +253,10 @@ class _PlaceCardState extends State<PlaceCard>
       );
 
   Widget _buildSignatureButton(
-          String svg, Color color, void Function() onPressed) =>
+    String svg,
+    Color color,
+    void Function() onPressed,
+  ) =>
       AnimatedSwitcher(
         duration: standartAnimationDuration,
         switchInCurve: Curves.easeInOutCubic,
@@ -266,7 +277,7 @@ class _PlaceCardState extends State<PlaceCard>
         ),
       );
 
-  Widget _buildCardBottom(MyThemeData theme, Place place) => Expanded(
+  Widget _buildCardBottom(Place place) => Expanded(
         flex: 2,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
@@ -288,45 +299,46 @@ class _PlaceCardState extends State<PlaceCard>
               bounds.right,
               bounds.bottom,
             )),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        place.name,
-                        style: theme.textMiddle16Main,
-                      ),
-                    ),
-                    const SizedBox(width: commonSpacing1_2),
-                    Text(
-                      '${place.distance ?? '-'}',
-                      style: theme.textRegular14Light,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: commonSpacing1_4),
-                Text(
-                  place.description,
-                  style: theme.textRegular14Light,
-                ),
-              ],
-            ),
+            child: _buildCardDescription(place),
           ),
         ),
       );
 
-  Widget _buildBackground(
-    MyThemeData theme, {
+  Widget _buildCardDescription(Place place) => ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  place.name,
+                  style: _theme.textMiddle16Main,
+                ),
+              ),
+              const SizedBox(width: commonSpacing1_2),
+              Text(
+                '${place.distance ?? '-'}',
+                style: _theme.textRegular14Light,
+              ),
+            ],
+          ),
+          const SizedBox(height: commonSpacing1_4),
+          Text(
+            place.description,
+            style: _theme.textRegular14Light,
+          ),
+        ],
+      );
+
+  Widget _buildBackground({
     required Color color,
     required String svg,
     required String label,
     required Alignment alignment,
   }) {
-    final textStyle = theme.textMiddle12White;
+    final textStyle = _theme.textMiddle12White;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: commonSpacing),

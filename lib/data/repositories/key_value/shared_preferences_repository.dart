@@ -45,13 +45,17 @@ class SharedPreferencesRepository extends KeyValueRepository {
 
   @override
   Future<bool> saveStringList(
-          String section, String key, List<String> value) async =>
+    String section,
+    String key,
+    List<String> value,
+  ) async =>
       (await SharedPreferences.getInstance())
           .setStringList(path(section, key), value);
 
   @override
   Future<bool> remove(String section, String key) async {
     final prefs = await SharedPreferences.getInstance();
+
     return prefs.remove(path(section, key));
   }
 }

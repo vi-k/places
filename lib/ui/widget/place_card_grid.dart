@@ -52,7 +52,10 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
   }
 
   SliverGrid _buildSliverGrid(
-          MyThemeData theme, int columnsCount, List<Place>? places) =>
+    MyThemeData theme,
+    int columnsCount,
+    List<Place>? places,
+  ) =>
       SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           childAspectRatio: cardAspectRatio,
@@ -61,16 +64,18 @@ class _PlaceCardGridState extends State<PlaceCardGrid> {
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final place = places![index];
+
             return Padding(
-                padding: commonPaddingLBR,
-                child: PlaceCard(
-                  key: ValueKey(place.id),
-                  place: place,
-                  cardType: widget.cardType,
-                  onClose: widget.onCardClose == null
-                      ? null
-                      : () => widget.onCardClose!(place),
-                ));
+              padding: commonPaddingLBR,
+              child: PlaceCard(
+                key: ValueKey(place.id),
+                place: place,
+                cardType: widget.cardType,
+                onClose: widget.onCardClose == null
+                    ? null
+                    : () => widget.onCardClose!(place),
+              ),
+            );
           },
           childCount: places?.length ?? 0,
         ),

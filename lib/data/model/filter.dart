@@ -34,7 +34,8 @@ class Filter extends Equatable {
     bool placeTypesReset = false,
     Distance? radius,
   }) {
-    assert(placeTypes == null || placeTypesReset == false);
+    assert(placeTypes == null || !placeTypesReset);
+
     return Filter(
       placeTypes: placeTypesReset ? null : placeTypes ?? this.placeTypes,
       radius: radius ?? this.radius,
@@ -46,6 +47,7 @@ class Filter extends Equatable {
     final placeTypesStr = placeTypes == null
         ? 'all'
         : '[${placeTypes!.map((e) => e.name).join(', ')}]';
+
     return 'Filter(radius: $radius, placeTypes: $placeTypesStr)';
   }
 

@@ -39,6 +39,7 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   @override
   Future<void> close() async {
     await _placeInteractorSubscription.cancel();
+
     return super.close();
   }
 
@@ -48,8 +49,9 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   /// События скролла пропускаем через debounce.
   @override
   Stream<Transition<PlacesEvent, PlacesState>> transformEvents(
-          Stream<PlacesEvent> events,
-          TransitionFunction<PlacesEvent, PlacesState> transitionFn) =>
+    Stream<PlacesEvent> events,
+    TransitionFunction<PlacesEvent, PlacesState> transitionFn,
+  ) =>
       MergeStream<PlacesEvent>([
         events
             .where(isDebouncedEvent)
@@ -165,7 +167,10 @@ class PlacesBloc extends Bloc<PlacesEvent, PlacesState> {
   // Сохраняет позицию скролла.
   Stream<PlacesState> _saveScrollOffset(PlacesScrollChanged event) async* {
     await _keyValueRepository.saveDouble(
-        _section, _scrollOffsetTag, event.scrollOffset);
+      _section,
+      _scrollOffsetTag,
+      event.scrollOffset,
+    );
     yield state.copyWith(scrollOffset: BlocValue(event.scrollOffset));
   }
 

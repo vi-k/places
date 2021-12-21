@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 import 'bloc/app/app_bloc.dart';
 import 'bloc/favorite/favorite_bloc.dart';
@@ -54,64 +55,73 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  List<SingleChildWidget> _providers() => [
+        Provider<Dio>(
+          create: (context) => createDio(createDioOptions()),
+        ),
+        Provider<KeyValueRepository>(
+          create: (context) => SharedPreferencesRepository(),
+        ),
+        Provider<DbRepository>(
+          create: (context) => SqliteDbRepository(),
+        ),
+        ProxyProvider<Dio, UploadRepository>(
+          update: (context, dio, previous) => ApiUploadRepository(dio),
+        ),
+        ProxyProvider<Dio, PlaceRepository>(
+          update: (context, dio, previous) =>
+              ApiPlaceRepository(dio, ApiPlaceMapper()),
+        ),
+        Provider<LocationRepository>(
+          create: (context) => RealLocationRepository(),
+        ),
+        ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
+            PlaceInteractor>(
+          update: (
+            context,
+            placeRepository,
+            dbRepository,
+            locationRepository,
+            previous,
+          ) =>
+              PlaceInteractor(
+            placeRepository: placeRepository,
+            dbRepository: dbRepository,
+            locationRepository: locationRepository,
+          ),
+          dispose: (context, interactor) => interactor.close(),
+        ),
+      ];
+
+  List<BlocProvider> _blocs() => [
+        BlocProvider<AppBloc>(
+          create: (context) => AppBloc(
+            context.read<KeyValueRepository>(),
+          )..add(const AppStarted()),
+        ),
+        BlocProvider<PlacesBloc>(
+          create: (context) => PlacesBloc(
+            context.read<KeyValueRepository>(),
+            context.read<PlaceInteractor>(),
+          )..add(const PlacesStarted()),
+        ),
+        BlocProvider<WishlistBloc>(
+          create: (context) => WishlistBloc(
+            context.read<PlaceInteractor>(),
+          )..add(const FavoriteStarted()),
+        ),
+        BlocProvider<VisitedBloc>(
+          create: (context) => VisitedBloc(
+            context.read<PlaceInteractor>(),
+          )..add(const FavoriteStarted()),
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          Provider<Dio>(
-            create: (context) => createDio(createDioOptions()),
-          ),
-          Provider<KeyValueRepository>(
-            create: (context) => SharedPreferencesRepository(),
-          ),
-          Provider<DbRepository>(
-            create: (context) => SqliteDbRepository(),
-          ),
-          ProxyProvider<Dio, UploadRepository>(
-            update: (context, dio, previous) => ApiUploadRepository(dio),
-          ),
-          ProxyProvider<Dio, PlaceRepository>(
-            update: (context, dio, previous) =>
-                ApiPlaceRepository(dio, ApiPlaceMapper()),
-          ),
-          Provider<LocationRepository>(
-            create: (context) => RealLocationRepository(),
-          ),
-          ProxyProvider3<PlaceRepository, DbRepository, LocationRepository,
-              PlaceInteractor>(
-            update: (context, placeRepository, dbRepository, locationRepository,
-                    previous) =>
-                PlaceInteractor(
-              placeRepository: placeRepository,
-              dbRepository: dbRepository,
-              locationRepository: locationRepository,
-            ),
-            dispose: (context, interactor) => interactor.close(),
-          ),
-        ],
+        providers: _providers(),
         child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AppBloc>(
-              create: (context) => AppBloc(
-                context.read<KeyValueRepository>(),
-              )..add(const AppStarted()),
-            ),
-            BlocProvider<PlacesBloc>(
-              create: (context) => PlacesBloc(
-                context.read<KeyValueRepository>(),
-                context.read<PlaceInteractor>(),
-              )..add(const PlacesStarted()),
-            ),
-            BlocProvider<WishlistBloc>(
-              create: (context) => WishlistBloc(
-                context.read<PlaceInteractor>(),
-              )..add(const FavoriteStarted()),
-            ),
-            BlocProvider<VisitedBloc>(
-              create: (context) => VisitedBloc(
-                context.read<PlaceInteractor>(),
-              )..add(const FavoriteStarted()),
-            ),
-          ],
+          providers: _blocs(),
           child: FlavorBanner(
             buildType: Environment.buildType,
             child: BlocBuilder<AppBloc, AppState>(

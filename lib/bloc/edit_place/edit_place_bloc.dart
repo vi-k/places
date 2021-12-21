@@ -27,7 +27,8 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
     this._locationRepository,
     this._id,
   ) : super(EditPlaceState.init(
-            _id == 0 ? FormValueState.underway : FormValueState.undefined));
+          _id == 0 ? FormValueState.underway : FormValueState.undefined,
+        ));
 
   final PlaceInteractor _placeInteractor;
   final UploadRepository _uploadRepository;
@@ -104,7 +105,8 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   Stream<EditPlaceState> _addPhoto(EditPlacePhotoAdded event) async* {
     final newPhotos = List<Photo>.from(state.photos.value)..add(event.photo);
     yield state.copyWith(
-        photos: _validatePhotos(state.photos.setValue(newPhotos)));
+      photos: _validatePhotos(state.photos.setValue(newPhotos)),
+    );
 
     // Если добавлено незагруженное фото, запускаем загрузку.
     final path = event.photo.path;
@@ -127,7 +129,8 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
 
       newPhotos[index] = Photo(url: url);
       emit(state.copyWith(
-          photos: _validatePhotos(state.photos.setValue(newPhotos))));
+        photos: _validatePhotos(state.photos.setValue(newPhotos)),
+      ));
     } on RepositoryException catch (error) {
       emit(EditPlaceLoadFailure(state, error));
     }
@@ -139,7 +142,8 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
       final newPhotos = List<Photo>.from(state.photos.value)
         ..remove(event.photo);
       yield state.copyWith(
-          photos: _validatePhotos(state.photos.setValue(newPhotos)));
+        photos: _validatePhotos(state.photos.setValue(newPhotos)),
+      );
     } on RepositoryException catch (error) {
       yield EditPlaceLoadFailure(state, error);
     }
@@ -191,6 +195,7 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
 
     if (checkedState.isNotValid) {
       yield checkedState;
+
       return;
     }
 
@@ -291,9 +296,12 @@ class EditPlaceBloc extends Bloc<EditPlaceEvent, EditPlaceState> {
   }
 
   // Проверяет, все ли фотографии загружены.
-  FormValue<List<Photo>> _validatePhotos(FormValue<List<Photo>> photos,
-      {bool toSave = false}) {
+  FormValue<List<Photo>> _validatePhotos(
+    FormValue<List<Photo>> photos, {
+    bool toSave = false,
+  }) {
     final loaded = photos.value.where((photo) => !photo.isLoaded).isEmpty;
+
     return photos.value.isEmpty
         ? photos.toInvalid(error: stringInvalidPhotos)
         : loaded

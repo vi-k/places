@@ -34,7 +34,8 @@ class MockDbRepository extends DbRepository {
   @override
   Future<Map<int, PlaceUserInfo>> getFavorites(Favorite type) async =>
       Map<int, PlaceUserInfo>.fromEntries(
-          _placesUserInfo.entries.where((e) => e.value.favorite == type));
+        _placesUserInfo.entries.where((e) => e.value.favorite == type),
+      );
 
   @override
   Future<PlaceUserInfo?> loadPlaceUserInfo(int placeId) async =>

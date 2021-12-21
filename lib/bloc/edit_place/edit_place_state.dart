@@ -43,6 +43,7 @@ class EditPlaceState extends Equatable with FormValues {
   @override
   List<Object?> get props => [values];
 
+  // ignore: long-parameter-list
   EditPlaceState copyWith({
     FormValue<String>? name,
     FormValue<PlaceType?>? type,
@@ -73,7 +74,7 @@ class EditPlaceState extends Equatable with FormValues {
       '    isValid: $isValid';
 }
 
-/// Загрузка/соахранение.
+/// Загрузка/сохранение.
 class EditPlaceLoadInProgress extends EditPlaceState {
   EditPlaceLoadInProgress(EditPlaceState state) : super.from(state);
 }

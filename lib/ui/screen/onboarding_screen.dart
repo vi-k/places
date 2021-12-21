@@ -23,19 +23,23 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   late final List<AnimationController> _animControllers =
       List<AnimationController>.generate(
-          _pageCount,
-          (index) => AnimationController(
-                vsync: this,
-                duration: standartAnimationDuration * 2,
-              ));
+    _pageCount,
+    (index) => AnimationController(
+      vsync: this,
+      duration: standartAnimationDuration * 2,
+    ),
+  );
 
   late final List<Animation<double>> _animations =
       List<Animation<double>>.generate(
-          _pageCount,
-          (index) => Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                curve: Curves.elasticOut,
-                parent: _animControllers[index],
-              )));
+    _pageCount,
+    (index) => Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        curve: Curves.elasticOut,
+        parent: _animControllers[index],
+      ),
+    ),
+  );
 
   late final PageController _pageController = PageController()
     ..addListener(() {
@@ -52,6 +56,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     });
 
   var _currentPage = 0.0;
+
+  late MyThemeData _theme;
 
   @override
   void dispose() {
@@ -78,7 +84,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.watch<AppBloc>().theme;
+    _theme = context.watch<AppBloc>().theme;
+
     final translate = _currentPage >= _lastPage - 0.5
         ? 1 - (_lastPage - _currentPage) * 2
         : 0.0;
@@ -92,27 +99,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ..._buildTop(theme, translate),
+          ..._buildTop(translate),
           Expanded(
             child: PageView(
               controller: _pageController,
               children: [
                 _buildTutorial(
-                  theme,
                   pageIndex: 0,
                   svg: SvgTutorial.tutorial1,
                   caption: tutorial1Caption,
                   description: tutorial1Description,
                 ),
                 _buildTutorial(
-                  theme,
                   pageIndex: 1,
                   svg: SvgTutorial.tutorial2,
                   caption: tutorial2Caption,
                   description: tutorial2Description,
                 ),
                 _buildTutorial(
-                  theme,
                   pageIndex: 2,
                   svg: SvgTutorial.tutorial3,
                   caption: tutorial3Caption,
@@ -128,7 +132,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  List<Widget> _buildTop(MyThemeData theme, double translate) {
+  List<Widget> _buildTop(double translate) {
     final top = MediaQuery.of(context).padding.top + commonSpacing1_2;
 
     return [
@@ -138,7 +142,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         child: Align(
           alignment: Alignment.topRight,
           child: SmallButton(
-            style: theme.textMiddle16Accent,
+            style: _theme.textMiddle16Accent,
             label: stringSkip,
             onPressed: _skip,
           ),
@@ -147,14 +151,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ];
   }
 
-  Widget _buildTutorial(
-    MyThemeData theme, {
+  Widget _buildTutorial({
     required int pageIndex,
     required String svg,
     required String caption,
     required String description,
   }) {
-    final image = SvgPicture.asset(svg, color: theme.mainTextColor2);
+    final image = SvgPicture.asset(svg, color: _theme.mainTextColor2);
 
     return Padding(
       padding: commonPaddingLR * 3,
@@ -175,13 +178,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               Text(
                 caption,
                 textAlign: TextAlign.center,
-                style: theme.textBold24Main2,
+                style: _theme.textBold24Main2,
               ),
               const SizedBox(height: commonSpacing),
               Text(
                 description,
                 textAlign: TextAlign.center,
-                style: theme.textRegular14Light,
+                style: _theme.textRegular14Light,
               ),
             ],
           ),

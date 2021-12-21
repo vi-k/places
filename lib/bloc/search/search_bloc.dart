@@ -26,6 +26,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   @override
   Future<void> close() async {
     await _placeInteractorSubscription.cancel();
+
     return super.close();
   }
 
@@ -95,7 +96,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   // Удаляет из истории поиска.
   Stream<SearchState> _removeFromHistory(
-      SearchRemovedFromHistory event) async* {
+    SearchRemovedFromHistory event,
+  ) async* {
     _checkHistory();
 
     final currentState = state as SearchHistory;

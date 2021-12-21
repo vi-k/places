@@ -39,7 +39,9 @@ class PlaceInteractor {
   Future<List<Place>> getPlaces(Filter filter) async {
     // Получаем список из репозитория
     final places = await placeRepository.loadFilteredList(
-        coord: await locationRepository.getLocation(), filter: filter);
+      coord: await locationRepository.getLocation(),
+      filter: filter,
+    );
 
     return _loadUserInfoForList(places);
   }
@@ -49,7 +51,9 @@ class PlaceInteractor {
     // Получаем список из репозитория
     final request = requestText.toLowerCase();
     final places = await placeRepository.search(
-        coord: await locationRepository.getLocation(), text: request);
+      coord: await locationRepository.getLocation(),
+      text: request,
+    );
 
     if (places.isNotEmpty) {
       if (request.contains(_lastSearchRequest)) {
@@ -85,6 +89,7 @@ class PlaceInteractor {
     final id = await placeRepository.create(place);
     final newPlace = await getPlace(id);
     _notify(PlaceAdded(newPlace));
+
     return newPlace;
   }
 
@@ -93,6 +98,7 @@ class PlaceInteractor {
     await placeRepository.update(place);
     final newPlace = await _loadUserInfo(place);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 
@@ -106,6 +112,7 @@ class PlaceInteractor {
   /// Загружает список "Хочу посетить".
   Future<List<Place>> getWishlist() async {
     final wishlist = await dbRepository.getFavorites(Favorite.wishlist);
+
     return _getPlacesByUserInfo(wishlist);
   }
 
@@ -124,6 +131,7 @@ class PlaceInteractor {
   /// Загружает посещённые места.
   Future<List<Place>> getVisited() async {
     final visited = await dbRepository.getFavorites(Favorite.visited);
+
     return _getPlacesByUserInfo(visited);
   }
 
@@ -143,6 +151,7 @@ class PlaceInteractor {
     await dbRepository.updatePlaceUserInfo(place.id, userInfo);
     final newPlace = Place.from(place, userInfo: userInfo);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 
@@ -159,6 +168,7 @@ class PlaceInteractor {
         await dbRepository.loadPlaceUserInfo(place.id) ?? PlaceUserInfo.zero;
     final newPlace = Place.from(place, userInfo: userInfo);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 
@@ -213,6 +223,7 @@ class PlaceInteractor {
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
     final newPlace = Place.from(place, userInfo: newUserInfo);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 
@@ -226,20 +237,20 @@ class PlaceInteractor {
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
     final newPlace = Place.from(place, userInfo: newUserInfo);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 
   /// Переключает в избранное и обратно.
   Future<Place> _toggleFavorite(Place place, Favorite favorite) async {
-    PlaceUserInfo newUserInfo;
-    if (place.userInfo.favorite != favorite) {
-      newUserInfo = place.userInfo.copyWith(favorite: favorite);
-    } else {
-      newUserInfo = place.userInfo.copyWith(favorite: Favorite.no);
-    }
+    final newUserInfo = place.userInfo.favorite != favorite
+        ? place.userInfo.copyWith(favorite: favorite)
+        : place.userInfo.copyWith(favorite: Favorite.no);
+
     await dbRepository.updatePlaceUserInfo(place.id, newUserInfo);
     final newPlace = Place.from(place, userInfo: newUserInfo);
     _notify(PlaceChanged(newPlace));
+
     return newPlace;
   }
 }

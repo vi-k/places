@@ -11,6 +11,7 @@ class DoubleConverter implements JsonConverter<double, Object> {
       if (json == '-infinity') return double.negativeInfinity;
       if (json == 'infinity') return double.infinity;
       if (json == 'nan') return double.nan;
+
       return double.parse(json);
     }
 
@@ -22,6 +23,7 @@ class DoubleConverter implements JsonConverter<double, Object> {
     if (value == double.negativeInfinity) return '-infinity';
     if (value == double.infinity) return 'infinity';
     if (value.isNaN) return 'nan';
+
     return value.toString();
   }
 }

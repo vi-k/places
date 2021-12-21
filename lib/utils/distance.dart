@@ -62,13 +62,10 @@ class Distance extends Equatable implements Comparable<Distance> {
 
     final resultUnits = units == DistanceUnits.optimal ? optimalUnits : units;
 
-    String result;
-    if (resultUnits == DistanceUnits.meters) {
-      result = value.toStringAsFixed(0);
-    } else {
-      result = (value / 1000)
-          .toFixedWithoutTrailingZeros(value.round() < 10000 ? 1 : 0);
-    }
+    var result = resultUnits == DistanceUnits.meters
+        ? value.toStringAsFixed(0)
+        : (value / 1000)
+            .toFixedWithoutTrailingZeros(value.round() < 10000 ? 1 : 0);
 
     if (withUnits) result += ' ${resultUnits.name}';
 

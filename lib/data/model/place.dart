@@ -65,6 +65,7 @@ class Place extends PlaceBase {
 
   /// Копирует с внесением изменений.
   @override
+  // ignore: long-parameter-list
   Place copyWith({
     int? id,
     Coord? coord,

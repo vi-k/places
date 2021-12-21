@@ -16,10 +16,11 @@ RepositoryException createExceptionFromDio(DioError error) {
   final url = error.requestOptions.uri.path;
   final statusCode = error.response?.statusCode ?? 0;
   var message = error.message.replaceFirst(
-      RegExp(
-        r'\s*\[' '$statusCode' r'\]$',
-      ),
-      '');
+    RegExp(
+      r'\s*\[' '$statusCode' r'\]$',
+    ),
+    '',
+  );
   String? data;
 
   if (error.type == DioErrorType.response) {

@@ -34,9 +34,10 @@ class SqliteDbRepository extends _$SqliteDbRepository with DbRepository {
             (t) => OrderingTerm(
                   expression: t.timestamp,
                   mode: OrderingMode.desc,
-                )
+                ),
           ]))
         .get();
+
     return entities
         .map((e) => SearchRequest(
               e.request,
@@ -111,6 +112,7 @@ LazyDatabase _openConnection() => LazyDatabase(
         // final dbPath = await getApplicationDocumentsDirectory();
         final dbPath = await getExternalStorageDirectory();
         final file = File(join(dbPath!.path, 'db.sqlite'));
+
         return VmDatabase(file);
         // return VmDatabase(file, logStatements: true);
       },

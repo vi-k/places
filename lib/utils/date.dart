@@ -8,8 +8,10 @@ extension Date on DateTime {
   static DateTime today() => DateTime.now().dateOnly();
 
   static DateTime yesterday() => DateTime.fromMillisecondsSinceEpoch(
-      DateTime.now().dateOnly().millisecondsSinceEpoch - _millisecondsInDay);
+        DateTime.now().dateOnly().millisecondsSinceEpoch - _millisecondsInDay,
+      );
 
   static DateTime tomorrow() => DateTime.fromMillisecondsSinceEpoch(
-      DateTime.now().dateOnly().millisecondsSinceEpoch + _millisecondsInDay);
+        DateTime.now().dateOnly().millisecondsSinceEpoch + _millisecondsInDay,
+      );
 }

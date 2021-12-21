@@ -166,10 +166,7 @@ const _baseCardTheme = CardTheme(
   margin: EdgeInsets.zero,
   clipBehavior: Clip.antiAlias,
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(
-      Radius.circular(
-          commonSpacing), // не использую BorderRadius.circular ради const
-    ),
+    borderRadius: BorderRadius.all(Radius.circular(commonSpacing)),
   ),
   elevation: 4,
 );
@@ -202,6 +199,7 @@ const _baseInputDecorationTheme = InputDecorationTheme(
   contentPadding: EdgeInsets.fromLTRB(12, 10, 12, 10),
 );
 
+// ignore: long-method
 MyThemeData createLightTheme() => MyThemeData(
       app: ThemeData(
         fontFamily: 'Roboto',
@@ -244,8 +242,7 @@ MyThemeData createLightTheme() => MyThemeData(
           cursorColor: accentColor50,
         ),
         inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-          hintStyle: const TextStyle(
-              color: mainColor70a56), // Размеры установятся как у базового
+          hintStyle: const TextStyle(color: mainColor70a56),
           errorStyle: const TextStyle(color: attentionColor50),
           helperStyle: const TextStyle(color: mainColor70),
           enabledBorder: _border(accentColor50a40),
@@ -291,8 +288,7 @@ MyThemeData createLightTheme() => MyThemeData(
       backgroundFirst: mainColor100,
       backgroundSecond: mainColor90,
       specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
-        hintStyle: const TextStyle(
-            color: mainColor70a56), // Размеры установятся как у базового
+        hintStyle: const TextStyle(color: mainColor70a56),
         errorStyle: const TextStyle(color: attentionColor50),
         helperStyle: const TextStyle(color: mainColor70),
         enabledBorder: _border(null),
@@ -302,6 +298,7 @@ MyThemeData createLightTheme() => MyThemeData(
       ),
     );
 
+// ignore: long-method
 MyThemeData createDarkTheme() => MyThemeData(
       app: ThemeData(
         fontFamily: 'Roboto',
@@ -344,8 +341,7 @@ MyThemeData createDarkTheme() => MyThemeData(
           cursorColor: accentColor70,
         ),
         inputDecorationTheme: _baseInputDecorationTheme.copyWith(
-          hintStyle: const TextStyle(
-              color: mainColor70a56), // Размеры установятся как у базового
+          hintStyle: const TextStyle(color: mainColor70a56),
           errorStyle: const TextStyle(color: attentionColor70),
           helperStyle: const TextStyle(color: mainColor70),
           enabledBorder: _border(accentColor70a40),
@@ -391,8 +387,7 @@ MyThemeData createDarkTheme() => MyThemeData(
       backgroundFirst: mainColor30,
       backgroundSecond: mainColor20,
       specialInputDecorationTheme: _baseInputDecorationTheme.copyWith(
-        hintStyle: const TextStyle(
-            color: mainColor70a56), // Размеры установятся как у базового
+        hintStyle: const TextStyle(color: mainColor70a56),
         errorStyle: const TextStyle(color: attentionColor70),
         helperStyle: const TextStyle(color: mainColor70),
         enabledBorder: _border(null),

@@ -87,7 +87,10 @@ class SliverTitleDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     final theme = context.watch<AppBloc>().theme;
     final maxHeight = maxExtent;
     final minHeight = minExtent;

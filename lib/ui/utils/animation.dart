@@ -2,12 +2,14 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:places/ui/res/const.dart';
 
+// ignore: long-parameter-list
 Widget standartFlightShuttleBuilder(
-    BuildContext flightContext,
-    Animation<double> animation,
-    HeroFlightDirection flightDirection,
-    BuildContext fromHeroContext,
-    BuildContext toHeroContext) {
+  BuildContext flightContext,
+  Animation<double> animation,
+  HeroFlightDirection flightDirection,
+  BuildContext fromHeroContext,
+  BuildContext toHeroContext,
+) {
   final Widget bottomHero;
   final Widget topHero;
 
@@ -37,7 +39,9 @@ Widget standartFlightShuttleBuilder(
 }
 
 Future<T?> standartNavigatorPush<T>(
-        BuildContext context, Widget Function() builder) async =>
+  BuildContext context,
+  Widget Function() builder,
+) async =>
     Navigator.push<T>(
       context,
       PageRouteBuilder(

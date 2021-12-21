@@ -28,6 +28,7 @@ class ApiPlaceRepository extends PlaceRepository {
       final response =
           await dio.post<String>('/place', data: mapper.stringify(place));
       final newPlace = mapper.parse(response.data!);
+
       return newPlace.id;
     } on DioError catch (error) {
       if (error.type == DioErrorType.response &&
@@ -44,6 +45,7 @@ class ApiPlaceRepository extends PlaceRepository {
   Future<PlaceBase> read(int id) async {
     try {
       final response = await dio.get<String>('/place/$id');
+
       return mapper.parse(response.data!);
     } on DioError catch (error) {
       if (error.type == DioErrorType.response &&
@@ -59,8 +61,10 @@ class ApiPlaceRepository extends PlaceRepository {
   @override
   Future<void> update(PlaceBase place) async {
     try {
-      await dio.put<String>('/place/${place.id}',
-          data: mapper.stringify(place, withId: false));
+      await dio.put<String>(
+        '/place/${place.id}',
+        data: mapper.stringify(place, withId: false),
+      );
     } on DioError catch (error) {
       if (error.type == DioErrorType.response &&
           error.response!.statusCode == 404) {
@@ -88,12 +92,14 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест.
   @override
-  Future<List<PlaceBase>> loadList(
-      {int? count,
-      int? offset,
-      PlaceOrderBy? pageBy,
-      Object? pageLastValue,
-      Map<PlaceOrderBy, Sort>? orderBy}) async {
+  // ignore: long-parameter-list
+  Future<List<PlaceBase>> loadList({
+    int? count,
+    int? offset,
+    PlaceOrderBy? pageBy,
+    Object? pageLastValue,
+    Map<PlaceOrderBy, Sort>? orderBy,
+  }) async {
     try {
       String? pageByDirect;
       if (pageBy != null) {
@@ -106,7 +112,8 @@ class ApiPlaceRepository extends PlaceRepository {
         final sort = orderBy[pageBy];
         if (sort == null) {
           throw RepositoryException(
-              'the [orderBy] must contain the field of the [pageBy]');
+            'the [orderBy] must contain the field of the [pageBy]',
+          );
         }
 
         pageByDirect = sort == Sort.asc ? 'pageAfter' : 'pagePrior';
@@ -129,6 +136,7 @@ class ApiPlaceRepository extends PlaceRepository {
       );
 
       final response = await dio.getUri<String>(uri);
+
       return (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map(mapper.map)
@@ -140,8 +148,10 @@ class ApiPlaceRepository extends PlaceRepository {
 
   /// Загружает список мест, соответствующих фильтру.
   @override
-  Future<List<PlaceBase>> loadFilteredList(
-      {Coord? coord, required Filter filter}) async {
+  Future<List<PlaceBase>> loadFilteredList({
+    Coord? coord,
+    required Filter filter,
+  }) async {
     try {
       // Если нужно получить объекты без ограничения расстояния, но, допустим,
       // по имени и типу, то придётся применять костыли. Есть ограничения
@@ -156,16 +166,18 @@ class ApiPlaceRepository extends PlaceRepository {
       // не работает. Поэтому делаем возможность не устанавливать радиус
       // (радиус = ∞), а по типам фильтруем вручную.
 
-      final response = await dio.post<String>('/filtered_places',
-          data: jsonEncode(<String, dynamic>{
-            if (coord != null && filter.radius.isFinite) ...<String, dynamic>{
-              'lat': coord.lat,
-              'lng': coord.lon,
-              'radius': filter.radius.value,
-            },
-            if (filter.placeTypes != null)
-              'typeFilter': filter.placeTypes!.map((e) => e.name).toList(),
-          }));
+      final response = await dio.post<String>(
+        '/filtered_places',
+        data: jsonEncode(<String, dynamic>{
+          if (coord != null && filter.radius.isFinite) ...<String, dynamic>{
+            'lat': coord.lat,
+            'lng': coord.lon,
+            'radius': filter.radius.value,
+          },
+          if (filter.placeTypes != null)
+            'typeFilter': filter.placeTypes!.map((e) => e.name).toList(),
+        }),
+      );
 
       var tmp = (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -186,8 +198,10 @@ class ApiPlaceRepository extends PlaceRepository {
   @override
   Future<List<PlaceBase>> search({Coord? coord, required String text}) async {
     try {
-      final response = await dio.post<String>('/filtered_places',
-          data: jsonEncode(<String, dynamic>{'nameFilter': text}));
+      final response = await dio.post<String>(
+        '/filtered_places',
+        data: jsonEncode(<String, dynamic>{'nameFilter': text}),
+      );
 
       final result = (jsonDecode(response.data!) as List<dynamic>)
           .whereType<Map<String, dynamic>>()

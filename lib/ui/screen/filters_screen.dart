@@ -96,9 +96,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
           onChanged: (value) {
             setState(() {
               _filter = _filter.copyWith(
-                  radius: value.roundToDouble() == _maxValue
-                      ? Distance.infinity
-                      : valueToDistance(value.round()));
+                radius: value.roundToDouble() == _maxValue
+                    ? Distance.infinity
+                    : valueToDistance(value.round()),
+              );
             });
           },
         ),

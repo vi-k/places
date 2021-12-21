@@ -44,6 +44,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
           body: WillPopScope(
             onWillPop: () async {
               Navigator.pop(context, state.place);
+
               return false;
             },
             child: CustomScrollView(

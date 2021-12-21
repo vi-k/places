@@ -27,6 +27,7 @@ class RealLocationRepository implements LocationRepository {
   @override
   Future<Coord?> getLocation() async {
     final pos = await getCurrentPosition();
+
     return _lastLocation =
         pos == null ? null : Coord(pos.latitude, pos.longitude);
   }

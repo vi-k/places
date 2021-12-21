@@ -106,28 +106,38 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
       ),
 
       // body: NestedScrollView(
+      //   controller: _controller,
+      //   floatHeaderSlivers: true,
       //   headerSliverBuilder: (context, innerBoxScrolled) => [
       //     _buildHeader(columnsCount),
       //   ],
       //   body: BlocBuilder<PlacesBloc, PlacesState>(
       //     builder: (context, state) {
-      //       if (state is PlacesLoading || state.places.isNotReady) {
+      //       if (state is PlacesLoadInProgress || state.places.isNotReady) {
       //         return const Center(
       //           child: CircularProgressIndicator(),
       //         );
       //       }
 
-      //       if (state is PlacesLoadingFailed) {
+      //       if (state is PlacesLoadFailure) {
       //         return Failed(
       //           svg: Svg64.delete,
       //           title: stringError,
       //           message: state.error.toString(),
-      //           onRepeat: () => bloc.add(const PlacesReload()),
+      //           onRepeat: () => bloc.add(const PlacesRerfreshed()),
       //         );
       //       }
 
+      //       // Восстановление позиции скролла. К сожалению, только здесь.
+      //       if (!_scrollInitialized) {
+      //         Future<void>(() {
+      //           _controller.jumpTo(state.scrollOffset.value);
+      //           _scrollInitialized = true;
+      //         });
+      //       }
+
       //       return RefreshIndicator(
-      //         onRefresh: () async => bloc.add(const PlacesReload()),
+      //         onRefresh: () async => bloc.add(const PlacesRerfreshed()),
       //         child: state.places.value.isEmpty
       //             ? const Failed(
       //                 svg: Svg64.search,
@@ -149,17 +159,12 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
       //   ),
       // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: columnsCount == 2
-          ? FloatingActionButton(
-              onPressed: () => PlaceEditScreen.start(context),
-              child: const Icon(Icons.add),
-            )
-          : FloatingActionButton.extended(
-              isExtended: true,
-              onPressed: () => PlaceEditScreen.start(context),
-              icon: const Icon(Icons.add),
-              label: Text(stringNewPlace.toUpperCase()),
-            ),
+      floatingActionButton: FloatingActionButton.extended(
+        isExtended: true,
+        onPressed: () => PlaceEditScreen.start(context),
+        icon: const Icon(Icons.add),
+        label: Text(stringNewPlace.toUpperCase()),
+      ),
       bottomNavigationBar: const AppNavigationBar(index: 0),
     );
   }

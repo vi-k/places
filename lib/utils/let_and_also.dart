@@ -3,6 +3,7 @@ extension Let<T extends Object> on T {
 
   T also(void Function(T it) op) {
     op(this);
+
     return this;
   }
 }

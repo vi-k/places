@@ -32,6 +32,7 @@ class PlaceTypeSelectScreen extends StatelessWidget {
         itemCount: PlaceType.values.length,
         itemBuilder: (context, index) {
           final tilePlaceType = PlaceTypeUi(PlaceType.values[index]);
+
           return ListTile(
             title: Text(tilePlaceType.name),
             trailing: tilePlaceType.type == placeType

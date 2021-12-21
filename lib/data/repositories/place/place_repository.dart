@@ -14,15 +14,18 @@ abstract class PlaceRepository {
   Future<void> update(PlaceBase place);
   Future<void> delete(int id);
 
-  Future<List<PlaceBase>> loadList(
-      {int? count,
-      int? offset,
-      PlaceOrderBy? pageBy,
-      Object? pageLastValue,
-      Map<PlaceOrderBy, Sort>? orderBy});
+  Future<List<PlaceBase>> loadList({
+    int? count,
+    int? offset,
+    PlaceOrderBy? pageBy,
+    Object? pageLastValue,
+    Map<PlaceOrderBy, Sort>? orderBy,
+  });
 
-  Future<List<PlaceBase>> loadFilteredList(
-      {Coord? coord, required Filter filter});
+  Future<List<PlaceBase>> loadFilteredList({
+    Coord? coord,
+    required Filter filter,
+  });
 
   Future<List<PlaceBase>> search({Coord? coord, required String text});
 }

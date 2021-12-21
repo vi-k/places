@@ -25,17 +25,29 @@ extension StringExt on String {
       padLeft((width + length) ~/ 2, padding).padRight(width, padding);
 
   /// Обрезает строку и добавляет [padding] слева (смещает строку вправо)
-  String cutAndPadLeft(int width,
-          {String ellipsis = '…', bool trim = true, String padding = ' '}) =>
+  String cutAndPadLeft(
+    int width, {
+    String ellipsis = '…',
+    bool trim = true,
+    String padding = ' ',
+  }) =>
       cut(width, ellipsis: ellipsis, trim: trim).padLeft(width, padding);
 
   /// Обрезает строку и добавляет [padding] справа (смещает строку влево)
-  String cutAndPadRight(int width,
-          {String ellipsis = '…', bool trim = true, String padding = ' '}) =>
+  String cutAndPadRight(
+    int width, {
+    String ellipsis = '…',
+    bool trim = true,
+    String padding = ' ',
+  }) =>
       cut(width, ellipsis: ellipsis, trim: trim).padRight(width, padding);
 
   /// Обрезает строку и центрирует строку
-  String cutAndPad(int width,
-          {String ellipsis = '…', bool trim = true, String padding = ' '}) =>
+  String cutAndPad(
+    int width, {
+    String ellipsis = '…',
+    bool trim = true,
+    String padding = ' ',
+  }) =>
       cut(width, ellipsis: ellipsis, trim: trim).pad(width, padding);
 }
